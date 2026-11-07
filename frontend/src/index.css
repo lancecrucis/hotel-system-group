@@ -673,7 +673,80 @@ footer {
   margin-inline: auto;
 }
 .dining-form-fields {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.dining-time-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 26px 0 0;
+  min-width: 0;
+}
+.dining-time-fieldset legend {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  padding: 0;
+}
+.dining-time-signs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.time-sign {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 92px;
+  padding: 13px 14px;
+  border: 1px solid #dedede;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+.time-sign:hover:not(:has(input:disabled)) {
+  border-color: #777;
+  background: #fafafa;
+}
+.time-sign input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.time-sign:has(input:checked) {
+  border-color: #161616;
+  box-shadow: 0 0 0 2px #161616 inset;
+}
+.time-sign:has(input:disabled) {
+  background: #f4f4f4;
+  color: #969696;
+  cursor: not-allowed;
+}
+.time-sign-time {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.3px;
+}
+.time-sign-range,
+.time-sign-status {
+  font-size: 11px;
+}
+.time-sign-status {
+  margin-top: auto;
+  color: #606060;
+}
+.time-sign-limited .time-sign-status {
+  color: #4d4d4d;
+  font-weight: 600;
+}
+.time-sign-full .time-sign-status,
+.time-sign-fit .time-sign-status {
+  color: #8b8b8b;
 }
 .dining-form-divider {
   border-top: 1px solid var(--line);
@@ -1072,6 +1145,9 @@ code {
   }
   .dining-form-fields {
     grid-template-columns: 1fr;
+  }
+  .dining-time-signs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .dining-photo {
     height: 140px;

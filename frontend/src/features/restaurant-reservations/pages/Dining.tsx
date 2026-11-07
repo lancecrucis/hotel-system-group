@@ -13,7 +13,7 @@ interface Slot {
   start_time: string;
   end_time: string;
   available: boolean;
-  tables: { capacity: number }[];
+  tables: { capacity: number; available: boolean }[];
 }
 
 export function Dining() {
@@ -33,6 +33,19 @@ export function Dining() {
     query.data?.slots[0];
   const maximumSeats = Math.max(0, ...(query.data?.slots[0]?.tables.map((table) => table.capacity) ?? []));
   const maxGuests = Math.min(query.data?.settings.max_guest_per_booking ?? 10, maximumSeats || 10);
+  const guestCount = Number(guests) || 0;
+  const slotStatus = (item: Slot) => {
+    const fittingTables = item.tables.filter((table) => table.capacity >= guestCount);
+    const availableTables = fittingTables.filter((table) => table.available).length;
+    if (!fittingTables.length) return { tone: 'fit', label: 'No table fits' };
+    if (!availableTables) return { tone: 'full', label: 'Fully booked' };
+    if (availableTables <= 2)
+      return {
+        tone: 'limited',
+        label: `${availableTables} ${availableTables === 1 ? 'table' : 'tables'} left`,
+      };
+    return { tone: 'open', label: `${availableTables} tables left` };
+  };
 
   async function book(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -88,25 +101,6 @@ export function Dining() {
             />
           </label>
           <label>
-            Time
-            <select
-              value={slot?.start_time ?? ''}
-              required
-              disabled={busy || query.loading || !slot}
-              onChange={(e) => {
-                setTime(e.target.value);
-                setError('');
-              }}
-            >
-              {query.data?.slots.map((item) => (
-                <option key={item.start_time} value={item.start_time}>
-                  {item.start_time.slice(0, 5)}–{item.end_time.slice(0, 5)}
-                  {item.available ? '' : ' · Full'}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
             Guests
             <input
               type="number"
@@ -122,6 +116,33 @@ export function Dining() {
             />
           </label>
         </div>
+        <fieldset className="dining-time-fieldset">
+          <legend>Dining time</legend>
+          <div className="dining-time-signs">
+            {query.data?.slots.map((item) => {
+              const status = slotStatus(item);
+              const disabled = status.tone === 'fit' || status.tone === 'full';
+              return (
+                <label className={`time-sign time-sign-${status.tone}`} key={item.start_time}>
+                  <input
+                    type="radio"
+                    name="dining-time"
+                    value={item.start_time}
+                    checked={time === item.start_time}
+                    disabled={busy || disabled}
+                    onChange={(e) => {
+                      setTime(e.target.value);
+                      setError('');
+                    }}
+                  />
+                  <span className="time-sign-time">{item.start_time.slice(0, 5)}</span>
+                  <span className="time-sign-range">until {item.end_time.slice(0, 5)}</span>
+                  <span className="time-sign-status">{status.label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
         {query.loading ? <Loading /> : <ErrorBox message={query.error} />}
         {!query.loading && !query.error && !slot && <ErrorBox message="No dining times available." />}
         {!query.loading && slot && !slot.available && (
