@@ -9,24 +9,37 @@ import type { Settings, Reservation } from '../../../types/models';
 import { ErrorBox, Empty, Loading, Modal } from '../../../components/ui/common';
 import { ContactFields } from '../../hotel-reservations/components/ContactFields';
 import { day, dateLabel } from '../../../utils/format';
+
+interface DiningTable {
+  id: string;
+  name: string;
+  shape: 'round' | 'square' | 'rectangle';
+  capacity: number;
+  available: boolean;
+}
 interface Slot {
   start_time: string;
   end_time: string;
-  available_seats: number;
   available: boolean;
+  tables: DiningTable[];
 }
 export function Dining() {
-  const initial = { date: day(1), guests: '2' },
-    [filters, setFilters] = useState(initial),
-    [search, setSearch] = useState(initial),
-    [selected, setSelected] = useState<Slot | null>(null),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
-  const { user } = useAuth(),
-    navigate = useNavigate(),
-    query = useQuery<{ slots: Slot[]; settings: Settings }>(
-      `/restaurant/availability?${new URLSearchParams(search)}`,
-    );
+  const [date, setDate] = useState(day(1));
+  const [guests, setGuests] = useState('2');
+  const [time, setTime] = useState('18:00');
+  const [selected, setSelected] = useState<{ table: DiningTable; slot: Slot } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const query = useQuery<{ slots: Slot[]; settings: Settings }>(
+    `/restaurant/availability?${new URLSearchParams({ date, guests })}`,
+  );
+  const slot =
+    query.data?.slots.find((item) => item.start_time === time) ??
+    query.data?.slots.find((item) => item.available) ??
+    query.data?.slots[0];
+
   async function book(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const contact = Object.fromEntries(new FormData(e.currentTarget));
@@ -37,9 +50,10 @@ export function Dining() {
         '/restaurant/reservations',
         send('POST', {
           ...contact,
-          reservation_date: search.date,
-          start_time: selected!.start_time,
-          guest_count: Number(search.guests),
+          reservation_date: date,
+          start_time: selected!.slot.start_time,
+          guest_count: Number(guests),
+          table_id: selected!.table.id,
         }),
       );
       navigate(`/reservations/${reservation.id}`);
@@ -55,81 +69,102 @@ export function Dining() {
       <div className="dining-photo">
         <img src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
       </div>
-      <form
-        className="panel search-form dining-search"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSearch({ ...filters });
-          query.reload();
-        }}
-      >
+      <div className="panel search-form dining-search">
         <label>
           Dining date
           <input
             type="date"
             required
             min={day()}
-            value={filters.date}
-            onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value);
+              setSelected(null);
+            }}
           />
         </label>
         <label>
-          Party size
+          Time
+          <select
+            value={slot?.start_time ?? ''}
+            disabled={query.loading || !slot}
+            onChange={(e) => {
+              setTime(e.target.value);
+              setSelected(null);
+            }}
+          >
+            {query.data?.slots.map((item) => (
+              <option key={item.start_time} value={item.start_time}>
+                {item.start_time.slice(0, 5)}–{item.end_time.slice(0, 5)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Guests
           <input
             type="number"
             min={1}
             max={query.data?.settings.max_guest_per_booking ?? 10}
-            required
-            value={filters.guests}
-            onChange={(e) => setFilters({ ...filters, guests: e.target.value })}
+            value={guests}
+            onChange={(e) => {
+              setGuests(e.target.value);
+              setSelected(null);
+            }}
           />
         </label>
-        <button disabled={query.loading}>Find a time</button>
-      </form>
+      </div>
       <div className="section-heading">
-        <h1 className="booking-heading">Available dining times</h1>
-        <span className="muted">
-          {dateLabel(search.date)} · {search.guests} guests
-        </span>
+        <h1 className="booking-heading">Choose a table</h1>
+        <span className="muted">1 hour · 30-minute buffer</span>
       </div>
       <ErrorBox message={query.error} />
       {query.loading ? (
         <Loading />
-      ) : (
+      ) : slot && !slot.tables.some((table) => table.capacity >= Number(guests)) ? (
+        <Empty title="No table fits this party size" />
+      ) : slot ? (
         <div className="panel">
-          <div className="slot-grid">
-            {query.data?.slots.map((slot) => (
+          <div className="dining-table-grid">
+            {slot.tables.map((table) => (
               <button
-                className={`slot ${slot.available ? '' : 'unavailable'}`}
-                key={slot.start_time}
-                disabled={!slot.available}
+                type="button"
+                key={table.id}
+                className="dining-table-option"
+                disabled={!table.available}
                 onClick={() => {
-                  setSelected(slot);
+                  setSelected({ table, slot });
                   setError('');
                 }}
               >
-                <strong>{slot.start_time}</strong>
-                <small>{slot.available ? `${slot.available_seats} seats available` : 'Fully booked'}</small>
+                <span className={`table-shape table-shape-${table.shape}`} aria-hidden="true" />
+                <strong>{table.name}</strong>
+                <small>
+                  {table.capacity} seats · {table.available ? 'Available' : 'Unavailable'}
+                </small>
               </button>
             ))}
           </div>
-          {query.data?.slots.length === 0 && <Empty title="No dining times available" />}
         </div>
+      ) : (
+        <Empty title="No dining times available" />
       )}
       {selected && (
         <Modal
-          title="Review your dining reservation"
+          title="Review dining reservation"
           onClose={() => {
             if (!busy) setSelected(null);
           }}
         >
           <div className="booking-summary">
-            <strong>{dateLabel(search.date)}</strong>
+            <strong>
+              {selected.table.name} · {dateLabel(date)}
+            </strong>
             <p className="inline">
               <Clock size={16} />
-              {selected.start_time}–{selected.end_time}
+              {selected.slot.start_time.slice(0, 5)}–{selected.slot.end_time.slice(0, 5)}
               <Users size={16} />
-              {search.guests} guests
+              {guests} guests
             </p>
           </div>
           <ErrorBox message={error} />
@@ -137,8 +172,11 @@ export function Dining() {
             <form className="form-grid" onSubmit={book}>
               <ContactFields />
               <p className="full muted small-text">Confirm within 15 minutes.</p>
-              <div className="full">
-                <button disabled={busy}>{busy ? 'Holding your time…' : 'Continue to confirmation'}</button>
+              <div className="full actions">
+                <button disabled={busy}>{busy ? 'Holding your table…' : 'Continue to confirmation'}</button>
+                <button type="button" className="secondary" disabled={busy} onClick={() => setSelected(null)}>
+                  Edit time or guests
+                </button>
               </div>
             </form>
           ) : (

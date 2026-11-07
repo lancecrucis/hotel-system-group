@@ -11,6 +11,17 @@ import { peakOccupancy, minutes, clock } from '../repositories/capacity.js';
 
 export const restaurantRouter = Router();
 const search = z.object({ date, guests: z.coerce.number().int().min(1).max(500) });
+const visitMinutes = 60;
+const bufferMinutes = 30;
+type DiningTable = { id: string; name: string; shape: string; capacity: number };
+type TableBooking = { table_id: string | null; start_time: string; end_time: string };
+const tableFree = (bookings: TableBooking[], tableId: string, start: number) =>
+  !bookings.some(
+    (booking) =>
+      booking.table_id === tableId &&
+      minutes(booking.start_time) < start + visitMinutes + bufferMinutes &&
+      minutes(booking.end_time) + bufferMinutes > start,
+  );
 restaurantRouter.get(
   '/settings',
   route(async (_req, res) => {
@@ -74,17 +85,41 @@ restaurantRouter.get(
       await pool.query("SELECT CURRENT_DATE::text AS today,to_char(LOCALTIME,'HH24:MI') AS time")
     ).rows[0];
     if (data.date < current.today) throw new HttpError(400, 'Choose today or a future date.');
+    const tables = (await pool.query<DiningTable>('SELECT * FROM dining_tables ORDER BY name')).rows;
+    const bookings = (
+      await pool.query<TableBooking>(
+        `SELECT d.table_id,d.start_time,d.end_time FROM restaurant_reservations d
+         JOIN reservations r ON r.id=d.reservation_id
+         WHERE d.reservation_date=$1 AND
+         (r.status IN ('confirmed','arrived','seated','completed') OR
+          (r.status='pending' AND r.hold_expires_at>now()))`,
+        [data.date],
+      )
+    ).rows;
     const slots = [];
-    for (let m = minutes(settings.opening_time); m + 90 <= minutes(settings.closing_time); m += 30) {
+    for (
+      let m = minutes(settings.opening_time);
+      m + visitMinutes <= minutes(settings.closing_time);
+      m += 30
+    ) {
       const start = clock(m),
-        end = clock(m + 90);
+        end = clock(m + visitMinutes);
       if (data.date === current.today && start <= current.time) continue;
       const available = settings.max_capacity - (await peakOccupancy(pool, data.date, start, end));
+      const slotTables = tables.map((table) => ({
+        ...table,
+        available:
+          table.capacity >= data.guests &&
+          tableFree(bookings, table.id, m) &&
+          data.guests <= available &&
+          data.guests <= settings.max_guest_per_booking,
+      }));
       slots.push({
         start_time: start,
         end_time: end,
         available_seats: Math.max(0, available),
-        available: data.guests <= available && data.guests <= settings.max_guest_per_booking,
+        available: slotTables.some((table) => table.available),
+        tables: slotTables,
       });
     }
     res.json({ slots, settings });
@@ -95,7 +130,12 @@ restaurantRouter.post(
   requireUser,
   route(async (req, res) => {
     const data = contactSchema
-      .extend({ reservation_date: date, start_time: time, guest_count: z.number().int().min(1).max(500) })
+      .extend({
+        reservation_date: date,
+        start_time: time,
+        guest_count: z.number().int().min(1).max(500),
+        table_id: z.string().uuid(),
+      })
       .parse(req.body);
     const result = await transaction(async (c) => {
       const settings = (await c.query('SELECT * FROM restaurant_settings WHERE id=1 FOR UPDATE')).rows[0];
@@ -103,7 +143,7 @@ restaurantRouter.post(
         await c.query("SELECT CURRENT_DATE::text AS today,to_char(LOCALTIME,'HH24:MI') AS time")
       ).rows[0];
       const start = minutes(data.start_time),
-        end = clock(start + 90);
+        end = clock(start + visitMinutes);
       if (
         data.reservation_date < current.today ||
         (data.reservation_date === current.today && data.start_time <= current.time)
@@ -111,12 +151,28 @@ restaurantRouter.post(
         throw new HttpError(400, 'Choose a future dining time.');
       if (
         start < minutes(settings.opening_time) ||
-        start + 90 > minutes(settings.closing_time) ||
+        start + visitMinutes > minutes(settings.closing_time) ||
         (start - minutes(settings.opening_time)) % 30 !== 0 ||
         data.guest_count > settings.max_guest_per_booking
       )
         throw new HttpError(400, 'That time or party size is outside restaurant limits.');
       await expireHolds(c);
+      const table = (await c.query<DiningTable>('SELECT * FROM dining_tables WHERE id=$1', [data.table_id]))
+        .rows[0];
+      if (!table || data.guest_count > table.capacity)
+        throw new HttpError(400, 'Choose a table that fits your party.');
+      const bookings = (
+        await c.query<TableBooking>(
+          `SELECT d.table_id,d.start_time,d.end_time FROM restaurant_reservations d
+         JOIN reservations r ON r.id=d.reservation_id
+         WHERE d.reservation_date=$1 AND d.table_id=$2 AND
+         (r.status IN ('confirmed','arrived','seated','completed') OR
+          (r.status='pending' AND r.hold_expires_at>now()))`,
+          [data.reservation_date, data.table_id],
+        )
+      ).rows;
+      if (!tableFree(bookings, data.table_id, start))
+        throw new HttpError(409, 'This table is unavailable at that time. Choose another table or time.');
       const occupied = await peakOccupancy(c, data.reservation_date, data.start_time, end);
       if (occupied + data.guest_count > settings.max_capacity)
         throw new HttpError(409, 'This time slot has filled up. Choose another time.');
@@ -133,8 +189,16 @@ restaurantRouter.post(
       );
       const r = inserted.rows[0];
       await c.query(
-        'INSERT INTO restaurant_reservations(reservation_id,reservation_date,start_time,end_time,guest_count,special_requests) VALUES($1,$2,$3,$4,$5,$6)',
-        [r.id, data.reservation_date, data.start_time, end, data.guest_count, data.special_requests],
+        'INSERT INTO restaurant_reservations(reservation_id,reservation_date,start_time,end_time,guest_count,special_requests,table_id) VALUES($1,$2,$3,$4,$5,$6,$7)',
+        [
+          r.id,
+          data.reservation_date,
+          data.start_time,
+          end,
+          data.guest_count,
+          data.special_requests,
+          data.table_id,
+        ],
       );
       await recordStatus(
         c,

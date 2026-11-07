@@ -131,8 +131,9 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
   await expect(page.locator('.badge-checked_out')).toBeVisible();
   await expect(page.getByText('Prototype Test Room · ' + roomNumber)).toBeVisible();
   await page.getByRole('link', { name: 'Reserve a table' }).click();
-  await expect(page.getByRole('heading', { name: 'Available dining times' })).toBeVisible();
-  await page.getByRole('button', { name: /^18:00 / }).click();
+  await expect(page.getByRole('heading', { name: 'Choose a table' })).toBeVisible();
+  await page.getByLabel('Time', { exact: true }).selectOption('18:00');
+  await page.getByRole('button', { name: /T01/ }).click();
   const dining = page.waitForResponse(
     (r) => r.url().endsWith('/api/restaurant/reservations') && r.request().method() === 'POST',
   );

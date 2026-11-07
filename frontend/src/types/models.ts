@@ -55,6 +55,8 @@ export interface Reservation {
     start_time: string;
     end_time: string;
     guest_count: number;
+    table_name: string | null;
+    table_shape: string | null;
     special_requests: string;
     arrived_at: string | null;
     seated_at: string | null;

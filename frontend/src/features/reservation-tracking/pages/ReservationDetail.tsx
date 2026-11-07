@@ -150,9 +150,15 @@ export function ReservationDetail() {
                   <div>
                     <dt>Time</dt>
                     <dd>
-                      {r.restaurant!.start_time.slice(0, 5)}–{r.restaurant!.end_time.slice(0, 5)} (90 minutes)
+                      {r.restaurant!.start_time.slice(0, 5)}–{r.restaurant!.end_time.slice(0, 5)}
                     </dd>
                   </div>
+                  {r.restaurant!.table_name && (
+                    <div>
+                      <dt>Table</dt>
+                      <dd>{r.restaurant!.table_name}</dd>
+                    </div>
+                  )}
                   {r.restaurant!.arrived_at && (
                     <div>
                       <dt>Arrived</dt>

@@ -136,7 +136,7 @@ try {
       );
     else
       await c.query(
-        "INSERT INTO restaurant_reservations(reservation_id,reservation_date,start_time,end_time,guest_count,special_requests) VALUES($1,CURRENT_DATE+1,'18:00','19:30',4,'One vegetarian guest.')",
+        "INSERT INTO restaurant_reservations(reservation_id,reservation_date,start_time,end_time,guest_count,special_requests,table_id) VALUES($1,CURRENT_DATE+1,'18:00','19:00',4,'One vegetarian guest.',(SELECT id FROM dining_tables WHERE name='T05'))",
         [id],
       );
     await c.query(

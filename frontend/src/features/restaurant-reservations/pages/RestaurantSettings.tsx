@@ -66,7 +66,7 @@ function SettingsForm({ settings, onSave }: { settings: Settings; onSave: () => 
           Closing time
           <input type="time" name="closing_time" required defaultValue={settings.closing_time.slice(0, 5)} />
         </label>
-        <p className="full muted">90-minute visits · Times every 30 minutes.</p>
+        <p className="full muted">1-hour visits · 30 minutes between bookings · Times every 30 minutes.</p>
         <div className="full">
           <button disabled={busy}>{busy ? 'Saving…' : 'Save settings'}</button>
         </div>

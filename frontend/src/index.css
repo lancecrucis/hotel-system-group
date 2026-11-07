@@ -653,7 +653,60 @@ footer {
   height: 54px;
 }
 .dining-search {
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.dining-table-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 14px;
+}
+.dining-table-option {
+  min-height: 145px;
+  border: 1px solid #d6d6d6;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 17px 12px;
+}
+.dining-table-option:hover:not(:disabled) {
+  background: #f4f4f4;
+  border-color: #161616;
+}
+.dining-table-option:disabled {
+  background: #f5f5f5;
+  color: #777;
+  opacity: 0.7;
+}
+.dining-table-option strong {
+  font-size: 13px;
+}
+.dining-table-option small {
+  font-size: 11px;
+}
+.table-shape {
+  display: block;
+  width: 48px;
+  height: 42px;
+  margin: 0 auto 7px;
+  border: 2px solid currentColor;
+  background: #ececec;
+  box-shadow: 0 0 0 5px #fff inset;
+}
+.table-shape-round {
+  border-radius: 50%;
+  width: 43px;
+  height: 43px;
+}
+.table-shape-square {
+  border-radius: 5px;
+}
+.table-shape-rectangle {
+  border-radius: 5px;
+  width: 62px;
+  height: 36px;
 }
 .slot-grid {
   display: grid;
@@ -1071,6 +1124,9 @@ code {
 }
 @media (max-width: 500px) {
   .room-grid {
+    grid-template-columns: 1fr;
+  }
+  .dining-search {
     grid-template-columns: 1fr;
   }
   .dining-photo {

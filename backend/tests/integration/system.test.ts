@@ -240,19 +240,23 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     409,
   );
   const settings = (await request('/restaurant/settings')).body.settings;
-  const party = settings.max_guest_per_booking,
-    amount = Math.floor(settings.max_capacity / party) + 1;
+  const party = 2;
+  const availability = await request(`/restaurant/availability?date=${today.distant}&guests=2`);
+  const tableId = availability.body.slots[0].tables.find(
+    (table: { name: string }) => table.name === 'T01',
+  ).id;
   const dine = {
     ...contact,
     reservation_date: today.distant,
     start_time: settings.opening_time.slice(0, 5),
     guest_count: party,
+    table_id: tableId,
   };
   const dining = await Promise.all(
-    Array.from({ length: amount }, () => request('/restaurant/reservations', 'POST', dine, owner.cookie)),
+    Array.from({ length: 2 }, () => request('/restaurant/reservations', 'POST', dine, owner.cookie)),
   );
   for (const result of dining) if (result.status === 201) reservationIds.push(result.body.reservation.id);
-  assert.equal(dining.filter((r) => r.status === 201).length, Math.floor(settings.max_capacity / party));
+  assert.equal(dining.filter((r) => r.status === 201).length, 1);
   assert.equal(dining.filter((r) => r.status === 409).length, 1);
   const first = dining.find((r) => r.status === 201)!.body.reservation;
   assert.equal(
@@ -273,23 +277,9 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
       (await request(`/reservations/${first.id}/status`, 'PATCH', { status }, staff.cookie)).status,
       200,
     );
-  const remaining = dining.filter((r) => r.status === 201).slice(1);
-  for (const r of remaining)
-    assert.equal(
-      (
-        await request(
-          `/reservations/${r.body.reservation.id}/status`,
-          'PATCH',
-          { status: 'cancelled', reason: 'Integration cleanup' },
-          owner.cookie,
-        )
-      ).status,
-      200,
-    );
-  // Two bookings touching opposite ends of a candidate interval are not
-  // concurrent with each other. Their party sizes must not be summed.
+  // A table needs 30 minutes after the one-hour visit before its next booking.
   const opening = minutes(settings.opening_time);
-  for (const start of [opening, opening + 120]) {
+  for (const start of [opening, opening + 90]) {
     const result = await request(
       '/restaurant/reservations',
       'POST',
@@ -299,8 +289,19 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     assert.equal(result.status, 201);
     reservationIds.push(result.body.reservation.id);
   }
+  assert.equal(
+    (
+      await request(
+        '/restaurant/reservations',
+        'POST',
+        { ...dine, start_time: clock(opening + 60) },
+        owner.cookie,
+      )
+    ).status,
+    409,
+  );
   assert.equal(await peakOccupancy(pool, today.distant, clock(opening + 60), clock(opening + 150)), party);
-  assert.equal(await peakOccupancy(pool, today.distant, clock(opening + 90), clock(opening + 120)), 0);
+  assert.equal(await peakOccupancy(pool, today.distant, clock(opening + 60), clock(opening + 90)), 0);
   const notices = await request('/notifications', 'GET', undefined, owner.cookie);
   assert.ok(notices.body.notifications.length >= 10);
   assert.equal((await request('/notifications/read', 'PATCH', {}, owner.cookie)).status, 200);
