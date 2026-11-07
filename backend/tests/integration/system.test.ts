@@ -302,6 +302,21 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   );
   assert.equal(await peakOccupancy(pool, today.distant, clock(opening + 60), clock(opening + 150)), party);
   assert.equal(await peakOccupancy(pool, today.distant, clock(opening + 60), clock(opening + 90)), 0);
+  const assigned = await request(
+    '/restaurant/reservations',
+    'POST',
+    { ...dine, start_time: clock(opening + 180), table_id: undefined },
+    owner.cookie,
+  );
+  assert.equal(assigned.status, 201);
+  reservationIds.push(assigned.body.reservation.id);
+  const assignedDetail = await request(
+    `/reservations/${assigned.body.reservation.id}`,
+    'GET',
+    undefined,
+    owner.cookie,
+  );
+  assert.equal(assignedDetail.body.reservation.restaurant.table_name, 'T01');
   const notices = await request('/notifications', 'GET', undefined, owner.cookie);
   assert.ok(notices.body.notifications.length >= 10);
   assert.equal((await request('/notifications/read', 'PATCH', {}, owner.cookie)).status, 200);

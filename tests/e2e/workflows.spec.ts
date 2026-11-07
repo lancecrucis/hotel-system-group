@@ -131,16 +131,13 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
   await expect(page.locator('.badge-checked_out')).toBeVisible();
   await expect(page.getByText('Prototype Test Room · ' + roomNumber)).toBeVisible();
   await page.getByRole('link', { name: 'Reserve a table' }).click();
-  await expect(page.getByRole('heading', { name: 'Choose a table' })).toBeVisible();
-  await page.getByLabel('Time', { exact: true }).selectOption('18:00');
-  await page.getByRole('button', { name: /T01/ }).click();
-  await expect(dialog.getByLabel('Dining date')).toBeVisible();
-  await dialog.getByLabel('Time', { exact: true }).selectOption('18:30');
-  await expect(dialog.getByLabel('Guests')).toHaveValue('2');
+  await expect(page.getByRole('heading', { name: 'Reserve a table' })).toBeVisible();
+  await page.getByLabel('Time', { exact: true }).selectOption('18:30');
+  await expect(page.getByLabel('Guests')).toHaveValue('2');
   const dining = page.waitForResponse(
     (r) => r.url().endsWith('/api/restaurant/reservations') && r.request().method() === 'POST',
   );
-  await dialog.getByRole('button', { name: 'Continue to confirmation' }).click();
+  await page.getByRole('button', { name: 'Continue to confirmation' }).click();
   const diningId = (await (await dining).json()).reservation.id;
   reservationIds.push(diningId);
   await page.waitForURL(`**/reservations/${diningId}`);

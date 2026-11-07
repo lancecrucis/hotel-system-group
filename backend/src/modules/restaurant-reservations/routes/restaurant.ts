@@ -134,7 +134,7 @@ restaurantRouter.post(
         reservation_date: date,
         start_time: time,
         guest_count: z.number().int().min(1).max(500),
-        table_id: z.string().uuid(),
+        table_id: z.string().uuid().optional(),
       })
       .parse(req.body);
     const result = await transaction(async (c) => {
@@ -157,22 +157,25 @@ restaurantRouter.post(
       )
         throw new HttpError(400, 'That time or party size is outside restaurant limits.');
       await expireHolds(c);
-      const table = (await c.query<DiningTable>('SELECT * FROM dining_tables WHERE id=$1', [data.table_id]))
-        .rows[0];
-      if (!table || data.guest_count > table.capacity)
-        throw new HttpError(400, 'Choose a table that fits your party.');
+      const tables = (
+        await c.query<DiningTable>(
+          'SELECT * FROM dining_tables WHERE ($1::uuid IS NULL OR id=$1) AND capacity >= $2 ORDER BY capacity,name',
+          [data.table_id ?? null, data.guest_count],
+        )
+      ).rows;
+      if (!tables.length) throw new HttpError(400, 'No table fits this party size.');
       const bookings = (
         await c.query<TableBooking>(
           `SELECT d.table_id,d.start_time,d.end_time FROM restaurant_reservations d
          JOIN reservations r ON r.id=d.reservation_id
-         WHERE d.reservation_date=$1 AND d.table_id=$2 AND
+         WHERE d.reservation_date=$1 AND
          (r.status IN ('confirmed','arrived','seated','completed') OR
           (r.status='pending' AND r.hold_expires_at>now()))`,
-          [data.reservation_date, data.table_id],
+          [data.reservation_date],
         )
       ).rows;
-      if (!tableFree(bookings, data.table_id, start))
-        throw new HttpError(409, 'This table is unavailable at that time. Choose another table or time.');
+      const table = tables.find((candidate) => tableFree(bookings, candidate.id, start));
+      if (!table) throw new HttpError(409, 'No tables are available at that time. Choose another time.');
       const occupied = await peakOccupancy(c, data.reservation_date, data.start_time, end);
       if (occupied + data.guest_count > settings.max_capacity)
         throw new HttpError(409, 'This time slot has filled up. Choose another time.');
@@ -197,7 +200,7 @@ restaurantRouter.post(
           end,
           data.guest_count,
           data.special_requests,
-          data.table_id,
+          table.id,
         ],
       );
       await recordStatus(
