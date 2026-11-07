@@ -1,0 +1,37 @@
+{
+  "name": "hotel-restaurant-reservation-tracking",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "predev": "npm run setup && npm run db:start && npm run db:migrate && npm run db:seed",
+    "dev": "concurrently --kill-others --names API,WEB --prefix-colors cyan,magenta \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:backend": "npm run dev --workspace backend",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspace backend",
+    "db:start": "npm run db:start --workspace backend",
+    "db:stop": "npm run db:stop --workspace backend",
+    "db:check": "npm run db:check --workspace backend",
+    "db:migrate": "npm run db:migrate --workspace backend",
+    "db:seed": "npm run db:seed --workspace backend",
+    "test:system": "npm run test:system --workspace backend",
+    "test:e2e": "playwright test",
+    "format": "prettier --write \"frontend/src/**/*.{ts,tsx,css}\" \"backend/src/**/*.{ts,tsx}\" \"backend/scripts/*.{ts,mjs}\" \"backend/tests/**/*.ts\" \"tests/e2e/*.ts\" \"scripts/*.mjs\" \"docs/**/*.md\" \"*.{json,ts,md}\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "concurrently": "^10.0.7",
+    "prettier": "^3.9.10"
+  }
+}
