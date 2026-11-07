@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, Users } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { api, send } from '../../../services/client';
 import type { Settings, Reservation } from '../../../types/models';
 import { ErrorBox, Empty, Loading, Modal } from '../../../components/ui/common';
 import { ContactFields } from '../../hotel-reservations/components/ContactFields';
-import { day, dateLabel } from '../../../utils/format';
+import { day } from '../../../utils/format';
 
 interface DiningTable {
   id: string;
   name: string;
-  shape: 'round' | 'square' | 'rectangle';
   capacity: number;
   available: boolean;
 }
@@ -27,21 +25,26 @@ export function Dining() {
   const [date, setDate] = useState(day(1));
   const [guests, setGuests] = useState('2');
   const [time, setTime] = useState('18:00');
-  const [selected, setSelected] = useState<{ table: DiningTable; slot: Slot } | null>(null);
+  const [selected, setSelected] = useState<DiningTable | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const { user } = useAuth();
   const navigate = useNavigate();
   const query = useQuery<{ slots: Slot[]; settings: Settings }>(
-    `/restaurant/availability?${new URLSearchParams({ date, guests })}`,
+    `/restaurant/availability?${new URLSearchParams({ date: date || day(), guests: guests || '2' })}`,
   );
   const slot =
     query.data?.slots.find((item) => item.start_time === time) ??
     query.data?.slots.find((item) => item.available) ??
     query.data?.slots[0];
+  const selectedTable = slot?.tables.find((table) => table.id === selected?.id);
 
   async function book(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (query.loading || !selectedTable?.available || !slot || !date || !guests) {
+      setError('This table is unavailable for the selected date, time, or party size.');
+      return;
+    }
     const contact = Object.fromEntries(new FormData(e.currentTarget));
     setBusy(true);
     setError('');
@@ -51,9 +54,9 @@ export function Dining() {
         send('POST', {
           ...contact,
           reservation_date: date,
-          start_time: selected!.slot.start_time,
+          start_time: slot.start_time,
           guest_count: Number(guests),
-          table_id: selected!.table.id,
+          table_id: selectedTable.id,
         }),
       );
       navigate(`/reservations/${reservation.id}`);
@@ -133,11 +136,10 @@ export function Dining() {
                 className="dining-table-option"
                 disabled={!table.available}
                 onClick={() => {
-                  setSelected({ table, slot });
+                  setSelected(table);
                   setError('');
                 }}
               >
-                <span className={`table-shape table-shape-${table.shape}`} aria-hidden="true" />
                 <strong>{table.name}</strong>
                 <small>
                   {table.capacity} seats · {table.available ? 'Available' : 'Unavailable'}
@@ -158,24 +160,73 @@ export function Dining() {
         >
           <div className="booking-summary">
             <strong>
-              {selected.table.name} · {dateLabel(date)}
+              {selected.name} · {selected.capacity} seats
             </strong>
-            <p className="inline">
-              <Clock size={16} />
-              {selected.slot.start_time.slice(0, 5)}–{selected.slot.end_time.slice(0, 5)}
-              <Users size={16} />
-              {guests} guests
-            </p>
           </div>
+          <div className="form-grid dining-edit-fields">
+            <label>
+              Dining date
+              <input
+                type="date"
+                required
+                min={day()}
+                value={date}
+                disabled={busy}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                  setError('');
+                }}
+              />
+            </label>
+            <label>
+              Time
+              <select
+                value={slot?.start_time ?? ''}
+                disabled={busy || query.loading || !slot}
+                onChange={(e) => {
+                  setTime(e.target.value);
+                  setError('');
+                }}
+              >
+                {query.data?.slots.map((item) => (
+                  <option key={item.start_time} value={item.start_time}>
+                    {item.start_time.slice(0, 5)}–{item.end_time.slice(0, 5)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Guests
+              <input
+                type="number"
+                required
+                min={1}
+                max={Math.min(selected.capacity, query.data?.settings.max_guest_per_booking ?? 10)}
+                value={guests}
+                disabled={busy}
+                onChange={(e) => {
+                  setGuests(e.target.value);
+                  setError('');
+                }}
+              />
+            </label>
+          </div>
+          {query.loading && <Loading />}
+          <ErrorBox message={query.error} />
+          {!query.loading && selectedTable && !selectedTable.available && (
+            <ErrorBox message="This table is unavailable. Change the date, time, or guest count." />
+          )}
           <ErrorBox message={error} />
           {user ? (
             <form className="form-grid" onSubmit={book}>
               <ContactFields />
               <p className="full muted small-text">Confirm within 15 minutes.</p>
               <div className="full actions">
-                <button disabled={busy}>{busy ? 'Holding your table…' : 'Continue to confirmation'}</button>
+                <button disabled={busy || query.loading || !selectedTable?.available || !date || !guests}>
+                  {busy ? 'Holding your table…' : 'Continue to confirmation'}
+                </button>
                 <button type="button" className="secondary" disabled={busy} onClick={() => setSelected(null)}>
-                  Edit time or guests
+                  Choose another table
                 </button>
               </div>
             </form>

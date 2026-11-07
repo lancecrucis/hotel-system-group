@@ -661,7 +661,7 @@ footer {
   gap: 14px;
 }
 .dining-table-option {
-  min-height: 145px;
+  min-height: 92px;
   border: 1px solid #d6d6d6;
   border-radius: 16px;
   background: #fff;
@@ -686,27 +686,8 @@ footer {
 .dining-table-option small {
   font-size: 11px;
 }
-.table-shape {
-  display: block;
-  width: 48px;
-  height: 42px;
-  margin: 0 auto 7px;
-  border: 2px solid currentColor;
-  background: #ececec;
-  box-shadow: 0 0 0 5px #fff inset;
-}
-.table-shape-round {
-  border-radius: 50%;
-  width: 43px;
-  height: 43px;
-}
-.table-shape-square {
-  border-radius: 5px;
-}
-.table-shape-rectangle {
-  border-radius: 5px;
-  width: 62px;
-  height: 36px;
+.dining-edit-fields {
+  margin-bottom: 20px;
 }
 .slot-grid {
   display: grid;
