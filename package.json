@@ -12,7 +12,8 @@
   },
   "scripts": {
     "setup": "node scripts/setup.mjs",
-    "predev": "npm run setup && npm run db:start && npm run db:migrate && npm run db:seed",
+    "doctor": "node scripts/doctor.mjs",
+    "predev": "npm run doctor && npm run setup && npm run db:start && npm run db:migrate && npm run db:seed",
     "dev": "concurrently --kill-others --names API,WEB --prefix-colors cyan,magenta \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
     "dev:frontend": "npm run dev --workspace frontend",
     "dev:backend": "npm run dev --workspace backend",

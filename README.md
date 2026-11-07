@@ -4,10 +4,13 @@ A functional prototype based on the supplied ERD. React + TypeScript + Vite, Nod
 
 ## Run the system
 
-Requires Node.js 22.12+, npm 10+, and PostgreSQL server binaries. PostgreSQL 18 is already installed on the development computer. Windows installations under `C:\Program Files\PostgreSQL\<version>\bin` are detected automatically; on other systems add `initdb` and `pg_ctl` to PATH.
+Requires Git, Node.js 22.12+, npm 10+, and PostgreSQL server binaries. Windows installations under `C:\Program Files\PostgreSQL\<version>\bin` are detected automatically; on other systems add `initdb` and `pg_ctl` to PATH.
 
 ```powershell
-npm install
+git clone https://github.com/lancecrucis/hotel-system-group.git
+cd hotel-system-group
+npm ci
+npm run doctor
 npm run dev
 ```
 
@@ -25,7 +28,7 @@ Demo credentials are shown on the sign-in page. Use only with local demonstratio
 
 - Registration, sign-in/out, editable profiles, password hashing, persistent HTTP-only sessions, role checks, and administrator role assignment.
 - Room availability by dates and party size; nightly pricing; room descriptions, amenities, cover/gallery image URLs; staff room creation/editing and maintenance controls.
-- Restaurant availability by date and party size; configurable hours, overall capacity and maximum party size; 90-minute visits at 30-minute start intervals.
+- Restaurant availability by date, time, and party size; automatically assigned tables; one-hour visits with a 30-minute table buffer and 30-minute start intervals.
 - Temporary booking holds, confirmation, cancellation with a reason, unique booking references, and a chronological status timeline.
 - Hotel check-in/check-out; restaurant arrival, seating, completion; no-show handling.
 - Staff-recorded payments, partial/full refunds, receipt references, outstanding balances, and overpayment/over-refund protection.
@@ -47,7 +50,7 @@ Demo credentials are shown on the sign-in page. Use only with local demonstratio
 - Hotel stays last 1–30 nights; checkout is exclusive, so consecutive stays can share a checkout/check-in date. A room with a guest still checked in cannot receive another check-in.
 - Check-in is advertised from 3 PM and checkout by 11 AM. Staff may process arrivals on the reservation date; no-shows cannot be marked before the scheduled arrival time.
 - A pending reservation holds inventory for 15 minutes. Confirmation secures it without an online payment. Expiry runs every minute and before key reads/writes. Terminal states cannot be reactivated.
-- Restaurant inventory counts seats, following the ERD. There is no individual-table or floor-plan model. Overlapping reservations use peak concurrent occupancy; back-to-back visits do not overlap.
+- Restaurant inventory includes individual tables with 2, 4, or 6 seats. The system assigns the smallest available table that fits the party. It holds that table for the one-hour visit plus a 30-minute buffer, and also checks overall seat capacity. The prototype has no visual floor plan.
 - Customers can confirm and cancel before service starts. Date/room/party changes use cancellation and a new booking in this prototype. Contact the property for past-booking changes. No cancellation fees are calculated automatically.
 - Payments and refunds are staff records of cash, transfers, or external card-terminal transactions. There is no online payment gateway, card storage, automatic collection, or automatic refund. Dining bills are outside the reservation model.
 - Notifications are in-app only. There is no email/SMS delivery or password recovery service. Room images use URLs rather than uploads.
@@ -72,6 +75,7 @@ Schema migrations are versioned and checksum-checked. Add a new SQL migration ra
 | `npm run dev`                                  | Set up database/schema/demo records and run frontend + backend     |
 | `npm run dev:frontend` / `npm run dev:backend` | Run one application                                                |
 | `npm run setup`                                | Create missing local environment configuration                     |
+| `npm run doctor`                               | Check Node.js, npm, and PostgreSQL prerequisites                   |
 | `npm run db:start` / `npm run db:stop`         | Start/stop the project PostgreSQL cluster                          |
 | `npm run db:migrate`                           | Apply new migrations                                               |
 | `npm run db:seed`                              | Add missing demo data                                              |
