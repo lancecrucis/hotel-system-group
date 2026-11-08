@@ -39,6 +39,7 @@ hotelRouter.get(
         check_in: date.optional(),
         check_out: date.optional(),
         guests: z.coerce.number().int().min(1).max(20).default(1),
+        room_type: z.string().max(80).default(''),
       })
       .parse(req.query);
     if (!!filter.check_in !== !!filter.check_out)
@@ -47,8 +48,9 @@ hotelRouter.get(
       throw new HttpError(400, 'Choose a future stay between 1 and 30 nights.');
     const result = await pool.query(
       `SELECT rm.*,COALESCE((SELECT json_agg(i ORDER BY i.display_order) FROM room_images i WHERE i.room_id=rm.id),'[]') AS images
-    FROM rooms rm WHERE ($1::boolean OR status='available') AND capacity>=$2 ORDER BY price_per_night,room_number`,
-      [req.user?.role === 'staff' || req.user?.role === 'admin', filter.guests],
+    FROM rooms rm WHERE ($1::boolean OR status='available') AND capacity>=$2
+    AND ($3::text='' OR room_type=$3) ORDER BY price_per_night,room_number`,
+      [req.user?.role === 'staff' || req.user?.role === 'admin', filter.guests, filter.room_type],
     );
     const rooms = [];
     for (const room of result.rows) {
@@ -57,7 +59,10 @@ hotelRouter.get(
         (!filter.check_in || (await roomAvailable(pool, room.id, filter.check_in, filter.check_out!)));
       if (available || (req.user?.role !== 'customer' && req.user)) rooms.push({ ...room, available });
     }
-    res.json({ rooms });
+    const roomTypes = await pool.query(
+      "SELECT DISTINCT room_type FROM rooms WHERE status='available' ORDER BY room_type",
+    );
+    res.json({ rooms, room_types: roomTypes.rows.map((row: { room_type: string }) => row.room_type) });
   }),
 );
 async function saveRoom(id: string | null, data: z.infer<typeof roomSchema>, actor: string) {

@@ -410,6 +410,84 @@ footer {
 .search-form button {
   height: 42px;
 }
+.room-search-bar {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.15fr) minmax(320px, 1.9fr) minmax(130px, 0.75fr) auto;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #f1f1f1;
+}
+.room-search-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: white;
+}
+.room-search-field > svg {
+  flex: none;
+  color: #424242;
+}
+.room-search-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.room-search-content > span:first-child {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+.room-search-content > select,
+.room-search-content > input {
+  min-height: 28px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+}
+.room-search-dates .room-search-content {
+  gap: 3px;
+}
+.room-date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.room-date-inputs label {
+  min-width: 0;
+  flex: 1;
+}
+.room-date-inputs input {
+  width: 100%;
+  min-width: 0;
+  min-height: 25px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+}
+.room-date-inputs > span {
+  color: var(--muted);
+}
+.room-search-bar > button {
+  min-height: 65px;
+  white-space: nowrap;
+  border-radius: 14px;
+}
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1097,6 +1175,12 @@ code {
   }
 }
 @media (max-width: 1200px) {
+  .room-search-bar {
+    grid-template-columns: 1fr 1.5fr;
+  }
+  .room-search-bar > button {
+    min-height: 54px;
+  }
   .room-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1141,6 +1225,13 @@ code {
   }
 }
 @media (max-width: 500px) {
+  .room-search-bar {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+  .room-search-field {
+    min-height: 64px;
+  }
   .room-grid {
     grid-template-columns: 1fr;
   }

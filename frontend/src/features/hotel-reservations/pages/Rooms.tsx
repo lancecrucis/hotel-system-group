@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BedDouble, Users, Wifi, Coffee, ArrowRight } from 'lucide-react';
+import { BedDouble, Users, Wifi, Coffee, CalendarDays, Search } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { api, send } from '../../../services/client';
@@ -19,7 +19,7 @@ function roomImage(room: Room) {
 }
 
 export function Rooms() {
-  const initial = { check_in: day(1), check_out: day(2), guests: '2' };
+  const initial = { room_type: '', check_in: day(1), check_out: day(2), guests: '2' };
   const [filters, setFilters] = useState(initial),
     [search, setSearch] = useState(initial),
     [selected, setSelected] = useState<Room | null>(null),
@@ -27,7 +27,7 @@ export function Rooms() {
     [error, setError] = useState('');
   const { user } = useAuth(),
     navigate = useNavigate(),
-    query = useQuery<{ rooms: Room[] }>(`/hotel/rooms?${new URLSearchParams(search)}`);
+    query = useQuery<{ rooms: Room[]; room_types: string[] }>(`/hotel/rooms?${new URLSearchParams(search)}`);
   const count = nights(search.check_in, search.check_out);
   async function book(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -56,46 +56,80 @@ export function Rooms() {
   return (
     <>
       <form
-        className="panel search-form"
+        className="room-search-bar"
         onSubmit={(e) => {
           e.preventDefault();
           setSearch({ ...filters });
           query.reload();
         }}
       >
-        <label>
-          Check-in
-          <input
-            type="date"
-            required
-            min={day()}
-            value={filters.check_in}
-            onChange={(e) => setFilters({ ...filters, check_in: e.target.value })}
-          />
+        <label className="room-search-field">
+          <BedDouble size={20} aria-hidden="true" />
+          <span className="room-search-content">
+            <span>Room type</span>
+            <select
+              value={filters.room_type}
+              onChange={(e) => setFilters({ ...filters, room_type: e.target.value })}
+            >
+              <option value="">All room types</option>
+              {query.data?.room_types.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+              {filters.room_type && !query.data?.room_types.includes(filters.room_type) && (
+                <option value={filters.room_type}>{filters.room_type}</option>
+              )}
+            </select>
+          </span>
         </label>
-        <label>
-          Check-out
-          <input
-            type="date"
-            required
-            min={filters.check_in}
-            value={filters.check_out}
-            onChange={(e) => setFilters({ ...filters, check_out: e.target.value })}
-          />
-        </label>
-        <label>
-          Guests
-          <input
-            type="number"
-            min={1}
-            max={20}
-            required
-            value={filters.guests}
-            onChange={(e) => setFilters({ ...filters, guests: e.target.value })}
-          />
+        <div className="room-search-field room-search-dates">
+          <CalendarDays size={20} aria-hidden="true" />
+          <div className="room-search-content">
+            <span>Check-in &amp; check-out</span>
+            <div className="room-date-inputs">
+              <label>
+                <span className="sr-only">Check-in</span>
+                <input
+                  aria-label="Check-in"
+                  type="date"
+                  required
+                  min={day()}
+                  value={filters.check_in}
+                  onChange={(e) => setFilters({ ...filters, check_in: e.target.value })}
+                />
+              </label>
+              <span aria-hidden="true">–</span>
+              <label>
+                <span className="sr-only">Check-out</span>
+                <input
+                  aria-label="Check-out"
+                  type="date"
+                  required
+                  min={filters.check_in}
+                  value={filters.check_out}
+                  onChange={(e) => setFilters({ ...filters, check_out: e.target.value })}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+        <label className="room-search-field">
+          <Users size={20} aria-hidden="true" />
+          <span className="room-search-content">
+            <span>Guests</span>
+            <input
+              type="number"
+              min={1}
+              max={20}
+              required
+              value={filters.guests}
+              onChange={(e) => setFilters({ ...filters, guests: e.target.value })}
+            />
+          </span>
         </label>
         <button disabled={query.loading}>
-          Check availability <ArrowRight size={17} />
+          Find a room <Search size={18} />
         </button>
       </form>
       <div className="section-heading">
