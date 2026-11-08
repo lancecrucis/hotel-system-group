@@ -61,11 +61,23 @@ export function ReservationDetail() {
         refunds.filter((f) => f.payment_id === p.id).reduce((n, f) => n + Number(f.refund_amount), 0) >
       0,
   );
-  const stages = r.reservation_type === 'hotel'
-    ? [{ key: 'pending', name: 'Booking submitted' }, { key: 'confirmed', name: 'Reservation confirmed' }, { key: 'checked_in', name: 'Checked in' }, { key: 'checked_out', name: 'Checked out' }]
-    : [{ key: 'pending', name: 'Booking submitted' }, { key: 'confirmed', name: 'Reservation confirmed' }, { key: 'arrived', name: 'Arrived' }, { key: 'seated', name: 'Seated' }, { key: 'completed', name: 'Visit completed' }];
-  const stageIndex = stages.findIndex((stage) => stage.key === r.status);
   const stopped = ['cancelled', 'expired', 'no_show'].includes(r.status);
+  const stages = r.reservation_type === 'hotel'
+    ? [
+        { key: 'pending', name: 'Booking submitted', event: history.find((h) => h.new_status === 'pending'), done: history.some((h) => h.new_status === 'pending') },
+        { key: 'payment', name: 'Payment confirmed', event: payments.length && balance === 0 ? history.find((h) => h.new_status === 'confirmed') : undefined, done: Number(r.paid_amount) > 0 && balance === 0 },
+        { key: 'confirmed', name: 'Reservation confirmed', event: history.find((h) => h.new_status === 'confirmed'), done: ['confirmed', 'checked_in', 'checked_out'].includes(r.status) },
+        { key: 'checked_in', name: 'Checked in', event: history.find((h) => h.new_status === 'checked_in'), done: ['checked_in', 'checked_out'].includes(r.status) },
+        { key: 'checked_out', name: 'Checked out', event: history.find((h) => h.new_status === 'checked_out'), done: r.status === 'checked_out' },
+        { key: 'completed', name: 'Completed', event: history.find((h) => h.new_status === 'checked_out'), done: r.status === 'checked_out' },
+      ]
+    : [
+        { key: 'pending', name: 'Booking submitted', event: history.find((h) => h.new_status === 'pending'), done: history.some((h) => h.new_status === 'pending') },
+        { key: 'confirmed', name: 'Reservation confirmed', event: history.find((h) => h.new_status === 'confirmed'), done: ['confirmed', 'arrived', 'seated', 'completed'].includes(r.status) },
+        { key: 'arrived', name: 'Arrived', event: history.find((h) => h.new_status === 'arrived'), done: ['arrived', 'seated', 'completed'].includes(r.status) },
+        { key: 'seated', name: 'Seated', event: history.find((h) => h.new_status === 'seated'), done: ['seated', 'completed'].includes(r.status) },
+        { key: 'completed', name: 'Visit completed', event: history.find((h) => h.new_status === 'completed'), done: r.status === 'completed' },
+      ];
   function financialSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -105,6 +117,19 @@ export function ReservationDetail() {
           </div>
         </div>
       )}
+      <section className={`panel reservation-progress reservation-progress-primary ${stopped ? 'stopped' : ''}`} aria-label="Reservation progress">
+        <div className="progress-heading"><div><h2>Reservation progress</h2><p>Track each step of your stay.</p></div><Badge status={r.status} /></div>
+        <ol>
+          {stages.map((stage, index) => {
+            const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
+            return <li key={stage.key} className={stage.done && !stopped ? 'done' : current ? 'current' : ''} aria-current={current ? 'step' : undefined}>
+              <span className="progress-marker">{stage.done && !stopped ? <Check size={16} /> : index + 1}</span>
+              <div><strong>{stage.name}</strong>{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
+            </li>;
+          })}
+        </ol>
+        {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
+      </section>
       <div className="detail-grid">
         <div className="stack">
           <section className="panel">
@@ -230,22 +255,6 @@ export function ReservationDetail() {
           </section>
         </div>
         <div className="stack">
-          <section className="panel reservation-progress">
-            <h2>Reservation progress</h2>
-            <ol>
-              {stages.map((stage, index) => {
-                const event = history.find((entry) => entry.new_status === stage.key);
-                const done = Boolean(event) || (!stopped && stageIndex > index);
-                const current = !stopped && stageIndex === index;
-                return <li key={stage.key} className={done ? 'done' : current ? 'current' : ''} aria-current={current ? 'step' : undefined}>
-                  <span className="progress-marker">{done ? <Check size={15} /> : index + 1}</span>
-                  <div><strong>{stage.name}</strong>{event && <small>{timestamp(event.changed_at)}</small>}{current && !event && <small>Current stage</small>}</div>
-                </li>;
-              })}
-            </ol>
-            {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
-            {r.reservation_type === 'hotel' && <p className="progress-payment">Payment: {balance > 0 ? `${money(balance)} due at the property` : 'Paid in full'}</p>}
-          </section>
           <section className="panel">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
             <dl className="details-list">
