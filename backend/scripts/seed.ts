@@ -32,7 +32,7 @@ try {
     [
       '102',
       'Standard Twin',
-      95,
+      3200,
       2,
       'Single',
       2,
@@ -43,7 +43,7 @@ try {
     [
       '103',
       'Standard Queen',
-      95,
+      3200,
       2,
       'Queen',
       1,

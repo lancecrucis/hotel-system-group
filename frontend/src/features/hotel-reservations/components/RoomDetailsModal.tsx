@@ -75,9 +75,11 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
     }
   }
 
-  return <Modal title={room.room_type} className="room-detail-dialog" onClose={() => { if (!busy) onClose(); }}>
-    <div className="room-detail-layout">
-      <div className="room-detail-main">
+  const total = Number(room.price_per_night) * nightCount;
+
+  return <Modal title={step === 1 ? room.room_type : 'Complete your booking'} className="room-detail-dialog" onClose={() => { if (!busy) onClose(); }}>
+    <div className={`room-detail-layout ${step > 1 ? 'checkout-focus' : ''}`}>
+      {step === 1 && <div className="room-detail-main">
         <div className="room-detail-photo">
           <img src={gallery[photo]} alt={`${room.room_type} view ${photo + 1} of ${gallery.length}`} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = roomImage(room); }} />
           {gallery.length > 1 && <div className="room-photo-controls">
@@ -100,8 +102,8 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
           {room.description && <p>{room.description}</p>}
           {room.special_amenities && <p>{room.special_amenities}</p>}
         </div>
-      </div>
-      <div className="room-detail-booking">
+      </div>}
+      <div className={`room-detail-booking ${step > 1 ? 'focused' : ''}`}>
         <ol className="booking-steps" aria-label="Booking progress">
           {['Booking', 'Guest', 'Payment', 'Confirmation'].map((name, index) => <li key={name} className={step === index + 1 ? 'active' : step > index + 1 ? 'complete' : ''}><span>{step > index + 1 ? <Check size={13} /> : index + 1}</span><small>{name}</small></li>)}
         </ol>
@@ -124,26 +126,40 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
             <button type="button" className="room-book-button" disabled={availability.loading || !available} onClick={() => setStep(2)}>Continue</button>
           </>}
           {step === 2 && <>
-            <div className="booking-step-heading"><h3>Guest information</h3><p>Who should we contact about this stay?</p></div>
-            <ContactFields value={contact} onChange={setContact} />
+            <div className="focused-step-header"><div className="booking-step-heading"><h3>Guest information</h3><p>Who should we contact about this stay?</p></div><div className="checkout-mini-summary"><span>{room.room_type}</span><strong>{money(total)}</strong><small>{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</small></div></div>
+            <div className="guest-details-form"><ContactFields value={contact} onChange={setContact} /></div>
             <div className="booking-step-actions"><button type="button" className="secondary" onClick={() => setStep(1)}>Back</button><button>Continue</button></div>
           </>}
           {step === 3 && <>
-            <div className="booking-step-heading"><h3>Payment</h3><p>Payment is collected at the property.</p></div>
-            <div className="payment-choice selected"><WalletCards size={22} /><div><strong>Pay at the property</strong><span>No charge is made during booking.</span></div><Check size={18} /></div>
-            <div className="payment-methods" aria-label="Accepted payment methods"><span><CreditCard size={16} /> Card</span><span><Landmark size={16} /> Bank transfer</span><span><WalletCards size={16} /> Cash</span></div>
-            <div className="payment-total"><span>Amount due</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
-            <div className="booking-step-actions"><button type="button" className="secondary" onClick={() => setStep(2)}>Back</button><button type="button" onClick={() => setStep(4)}>Review booking</button></div>
+            <div className="booking-step-heading payment-heading"><h3>Review and payment</h3><p>Check your stay, then choose how you will pay.</p></div>
+            <div className="payment-checkout-layout">
+              <section className="checkout-review" aria-labelledby="stay-summary-title">
+                <div className="checkout-section-title"><h4 id="stay-summary-title">Stay summary</h4><button type="button" onClick={() => setStep(1)}>Edit</button></div>
+                <div className="checkout-review-row"><span>Room</span><strong>{room.room_type}</strong></div>
+                <div className="checkout-review-row"><span>Check-in</span><strong>{dateLabel(stay.checkIn)}</strong></div>
+                <div className="checkout-review-row"><span>Check-out</span><strong>{dateLabel(stay.checkOut)}</strong></div>
+                <div className="checkout-review-row"><span>Guests</span><strong>{guests} {guests === 1 ? 'guest' : 'guests'}</strong></div>
+                <div className="checkout-review-row"><span>{nightCount} {nightCount === 1 ? 'night' : 'nights'}</span><strong>{money(total)}</strong></div>
+              </section>
+              <section className="checkout-payment" aria-labelledby="payment-title">
+                <h4 id="payment-title">Payment method</h4>
+                <div className="payment-choice selected"><WalletCards size={22} /><div><strong>Pay at the property</strong><span>Nothing is charged today.</span></div><Check size={18} /></div>
+                <div className="payment-methods" aria-label="Accepted payment methods"><span><CreditCard size={16} /> Card</span><span><Landmark size={16} /> Bank transfer</span><span><WalletCards size={16} /> Cash</span></div>
+                <div className="payment-total"><span>Total due at property</span><strong>{money(total)}</strong></div>
+                <p className="payment-note">Your reservation will be held for 15 minutes while you confirm it.</p>
+              </section>
+            </div>
+            <div className="booking-step-actions payment-actions"><button type="button" className="secondary" onClick={() => setStep(2)}>Back</button><button type="button" onClick={() => setStep(4)}>Continue to confirmation</button></div>
           </>}
           {step === 4 && <>
-            <div className="booking-step-heading"><h3>Confirm your booking</h3><p>Review the details before placing your reservation.</p></div>
+            <div className="booking-step-heading confirmation-heading"><h3>Confirm your booking</h3><p>One last check before we hold your room.</p></div>
             <div className="confirmation-list">
               <div><span>Room</span><strong>{room.room_type}</strong></div>
               <div><span>Stay</span><strong>{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</strong></div>
               <div><span>Guests</span><strong>{guests} {guests === 1 ? 'guest' : 'guests'}</strong></div>
               <div><span>Contact</span><strong>{contact.contact_name}<small>{contact.contact_email}<br />{contact.contact_phone}</small></strong></div>
               <div><span>Payment</span><strong>At the property</strong></div>
-              <div className="total"><span>Total</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
+              <div className="total"><span>Total due at property</span><strong>{money(total)}</strong></div>
             </div>
             <ErrorBox message={error} />
             <div className="booking-step-actions"><button type="button" className="secondary" disabled={busy} onClick={() => setStep(3)}>Back</button><button disabled={busy || !available}>{busy ? 'Holding your room…' : 'Confirm booking'}</button></div>
