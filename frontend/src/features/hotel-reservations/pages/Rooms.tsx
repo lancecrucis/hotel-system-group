@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BedDouble, Users, Wifi, Coffee, CalendarDays, Search } from 'lucide-react';
+import { BedDouble, Users, Wifi, Coffee, CalendarDays, Search, ChevronDown } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { api, send } from '../../../services/client';
@@ -16,6 +16,11 @@ function roomImage(room: Room) {
   if (type.includes('family')) return '/images/rooms/family-suite.webp';
   if (type.includes('twin') || room.bed_count > 1) return '/images/rooms/deluxe-twin.webp';
   return '/images/rooms/deluxe-king.webp';
+}
+function addDays(value: string, amount: number) {
+  const date = new Date(`${value}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + amount);
+  return date.toISOString().slice(0, 10);
 }
 
 export function Rooms() {
@@ -81,32 +86,44 @@ export function Rooms() {
                 <option value={filters.room_type}>{filters.room_type}</option>
               )}
             </select>
+            <ChevronDown className="room-search-chevron" size={16} aria-hidden="true" />
           </span>
         </label>
         <div className="room-search-field room-search-dates">
           <CalendarDays size={20} aria-hidden="true" />
           <div className="room-search-content">
-            <span>Check-in &amp; check-out</span>
             <div className="room-date-inputs">
               <label>
-                <span className="sr-only">Check-in</span>
+                <span>Check-in</span>
                 <input
                   aria-label="Check-in"
                   type="date"
                   required
                   min={day()}
                   value={filters.check_in}
-                  onChange={(e) => setFilters({ ...filters, check_in: e.target.value })}
+                  onChange={(e) => {
+                    const checkIn = e.target.value;
+                    if (!checkIn) {
+                      setFilters({ ...filters, check_in: '', check_out: '' });
+                      return;
+                    }
+                    setFilters({
+                      ...filters,
+                      check_in: checkIn,
+                      check_out: filters.check_out <= checkIn ? addDays(checkIn, 1) : filters.check_out,
+                    });
+                  }}
                 />
               </label>
-              <span aria-hidden="true">–</span>
+              <span className="room-date-divider" aria-hidden="true" />
               <label>
-                <span className="sr-only">Check-out</span>
+                <span>Check-out</span>
                 <input
                   aria-label="Check-out"
                   type="date"
                   required
-                  min={filters.check_in}
+                  min={filters.check_in ? addDays(filters.check_in, 1) : day(1)}
+                  max={filters.check_in ? addDays(filters.check_in, 30) : undefined}
                   value={filters.check_out}
                   onChange={(e) => setFilters({ ...filters, check_out: e.target.value })}
                 />
@@ -118,14 +135,17 @@ export function Rooms() {
           <Users size={20} aria-hidden="true" />
           <span className="room-search-content">
             <span>Guests</span>
-            <input
-              type="number"
-              min={1}
-              max={20}
-              required
+            <select
               value={filters.guests}
               onChange={(e) => setFilters({ ...filters, guests: e.target.value })}
-            />
+            >
+              {Array.from({ length: 20 }, (_, index) => index + 1).map((count) => (
+                <option key={count} value={count}>
+                  {count} {count === 1 ? 'guest' : 'guests'}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="room-search-chevron" size={16} aria-hidden="true" />
           </span>
         </label>
         <button disabled={query.loading}>

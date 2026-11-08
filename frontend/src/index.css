@@ -412,10 +412,10 @@ footer {
 }
 .room-search-bar {
   display: grid;
-  grid-template-columns: minmax(190px, 1.15fr) minmax(320px, 1.9fr) minmax(130px, 0.75fr) auto;
+  grid-template-columns: minmax(190px, 1.15fr) minmax(330px, 2fr) minmax(145px, 0.8fr) auto;
   align-items: stretch;
-  gap: 12px;
-  padding: 16px;
+  gap: 10px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 22px;
   background: #f1f1f1;
@@ -426,10 +426,15 @@ footer {
   align-items: center;
   gap: 13px;
   min-width: 0;
-  padding: 10px 14px;
+  min-height: 72px;
+  padding: 11px 15px;
   border: 1px solid #e5e5e5;
   border-radius: 14px;
   background: white;
+}
+.room-search-field:focus-within {
+  border-color: #777;
+  box-shadow: 0 0 0 2px #16161612;
 }
 .room-search-field > svg {
   flex: none;
@@ -440,6 +445,7 @@ footer {
   flex-direction: column;
   min-width: 0;
   flex: 1;
+  position: relative;
 }
 .room-search-content > span:first-child {
   color: var(--muted);
@@ -448,43 +454,65 @@ footer {
 }
 .room-search-content > select,
 .room-search-content > input {
-  min-height: 28px;
+  min-height: 31px;
   width: 100%;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
 }
-.room-search-dates .room-search-content {
-  gap: 3px;
+.room-search-content > select {
+  appearance: none;
+  padding-right: 24px;
+  cursor: pointer;
+}
+.room-search-chevron {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  color: #515151;
+  pointer-events: none;
 }
 .room-date-inputs {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 12px;
   min-width: 0;
 }
 .room-date-inputs label {
   min-width: 0;
   flex: 1;
+  gap: 1px;
+}
+.room-date-inputs label > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
 }
 .room-date-inputs input {
   width: 100%;
   min-width: 0;
-  min-height: 25px;
+  min-height: 31px;
   padding: 0;
   border: 0;
   background: transparent;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
-.room-date-inputs > span {
-  color: var(--muted);
+.room-date-inputs input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.65;
+}
+.room-date-divider {
+  width: 1px;
+  margin: 5px 0;
+  background: #e4e4e4;
+  flex: none;
 }
 .room-search-bar > button {
-  min-height: 65px;
+  min-height: 72px;
   white-space: nowrap;
   border-radius: 14px;
 }
@@ -1193,6 +1221,15 @@ code {
 
   .page {
     padding: 28px;
+  }
+}
+@media (max-width: 800px) {
+  .room-search-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .room-search-dates,
+  .room-search-bar > button {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 800px) {
