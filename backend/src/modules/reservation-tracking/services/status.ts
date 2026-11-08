@@ -13,5 +13,5 @@ export const transitions: Record<string, Record<string, string[]>> = {
 };
 export function allowedActions(type: string, status: string, role: string) {
   const actions = transitions[type]?.[status] ?? [];
-  return role === 'customer' ? actions.filter((a) => a === 'confirmed' || a === 'cancelled') : actions;
+  return role === 'customer' ? actions.filter((a) => a === 'cancelled') : actions;
 }
