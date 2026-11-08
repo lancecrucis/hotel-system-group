@@ -1184,6 +1184,7 @@ dialog::backdrop {
   max-width: 1100px;
   padding: 24px;
 }
+.room-detail-dialog:has(.checkout-focus) { min-height: 680px; }
 .room-search-dates { position: relative; }
 .room-date-trigger { display: flex; justify-content: space-between; width: 100%; min-height: 26px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; }
 .room-date-trigger:hover { background: transparent; }
@@ -1209,18 +1210,18 @@ dialog::backdrop {
 .room-detail-facts { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 16px; }
 .room-detail-facts span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; }
 .room-detail-booking { padding: 20px; border: 1px solid var(--line); border-radius: 18px; align-self: start; }
-.room-detail-booking.focused { max-width: 920px; margin: 0 auto; padding: 8px 38px 24px; border: 0; }
-.room-detail-booking.focused .booking-steps { max-width: 660px; margin-inline: auto; margin-bottom: 34px; }
-.room-detail-booking.focused .room-book-form { max-width: 820px; margin-inline: auto; }
+.room-detail-booking.focused { max-width: 1020px; min-height: 570px; margin: 0 auto; padding: 8px 38px 38px; border: 0; }
+.room-detail-booking.focused .booking-steps { max-width: 760px; margin-inline: auto; margin-bottom: 42px; }
+.room-detail-booking.focused .room-book-form { max-width: 900px; min-height: 420px; margin-inline: auto; }
 .booking-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 0; margin: 0 0 24px; list-style: none; }
-.booking-steps li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #999; text-align: center; }
-.booking-steps li::before { content: ''; position: absolute; z-index: 0; top: 13px; right: 50%; width: 100%; height: 1px; background: #dedede; }
+.booking-steps li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #777; text-align: center; }
+.booking-steps li::before { content: ''; position: absolute; z-index: 0; top: 17px; right: 50%; width: 100%; height: 2px; background: #d4d4d4; }
 .booking-steps li:first-child::before { display: none; }
-.booking-steps li > span { position: relative; z-index: 1; display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid #d5d5d5; border-radius: 50%; background: #fff; font-size: 11px; font-weight: 700; }
+.booking-steps li > span { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid #bcbcbc; border-radius: 50%; background: #fff; font-size: 14px; font-weight: 700; }
 .booking-steps li.active, .booking-steps li.complete { color: var(--ink); }
 .booking-steps li.active > span, .booking-steps li.complete > span { border-color: var(--ink); background: var(--ink); color: #fff; }
 .booking-steps li.complete::before, .booking-steps li.active::before { background: var(--ink); }
-.booking-steps small { color: inherit; font-size: 9px; }
+.booking-steps small { color: inherit; font-size: 12px; font-weight: 600; }
 .booking-step-heading { margin-bottom: 17px; }
 .booking-step-heading h3, .booking-step-heading p { margin-bottom: 3px; }
 .booking-step-heading p { color: var(--muted); font-size: 12px; }
@@ -1286,7 +1287,7 @@ dialog::backdrop {
 .payment-actions { max-width: 470px; margin: 18px 0 0 auto; }
 .confirmation-heading { text-align: center; }
 .confirmation-list { border-top: 1px solid var(--line); }
-.confirmation-list > div { display: grid; grid-template-columns: 88px 1fr; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.confirmation-list > div { display: grid; grid-template-columns: minmax(130px, .45fr) minmax(0, 1fr); gap: 18px; padding: 13px 4px; border-bottom: 1px solid var(--line); }
 .confirmation-list > div > span { color: var(--muted); font-size: 12px; }
 .confirmation-list > div > strong { text-align: right; font-size: 12px; }
 .confirmation-list strong small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; line-height: 1.5; }
@@ -1296,13 +1297,18 @@ dialog::backdrop {
   .room-detail-layout { grid-template-columns: 1fr; gap: 18px; }
   .room-detail-photo > img { height: 250px; }
   .room-detail-booking { padding: 15px; }
-  .room-detail-booking.focused { padding: 0; }
+  .room-detail-dialog:has(.checkout-focus) { min-height: 0; }
+  .room-detail-booking.focused { min-height: 0; padding: 0 0 18px; }
+  .room-detail-booking.focused .room-book-form { min-height: 0; }
   .room-detail-booking.focused .booking-steps { margin-bottom: 24px; }
   .focused-step-header { display: block; }
   .checkout-mini-summary { margin-top: 12px; text-align: left; }
   .guest-details-form, .payment-checkout-layout { grid-template-columns: 1fr; }
   .guest-details-form .full { grid-column: auto; }
   .payment-actions { max-width: none; }
+  .booking-steps li > span { width: 32px; height: 32px; }
+  .booking-steps small { font-size: 10px; }
+  .confirmation-list > div { grid-template-columns: 105px minmax(0, 1fr); gap: 12px; }
 }
 .modal-heading {
   display: flex;
