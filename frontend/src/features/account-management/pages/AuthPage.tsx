@@ -56,8 +56,12 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                   name="phone_number"
                   type="tel"
                   required
-                  minLength={7}
-                  maxLength={30}
+                  defaultValue="+63 "
+                  placeholder="+63 917 123 4567"
+                  pattern="\+63[0-9 ]{9,14}"
+                  title="Use a Philippine number beginning with +63"
+                  minLength={12}
+                  maxLength={18}
                   autoComplete="tel"
                 />
               </label>

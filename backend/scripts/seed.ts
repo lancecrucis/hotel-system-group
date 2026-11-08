@@ -13,7 +13,7 @@ try {
     ['customer', 'Jamie', 'guest@example.com'],
   ]) {
     await c.query(
-      `INSERT INTO users(role,first_name,last_name,email,password_hash,phone_number) VALUES($1,$2,'Demo',$3,$4,'+1 555 010 2020') ON CONFLICT(email) DO NOTHING`,
+      `INSERT INTO users(role,first_name,last_name,email,password_hash,phone_number) VALUES($1,$2,'Demo',$3,$4,'+63 917 123 4567') ON CONFLICT(email) DO NOTHING`,
       [role, first, email, password],
     );
   }
@@ -21,7 +21,7 @@ try {
     [
       '101',
       'Standard Queen',
-      95,
+      3200,
       2,
       'Queen',
       1,
@@ -54,7 +54,7 @@ try {
     [
       '201',
       'Deluxe King',
-      145,
+      4500,
       2,
       'King',
       1,
@@ -65,7 +65,7 @@ try {
     [
       '202',
       'Deluxe Twin',
-      145,
+      4500,
       3,
       'Double',
       2,
@@ -76,7 +76,7 @@ try {
     [
       '301',
       'Family Suite',
-      220,
+      6500,
       4,
       'Queen',
       2,
@@ -87,7 +87,7 @@ try {
     [
       '302',
       'Family Suite',
-      220,
+      6500,
       4,
       'Queen',
       2,
@@ -98,7 +98,7 @@ try {
     [
       '401',
       'Executive Suite',
-      310,
+      8500,
       2,
       'King',
       1,
@@ -123,15 +123,15 @@ try {
   ]) {
     const inserted = await c.query(
       `INSERT INTO reservations(user_id,reservation_type,status,total_amount,contact_name,contact_email,contact_phone,reservation_reference)
-      VALUES($1,$2,'confirmed',$3,'Jamie Demo','guest@example.com','+1 555 010 2020',$4) ON CONFLICT(reservation_reference) DO NOTHING RETURNING id`,
-      [guest, type, type === 'hotel' ? 290 : 0, ref],
+      VALUES($1,$2,'confirmed',$3,'Jamie Demo','guest@example.com','+63 917 123 4567',$4) ON CONFLICT(reservation_reference) DO NOTHING RETURNING id`,
+      [guest, type, type === 'hotel' ? 9000 : 0, ref],
     );
     if (!inserted.rowCount) continue;
     const id = inserted.rows[0].id;
     if (type === 'hotel')
       await c.query(
         `INSERT INTO hotel_reservations(reservation_id,room_id,check_in,check_out,guest_count,price_per_night,special_requests)
-      SELECT $1,id,CURRENT_DATE+1,CURRENT_DATE+3,2,145,'A quiet room, please.' FROM rooms WHERE room_number='201'`,
+      SELECT $1,id,CURRENT_DATE+1,CURRENT_DATE+3,2,4500,'A quiet room, please.' FROM rooms WHERE room_number='201'`,
         [id],
       );
     else

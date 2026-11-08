@@ -48,10 +48,14 @@ export function Profile() {
             Phone number
             <input
               name="phone_number"
-              defaultValue={user!.phone_number}
+              type="tel"
+              defaultValue={user!.phone_number.startsWith('+63') ? user!.phone_number : '+63 '}
+              placeholder="+63 917 123 4567"
+              pattern="\+63[0-9 ]{9,14}"
+              title="Use a Philippine number beginning with +63"
               required
-              minLength={7}
-              maxLength={30}
+              minLength={12}
+              maxLength={18}
             />
           </label>
           <label>

@@ -369,7 +369,7 @@ export function ReservationDetail() {
             {financial === 'payment' ? (
               <>
                 <label>
-                  Amount (USD)
+                  Amount (PHP)
                   <input
                     name="amount"
                     type="number"
@@ -419,7 +419,7 @@ export function ReservationDetail() {
                   </select>
                 </label>
                 <label>
-                  Refund amount (USD)
+                  Refund amount (PHP)
                   <input name="refund_amount" type="number" min="0.01" step="0.01" required />
                 </label>
                 <label>

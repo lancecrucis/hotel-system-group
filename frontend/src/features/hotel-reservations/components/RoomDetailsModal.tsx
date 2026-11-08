@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BedDouble, Check, ChevronLeft, ChevronRight, Coffee, Users, Wifi } from 'lucide-react';
+import { BedDouble, Check, ChevronLeft, ChevronRight, Coffee, CreditCard, Landmark, Users, WalletCards, Wifi } from 'lucide-react';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { ErrorBox, Modal } from '../../../components/ui/common';
 import { useQuery } from '../../../hooks/useQuery';
@@ -9,6 +9,7 @@ import { api, send } from '../../../services/client';
 import type { Reservation, Room } from '../../../types/models';
 import { dateLabel, money, nights } from '../../../utils/format';
 import { ContactFields } from './ContactFields';
+import type { ContactDetails } from './ContactFields';
 import { StayCalendar } from './StayCalendar';
 
 function roomImage(room: Room, extra = false) {
@@ -34,6 +35,13 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const { user } = useAuth();
+  const [step, setStep] = useState(1);
+  const [contact, setContact] = useState<ContactDetails>({
+    contact_name: user ? `${user.first_name} ${user.last_name}` : '',
+    contact_email: user?.email ?? '',
+    contact_phone: user?.phone_number.startsWith('+63') ? user.phone_number : '+63 ',
+    special_requests: '',
+  });
   const navigate = useNavigate();
   const gallery = photos(room);
   const nightCount = nights(stay.checkIn, stay.checkOut);
@@ -42,11 +50,15 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
 
   async function book(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (step === 2) {
+      setStep(3);
+      return;
+    }
+    if (step !== 4) return;
     if (!available || busy) return;
     setBusy(true);
     setError('');
     try {
-      const contact = Object.fromEntries(new FormData(event.currentTarget));
       const { reservation } = await api<{ reservation: Reservation }>('/hotel/reservations', send('POST', {
         ...contact,
         room_id: room.id,
@@ -90,23 +102,53 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
         </div>
       </div>
       <div className="room-detail-booking">
-        <div className="room-detail-price"><strong>{money(room.price_per_night)}</strong><span> / night</span></div>
-        <StayCalendar value={stay} onChange={setStay} />
-        <label className="room-detail-guests">Guests
-          <select value={guests} onChange={(event) => setGuests(Number(event.target.value))}>
-            {Array.from({ length: Math.min(6, room.capacity) }, (_, index) => index + 1).map((count) => <option key={count} value={count}>{count} {count === 1 ? 'guest' : 'guests'}</option>)}
-          </select>
-        </label>
-        <div className="room-availability" role="status">
-          {availability.loading ? 'Checking availability…' : availability.error ? 'Could not check availability' : available ? <><Check size={16} /> Available for these dates</> : 'Unavailable for these dates'}
-        </div>
-        <ErrorBox message={availability.error || error} />
-        <div className="room-detail-total"><span>{money(room.price_per_night)} × {nightCount} {nightCount === 1 ? 'night' : 'nights'}</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
-        <p className="room-detail-dates">{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</p>
+        <ol className="booking-steps" aria-label="Booking progress">
+          {['Booking', 'Guest', 'Payment', 'Confirmation'].map((name, index) => <li key={name} className={step === index + 1 ? 'active' : step > index + 1 ? 'complete' : ''}><span>{step > index + 1 ? <Check size={13} /> : index + 1}</span><small>{name}</small></li>)}
+        </ol>
         {user ? <form className="room-book-form" onSubmit={book}>
-          <ContactFields />
-          <button className="room-book-button" disabled={busy || availability.loading || !available}>{busy ? 'Holding your room…' : 'Book room'}</button>
-          <p className="muted small-text">Held for 15 minutes after booking. Pay at the property.</p>
+          {step === 1 && <>
+            <div className="booking-step-heading"><h3>Booking details</h3><p>Check your dates and guests.</p></div>
+            <div className="room-detail-price"><strong>{money(room.price_per_night)}</strong><span> / night</span></div>
+            <StayCalendar value={stay} onChange={setStay} />
+            <label className="room-detail-guests">Guests
+              <select value={guests} onChange={(event) => setGuests(Number(event.target.value))}>
+                {Array.from({ length: Math.min(6, room.capacity) }, (_, index) => index + 1).map((count) => <option key={count} value={count}>{count} {count === 1 ? 'guest' : 'guests'}</option>)}
+              </select>
+            </label>
+            <div className="room-availability" role="status">
+              {availability.loading ? 'Checking availability…' : availability.error ? 'Could not check availability' : available ? <><Check size={16} /> Available for these dates</> : 'Unavailable for these dates'}
+            </div>
+            <ErrorBox message={availability.error} />
+            <div className="room-detail-total"><span>{money(room.price_per_night)} × {nightCount} {nightCount === 1 ? 'night' : 'nights'}</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
+            <p className="room-detail-dates">{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</p>
+            <button type="button" className="room-book-button" disabled={availability.loading || !available} onClick={() => setStep(2)}>Continue</button>
+          </>}
+          {step === 2 && <>
+            <div className="booking-step-heading"><h3>Guest information</h3><p>Who should we contact about this stay?</p></div>
+            <ContactFields value={contact} onChange={setContact} />
+            <div className="booking-step-actions"><button type="button" className="secondary" onClick={() => setStep(1)}>Back</button><button>Continue</button></div>
+          </>}
+          {step === 3 && <>
+            <div className="booking-step-heading"><h3>Payment</h3><p>Payment is collected at the property.</p></div>
+            <div className="payment-choice selected"><WalletCards size={22} /><div><strong>Pay at the property</strong><span>No charge is made during booking.</span></div><Check size={18} /></div>
+            <div className="payment-methods" aria-label="Accepted payment methods"><span><CreditCard size={16} /> Card</span><span><Landmark size={16} /> Bank transfer</span><span><WalletCards size={16} /> Cash</span></div>
+            <div className="payment-total"><span>Amount due</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
+            <div className="booking-step-actions"><button type="button" className="secondary" onClick={() => setStep(2)}>Back</button><button type="button" onClick={() => setStep(4)}>Review booking</button></div>
+          </>}
+          {step === 4 && <>
+            <div className="booking-step-heading"><h3>Confirm your booking</h3><p>Review the details before placing your reservation.</p></div>
+            <div className="confirmation-list">
+              <div><span>Room</span><strong>{room.room_type}</strong></div>
+              <div><span>Stay</span><strong>{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</strong></div>
+              <div><span>Guests</span><strong>{guests} {guests === 1 ? 'guest' : 'guests'}</strong></div>
+              <div><span>Contact</span><strong>{contact.contact_name}<small>{contact.contact_email}<br />{contact.contact_phone}</small></strong></div>
+              <div><span>Payment</span><strong>At the property</strong></div>
+              <div className="total"><span>Total</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
+            </div>
+            <ErrorBox message={error} />
+            <div className="booking-step-actions"><button type="button" className="secondary" disabled={busy} onClick={() => setStep(3)}>Back</button><button disabled={busy || !available}>{busy ? 'Holding your room…' : 'Confirm booking'}</button></div>
+            <p className="muted small-text">Your room will be held for 15 minutes.</p>
+          </>}
         </form> : <div className="room-book-form"><Link className="button room-book-button" to="/login" state={{ from: '/rooms' }}>Log in to book room</Link><Link to="/register">Create an account</Link></div>}
       </div>
     </div>

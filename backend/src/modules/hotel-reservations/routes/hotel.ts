@@ -135,7 +135,7 @@ hotelRouter.patch(
 export const contactSchema = z.object({
   contact_name: text(160).min(2),
   contact_email: z.email().max(254),
-  contact_phone: text(30).min(7),
+  contact_phone: text(18).regex(/^\+63[0-9 ]{9,14}$/, 'Use a Philippine number beginning with +63'),
   special_requests: text(2000).default(''),
 });
 hotelRouter.post(

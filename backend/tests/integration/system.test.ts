@@ -57,7 +57,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
       last_name: name,
       email: `test-${name}-${suffix}@example.com`,
       password: 'Integration123!',
-      phone_number: '+1 555 010 9999',
+      phone_number: '+63 917 123 4567',
       role: 'admin',
     });
     assert.equal(r.status, 201);
@@ -72,7 +72,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   const contact = {
     contact_name: 'Integration Guest',
     contact_email: `test-owner-${suffix}@example.com`,
-    contact_phone: '+1 555 010 9999',
+    contact_phone: '+63 917 123 4567',
     special_requests: 'Integration test',
   };
   assert.equal((await request('/reservations')).status, 401);

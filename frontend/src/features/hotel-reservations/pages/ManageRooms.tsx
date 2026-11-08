@@ -131,7 +131,7 @@ export function ManageRooms() {
               />
             </label>
             <label>
-              Nightly rate (USD)
+              Nightly rate (PHP)
               <input
                 name="price_per_night"
                 type="number"

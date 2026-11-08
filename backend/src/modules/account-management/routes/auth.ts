@@ -12,7 +12,7 @@ export const authRouter = Router();
 const profile = z.object({
   first_name: text(80).min(1),
   last_name: text(80).min(1),
-  phone_number: text(30).min(7),
+  phone_number: text(18).regex(/^\+63[0-9 ]{9,14}$/, 'Use a Philippine number beginning with +63'),
   date_of_birth: date.nullable().optional(),
 });
 const credentials = z.object({

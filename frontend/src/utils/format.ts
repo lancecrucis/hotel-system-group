@@ -1,6 +1,6 @@
 export const BUSINESS_TIMEZONE = 'Asia/Taipei';
 export const money = (value: string | number) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value));
+  new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(value));
 export const label = (value: string) => value.replaceAll('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 export const dateLabel = (value: string) =>
   new Intl.DateTimeFormat('en-US', {
