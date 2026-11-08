@@ -4,6 +4,7 @@ import { useAuth } from './app/providers/AuthContext';
 import { Layout } from './components/layout/Layout';
 import { Loading, ErrorBox, Empty } from './components/ui/common';
 import { AuthPage } from './features/account-management/pages/AuthPage';
+import { ForgotPassword, ResetPassword } from './features/account-management/pages/PasswordReset';
 import { Profile } from './features/account-management/pages/Profile';
 import { Users } from './features/account-management/pages/Users';
 import { Rooms } from './features/hotel-reservations/pages/Rooms';
@@ -55,6 +56,8 @@ function AppRoutes() {
         <Route path="dining" element={<Dining />} />
         <Route path="login" element={<AuthPage />} />
         <Route path="register" element={<AuthPage register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
         <Route element={<Guard />}>
           <Route path="reservations" element={<Reservations />} />
           <Route path="reservations/:id" element={<ReservationDetail />} />

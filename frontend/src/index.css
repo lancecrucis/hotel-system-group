@@ -1039,6 +1039,12 @@ td select {
   text-align: center;
   font-size: 12px;
 }
+.auth-options {
+  font-size: 12px;
+}
+.auth-options .checkbox {
+  font-size: 12px;
+}
 .demo-box {
   margin-top: 24px;
   padding: 22px;

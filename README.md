@@ -26,7 +26,7 @@ Demo credentials are shown on the sign-in page. Use only with local demonstratio
 
 ## What works
 
-- Registration, sign-in/out, editable profiles, password hashing, persistent HTTP-only sessions, role checks, and administrator role assignment.
+- Registration, login/logout, optional 30-day remembered sessions, local-development password reset, editable profiles, password hashing, HTTP-only sessions, role checks, and administrator role assignment.
 - Room availability by dates and party size; nightly pricing; room descriptions, amenities, cover/gallery image URLs; staff room creation/editing and maintenance controls.
 - Restaurant availability by date, time, and party size; automatically assigned tables; one-hour visits with a 30-minute table buffer and 30-minute start intervals.
 - Temporary booking holds, confirmation, cancellation with a reason, unique booking references, and a chronological status timeline.
@@ -53,7 +53,7 @@ Demo credentials are shown on the sign-in page. Use only with local demonstratio
 - Restaurant inventory includes individual tables with 2, 4, or 6 seats. The system assigns the smallest available table that fits the party. It holds that table for the one-hour visit plus a 30-minute buffer, and also checks overall seat capacity. The prototype has no visual floor plan.
 - Customers can confirm and cancel before service starts. Date/room/party changes use cancellation and a new booking in this prototype. Contact the property for past-booking changes. No cancellation fees are calculated automatically.
 - Payments and refunds are staff records of cash, transfers, or external card-terminal transactions. There is no online payment gateway, card storage, automatic collection, or automatic refund. Dining bills are outside the reservation model.
-- Notifications are in-app only. There is no email/SMS delivery or password recovery service. Room images use URLs rather than uploads.
+- Notifications are in-app only. Password reset links appear on screen in local development and expire after 15 minutes; production password recovery requires an email service before it can be enabled. Room images use URLs rather than uploads.
 - Lists show at most 500 reservations/users and 200 notifications/activity events. There is no external hotel-channel integration, multi-property support, or housekeeping module.
 
 ## Database and privacy

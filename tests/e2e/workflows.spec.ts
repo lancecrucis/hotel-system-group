@@ -54,12 +54,12 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
     await page.goto('/login');
     await page.getByLabel('Email address').fill(account);
     await page.getByLabel('Password', { exact: true }).fill('Prototype123!');
-    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+    await page.getByRole('button', { name: 'Login', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
   }
   async function logout() {
     await page.getByRole('button', { name: 'Sign out' }).click();
-    await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
   }
   async function status(name: string) {
     await page.getByRole('button', { name, exact: true }).click();

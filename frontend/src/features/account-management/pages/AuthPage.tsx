@@ -12,7 +12,8 @@ export function AuthPage({ register = false }: { register?: boolean }) {
   const [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
     [email, setEmail] = useState(''),
-    [password, setPassword] = useState('');
+    [password, setPassword] = useState(''),
+    [remember, setRemember] = useState(false);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -21,7 +22,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
     try {
       const result = await api<{ user: User }>(
         `/auth/${register ? 'register' : 'login'}`,
-        send('POST', { ...fields, email, password }),
+        send('POST', { ...fields, email, password, ...(!register ? { remember_me: remember } : {}) }),
       );
       setUser(result.user);
       navigate(location.state?.from ?? (result.user.role === 'customer' ? '/rooms' : '/overview'), {
@@ -35,7 +36,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
   }
   return (
     <div className="auth-page">
-      <PageHeader title={register ? 'Create account' : 'Sign in'} />
+      <PageHeader title={register ? 'Create account' : 'Login'} />
       <div className="panel">
         <ErrorBox message={error} />
         <form onSubmit={submit} className="stack">
@@ -84,10 +85,21 @@ export function AuthPage({ register = false }: { register?: boolean }) {
               autoComplete={register ? 'new-password' : 'current-password'}
             />
           </label>
-          <button disabled={busy}>{busy ? (register ? 'Creating account…' : 'Signing in…') : register ? 'Create account' : 'Sign in'}</button>
+          {!register && (
+            <div className="split auth-options">
+              <label className="checkbox">
+                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />{' '}
+                Remember me
+              </label>
+              <Link to="/forgot-password">Forgot password?</Link>
+            </div>
+          )}
+          <button disabled={busy}>
+            {busy ? (register ? 'Creating account…' : 'Logging in…') : register ? 'Create account' : 'Login'}
+          </button>
         </form>
         <p className="muted">
-          <Link to={register ? '/login' : '/register'}>{register ? 'Sign in' : 'Create account'}</Link>
+          <Link to={register ? '/login' : '/register'}>{register ? 'Login' : 'Create account'}</Link>
         </p>
       </div>
       {!register && (
