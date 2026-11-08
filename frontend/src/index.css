@@ -973,14 +973,16 @@ td select {
 .detail-grid .details-list { margin-top: 8px; }
 .reservation-progress ol { margin: 18px 0 0; padding: 0; list-style: none; }
 .reservation-progress-primary { margin-bottom: 14px; padding: 18px 24px; }
+.detail-grid { grid-template-columns: minmax(0, 1.25fr) minmax(290px, .75fr); align-items: start; gap: 18px; }
+.reservation-progress-primary { margin: 0; padding: 20px; }
 .progress-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .progress-heading h2 { margin: 0; font-size: 20px; }
 .progress-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
-.reservation-progress-primary ol { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: none; margin-top: 18px; }
-.reservation-progress-primary li { min-height: 0; flex-direction: column; align-items: center; gap: 7px; padding: 0 4px; text-align: center; }
-.reservation-progress-primary li:not(:last-child)::after { top: 15px; left: calc(50% + 16px); bottom: auto; width: calc(100% - 32px); height: 2px; }
-.reservation-progress-primary .progress-marker { flex-basis: 32px; width: 32px; height: 32px; }
-.reservation-progress-primary li strong { font-size: 11px; line-height: 1.25; }
+.reservation-progress-primary ol { display: block; max-width: none; margin-top: 17px; }
+.reservation-progress-primary li { min-height: 53px; flex-direction: row; align-items: flex-start; gap: 12px; padding: 0; text-align: left; }
+.reservation-progress-primary li:not(:last-child)::after { top: 25px; left: 13px; bottom: 0; width: 2px; height: auto; }
+.reservation-progress-primary .progress-marker { flex-basis: 28px; width: 28px; height: 28px; }
+.reservation-progress-primary li strong { font-size: 12px; line-height: 1.25; }
 .reservation-progress-primary li small { font-size: 10px; line-height: 1.2; }
 .reservation-progress li { position: relative; display: flex; gap: 13px; min-height: 66px; color: #888; }
 .reservation-progress li:not(:last-child)::after { content: ''; position: absolute; top: 27px; left: 13px; bottom: 0; width: 2px; background: #ddd; }
@@ -994,8 +996,7 @@ td select {
 @media (max-width: 700px) {
   .reservation-progress-primary { padding: 16px; }
   .progress-heading h2 { font-size: 17px; }
-  .reservation-progress-primary ol { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; }
-  .reservation-progress-primary li::after { display: none; }
+  .detail-grid { grid-template-columns: 1fr; }
 }
 .details-list {
   margin: 15px 0 0;

@@ -117,19 +117,6 @@ export function ReservationDetail() {
           </div>
         </div>
       )}
-      <section className={`panel reservation-progress reservation-progress-primary ${stopped ? 'stopped' : ''}`} aria-label="Reservation progress">
-        <div className="progress-heading"><div><h2>Reservation progress</h2><p>Track each step of your stay.</p></div><Badge status={r.status} /></div>
-        <ol>
-          {stages.map((stage, index) => {
-            const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
-            return <li key={stage.key} className={stage.done && !stopped ? 'done' : current ? 'current' : ''} aria-current={current ? 'step' : undefined}>
-              <span className="progress-marker">{stage.done && !stopped ? <Check size={16} /> : index + 1}</span>
-              <div><strong>{stage.name}</strong>{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
-            </li>;
-          })}
-        </ol>
-        {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
-      </section>
       <div className="detail-grid">
         <div className="stack">
           <section className="panel">
@@ -255,6 +242,19 @@ export function ReservationDetail() {
           </section>
         </div>
         <div className="stack">
+          <section className={`panel reservation-progress reservation-progress-primary ${stopped ? 'stopped' : ''}`} aria-label="Reservation progress">
+            <div className="progress-heading"><div><h2>Reservation progress</h2></div><Badge status={r.status} /></div>
+            <ol>
+              {stages.map((stage, index) => {
+                const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
+                return <li key={stage.key} className={stage.done && !stopped ? 'done' : current ? 'current' : ''} aria-current={current ? 'step' : undefined}>
+                  <span className="progress-marker">{stage.done && !stopped ? <Check size={15} /> : index + 1}</span>
+                  <div><strong>{stage.name}</strong>{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
+                </li>;
+              })}
+            </ol>
+            {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
+          </section>
           <section className="panel">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
             <dl className="details-list">
