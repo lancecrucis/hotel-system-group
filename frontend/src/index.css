@@ -984,6 +984,8 @@ td select {
 .reservation-progress-primary .progress-marker { flex-basis: 28px; width: 28px; height: 28px; }
 .reservation-progress-primary li strong { font-size: 12px; line-height: 1.25; }
 .reservation-progress-primary li small { font-size: 10px; line-height: 1.2; }
+.reservation-progress-primary li.refund { min-height: 42px; }
+.reservation-progress-primary .progress-detail { color: var(--ink); font-weight: 650; }
 .reservation-progress li { position: relative; display: flex; gap: 13px; min-height: 66px; color: #888; }
 .reservation-progress li:not(:last-child)::after { content: ''; position: absolute; top: 27px; left: 13px; bottom: 0; width: 2px; background: #ddd; }
 .reservation-progress li.done:not(:last-child)::after { background: #222; }

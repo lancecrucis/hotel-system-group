@@ -18,6 +18,13 @@ const actionLabels: Record<string, string> = {
   no_show: 'Mark no-show',
   cancelled: 'Cancel reservation',
 };
+type ProgressStage = {
+  key: string;
+  name: string;
+  event?: { changed_at: string };
+  done: boolean;
+  detail?: string;
+};
 export function ReservationDetail() {
   const { id } = useParams(),
     query = useQuery<Detail>(`/reservations/${id}`, 15000),
@@ -53,7 +60,9 @@ export function ReservationDetail() {
     );
   const { reservation: r, history, payments, refunds, allowed_actions } = query.data,
     staff = user!.role !== 'customer';
-  const paid = Number(r.paid_amount) - Number(r.refunded_amount),
+  const grossPaid = Number(r.paid_amount),
+    refunded = Number(r.refunded_amount),
+    paid = grossPaid - refunded,
     balance = Math.max(0, Number(r.total_amount) - paid);
   const refundable = payments.filter(
     (p) =>
@@ -62,10 +71,12 @@ export function ReservationDetail() {
       0,
   );
   const stopped = ['cancelled', 'expired', 'no_show'].includes(r.status);
-  const stages = r.reservation_type === 'hotel'
+  const latestPayment = payments.at(-1),
+    latestRefund = refunds.at(-1);
+  const stages: ProgressStage[] = r.reservation_type === 'hotel'
     ? [
         { key: 'pending', name: 'Booking submitted', event: history.find((h) => h.new_status === 'pending'), done: history.some((h) => h.new_status === 'pending') },
-        { key: 'payment', name: 'Payment confirmed', event: payments.length && balance === 0 ? history.find((h) => h.new_status === 'confirmed') : undefined, done: Number(r.paid_amount) > 0 && balance === 0 },
+        { key: 'payment', name: 'Payment confirmed', event: latestPayment ? { changed_at: latestPayment.paid_at } : undefined, done: grossPaid > 0 && grossPaid >= Number(r.total_amount) },
         { key: 'confirmed', name: 'Reservation confirmed', event: history.find((h) => h.new_status === 'confirmed'), done: ['confirmed', 'checked_in', 'checked_out'].includes(r.status) },
         { key: 'checked_in', name: 'Checked in', event: history.find((h) => h.new_status === 'checked_in'), done: ['checked_in', 'checked_out'].includes(r.status) },
         { key: 'checked_out', name: 'Checked out', event: history.find((h) => h.new_status === 'checked_out'), done: r.status === 'checked_out' },
@@ -78,6 +89,14 @@ export function ReservationDetail() {
         { key: 'seated', name: 'Seated', event: history.find((h) => h.new_status === 'seated'), done: ['seated', 'completed'].includes(r.status) },
         { key: 'completed', name: 'Visit completed', event: history.find((h) => h.new_status === 'completed'), done: r.status === 'completed' },
       ];
+  if (refunded > 0)
+    stages.push({
+      key: 'refund',
+      name: refunded >= grossPaid ? 'Refunded' : 'Partially refunded',
+      event: latestRefund ? { changed_at: latestRefund.processed_at } : undefined,
+      done: true,
+      detail: `${money(refunded)} returned`,
+    });
   function financialSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -247,9 +266,9 @@ export function ReservationDetail() {
             <ol>
               {stages.map((stage, index) => {
                 const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
-                return <li key={stage.key} className={stage.done && !stopped ? 'done' : current ? 'current' : ''} aria-current={current ? 'step' : undefined}>
-                  <span className="progress-marker">{stage.done && !stopped ? <Check size={15} /> : index + 1}</span>
-                  <div><strong>{stage.name}</strong>{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
+                return <li key={stage.key} className={`${stage.done ? 'done' : current ? 'current' : ''} ${stage.key === 'refund' ? 'refund' : ''}`} aria-current={current ? 'step' : undefined}>
+                  <span className="progress-marker">{stage.done ? <Check size={15} /> : index + 1}</span>
+                  <div><strong>{stage.name}</strong>{stage.detail && <small className="progress-detail">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
                 </li>;
               })}
             </ol>
