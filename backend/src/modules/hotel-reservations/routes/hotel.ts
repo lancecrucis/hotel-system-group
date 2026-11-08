@@ -38,7 +38,7 @@ hotelRouter.get(
       .object({
         check_in: date.optional(),
         check_out: date.optional(),
-        guests: z.coerce.number().int().min(1).max(20).default(1),
+        guests: z.coerce.number().int().min(1).max(6).default(1),
         room_type: z.string().max(80).default(''),
       })
       .parse(req.query);
@@ -147,7 +147,7 @@ hotelRouter.post(
         room_id: uuid,
         check_in: date,
         check_out: date,
-        guest_count: z.number().int().min(1).max(20),
+        guest_count: z.number().int().min(1).max(6),
       })
       .parse(req.body);
     const result = await transaction(async (c) => {

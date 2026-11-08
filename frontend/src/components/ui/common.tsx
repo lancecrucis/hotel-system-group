@@ -57,10 +57,12 @@ export function Modal({
   title,
   children,
   onClose,
+  className,
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null),
     id = useId();
@@ -70,7 +72,7 @@ export function Modal({
     return () => el?.close();
   }, []);
   return (
-    <dialog ref={ref} onCancel={onClose} aria-labelledby={id}>
+    <dialog ref={ref} className={className} onCancel={onClose} aria-labelledby={id}>
       <div className="modal-heading">
         <h2 id={id}>{title}</h2>
         <button className="icon-button" onClick={onClose} aria-label="Close dialog">

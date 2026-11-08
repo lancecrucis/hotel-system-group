@@ -1,14 +1,11 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { BedDouble, Users, Wifi, Coffee, CalendarDays, Search, ChevronDown } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
-import { useAuth } from '../../../app/providers/AuthContext';
-import { api, send } from '../../../services/client';
-import type { Room, Reservation } from '../../../types/models';
-import { ErrorBox, Empty, Loading, Modal } from '../../../components/ui/common';
-import { ContactFields } from '../components/ContactFields';
-import { day, money, nights, dateLabel } from '../../../utils/format';
+import type { Room } from '../../../types/models';
+import { ErrorBox, Empty, Loading } from '../../../components/ui/common';
+import { RoomDetailsModal } from '../components/RoomDetailsModal';
+import { StayCalendar } from '../components/StayCalendar';
+import { day, dateLabel, money } from '../../../utils/format';
 
 function roomImage(room: Room) {
   const type = room.room_type.toLowerCase();
@@ -17,53 +14,20 @@ function roomImage(room: Room) {
   if (type.includes('twin') || room.bed_count > 1) return '/images/rooms/deluxe-twin.webp';
   return '/images/rooms/deluxe-king.webp';
 }
-function addDays(value: string, amount: number) {
-  const date = new Date(`${value}T12:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + amount);
-  return date.toISOString().slice(0, 10);
-}
-
 export function Rooms() {
   const initial = { room_type: '', check_in: day(1), check_out: day(2), guests: '2' };
   const [filters, setFilters] = useState(initial),
     [search, setSearch] = useState(initial),
     [selected, setSelected] = useState<Room | null>(null),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
-  const { user } = useAuth(),
-    navigate = useNavigate(),
-    query = useQuery<{ rooms: Room[]; room_types: string[] }>(`/hotel/rooms?${new URLSearchParams(search)}`);
-  const count = nights(search.check_in, search.check_out);
-  async function book(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const contact = Object.fromEntries(new FormData(e.currentTarget));
-    setBusy(true);
-    setError('');
-    try {
-      const { reservation } = await api<{ reservation: Reservation }>(
-        '/hotel/reservations',
-        send('POST', {
-          ...contact,
-          room_id: selected!.id,
-          check_in: search.check_in,
-          check_out: search.check_out,
-          guest_count: Number(search.guests),
-        }),
-      );
-      navigate(`/reservations/${reservation.id}`);
-    } catch (e) {
-      setError((e as Error).message);
-      query.reload();
-    } finally {
-      setBusy(false);
-    }
-  }
+    [dateOpen, setDateOpen] = useState(false);
+  const query = useQuery<{ rooms: Room[]; room_types: string[] }>(`/hotel/rooms?${new URLSearchParams(search)}`);
   return (
     <>
       <form
         className="room-search-bar"
         onSubmit={(e) => {
           e.preventDefault();
+          setDateOpen(false);
           setSearch({ ...filters });
           query.reload();
         }}
@@ -92,44 +56,10 @@ export function Rooms() {
         <div className="room-search-field room-search-dates">
           <CalendarDays size={20} aria-hidden="true" />
           <div className="room-search-content">
-            <div className="room-date-inputs">
-              <label>
-                <span>Check-in</span>
-                <input
-                  aria-label="Check-in"
-                  type="date"
-                  required
-                  min={day()}
-                  value={filters.check_in}
-                  onChange={(e) => {
-                    const checkIn = e.target.value;
-                    if (!checkIn) {
-                      setFilters({ ...filters, check_in: '', check_out: '' });
-                      return;
-                    }
-                    setFilters({
-                      ...filters,
-                      check_in: checkIn,
-                      check_out: filters.check_out <= checkIn ? addDays(checkIn, 1) : filters.check_out,
-                    });
-                  }}
-                />
-              </label>
-              <span className="room-date-divider" aria-hidden="true" />
-              <label>
-                <span>Check-out</span>
-                <input
-                  aria-label="Check-out"
-                  type="date"
-                  required
-                  min={filters.check_in ? addDays(filters.check_in, 1) : day(1)}
-                  max={filters.check_in ? addDays(filters.check_in, 30) : undefined}
-                  value={filters.check_out}
-                  onChange={(e) => setFilters({ ...filters, check_out: e.target.value })}
-                />
-              </label>
-            </div>
+            <span>Check-in & check-out</span>
+            <button type="button" className="room-date-trigger" aria-expanded={dateOpen} aria-label="Choose check-in and check-out dates" onClick={() => setDateOpen(!dateOpen)}>{dateLabel(filters.check_in)} <span aria-hidden="true">→</span> {dateLabel(filters.check_out)} <ChevronDown size={16} /></button>
           </div>
+          {dateOpen && <div className="room-search-calendar-popover"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="room-date-done" onClick={() => setDateOpen(false)}>Done</button></div>}
         </div>
         <label className="room-search-field">
           <Users size={20} aria-hidden="true" />
@@ -139,7 +69,7 @@ export function Rooms() {
               value={filters.guests}
               onChange={(e) => setFilters({ ...filters, guests: e.target.value })}
             >
-              {Array.from({ length: 20 }, (_, index) => index + 1).map((count) => (
+              {Array.from({ length: 6 }, (_, index) => index + 1).map((count) => (
                 <option key={count} value={count}>
                   {count} {count === 1 ? 'guest' : 'guests'}
                 </option>
@@ -207,10 +137,7 @@ export function Rooms() {
                     </span>
                     <button
                       className="small"
-                      onClick={() => {
-                        setSelected(room);
-                        setError('');
-                      }}
+                      onClick={() => setSelected(room)}
                     >
                       Select room
                     </button>
@@ -223,58 +150,7 @@ export function Rooms() {
       {!query.loading && !query.error && query.data?.rooms.filter((r) => r.available).length === 0 && (
         <Empty title="No rooms available" />
       )}
-      {selected && (
-        <Modal
-          title="Review your stay"
-          onClose={() => {
-            if (!busy) setSelected(null);
-          }}
-        >
-          <div className="booking-summary">
-            <strong>
-              {selected.room_type} · Room {selected.room_number}
-            </strong>
-            <p>
-              {dateLabel(search.check_in)} → {dateLabel(search.check_out)} · {count}{' '}
-              {count === 1 ? 'night' : 'nights'} · {search.guests} guests
-            </p>
-            <div className="split">
-              <span>Total room charge</span>
-              <strong>{money(Number(selected.price_per_night) * count)}</strong>
-            </div>
-          </div>
-          {selected.images.length > 0 && (
-            <div className="gallery">
-              {selected.images.map((i, index) => (
-                <img key={index} src={i.image_url} alt={`${selected.room_type} view ${index + 1}`} />
-              ))}
-            </div>
-          )}
-          <ErrorBox message={error} />
-          <p className="muted small-text">
-            {selected.description} {selected.special_amenities}
-          </p>
-          {user ? (
-            <form className="form-grid" onSubmit={book}>
-              <ContactFields />
-              <p className="full muted small-text">Pay at the property · Confirm within 15 minutes.</p>
-              <div className="full actions">
-                <button disabled={busy}>{busy ? 'Holding your room…' : 'Continue to confirmation'}</button>
-                <button type="button" className="secondary" disabled={busy} onClick={() => setSelected(null)}>
-                  Back
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="stack">
-              <Link className="button" to="/login" state={{ from: '/rooms' }}>
-                Sign in to continue
-              </Link>
-              <Link to="/register">Create an account</Link>
-            </div>
-          )}
-        </Modal>
-      )}
+      {selected && <RoomDetailsModal key={selected.id} room={selected} initialStay={{ checkIn: search.check_in, checkOut: search.check_out }} initialGuests={Number(search.guests)} onClose={() => setSelected(null)} />}
     </>
   );
 }
