@@ -61,6 +61,11 @@ export function ReservationDetail() {
         refunds.filter((f) => f.payment_id === p.id).reduce((n, f) => n + Number(f.refund_amount), 0) >
       0,
   );
+  const stages = r.reservation_type === 'hotel'
+    ? [{ key: 'pending', name: 'Booking submitted' }, { key: 'confirmed', name: 'Reservation confirmed' }, { key: 'checked_in', name: 'Checked in' }, { key: 'checked_out', name: 'Checked out' }]
+    : [{ key: 'pending', name: 'Booking submitted' }, { key: 'confirmed', name: 'Reservation confirmed' }, { key: 'arrived', name: 'Arrived' }, { key: 'seated', name: 'Seated' }, { key: 'completed', name: 'Visit completed' }];
+  const stageIndex = stages.findIndex((stage) => stage.key === r.status);
+  const stopped = ['cancelled', 'expired', 'no_show'].includes(r.status);
   function financialSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -225,6 +230,22 @@ export function ReservationDetail() {
           </section>
         </div>
         <div className="stack">
+          <section className="panel reservation-progress">
+            <h2>Reservation progress</h2>
+            <ol>
+              {stages.map((stage, index) => {
+                const event = history.find((entry) => entry.new_status === stage.key);
+                const done = Boolean(event) || (!stopped && stageIndex > index);
+                const current = !stopped && stageIndex === index;
+                return <li key={stage.key} className={done ? 'done' : current ? 'current' : ''} aria-current={current ? 'step' : undefined}>
+                  <span className="progress-marker">{done ? <Check size={15} /> : index + 1}</span>
+                  <div><strong>{stage.name}</strong>{event && <small>{timestamp(event.changed_at)}</small>}{current && !event && <small>Current stage</small>}</div>
+                </li>;
+              })}
+            </ol>
+            {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
+            {r.reservation_type === 'hotel' && <p className="progress-payment">Payment: {balance > 0 ? `${money(balance)} due at the property` : 'Paid in full'}</p>}
+          </section>
           <section className="panel">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
             <dl className="details-list">

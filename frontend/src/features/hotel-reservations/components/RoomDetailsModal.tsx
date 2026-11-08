@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BedDouble, Check, ChevronLeft, ChevronRight, Coffee, CreditCard, Landmark, Users, WalletCards, Wifi } from 'lucide-react';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { ErrorBox, Modal } from '../../../components/ui/common';
@@ -36,13 +36,13 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
   const [error, setError] = useState('');
   const { user } = useAuth();
   const [step, setStep] = useState(1);
+  const [created, setCreated] = useState<Reservation | null>(null);
   const [contact, setContact] = useState<ContactDetails>({
     contact_name: user ? `${user.first_name} ${user.last_name}` : '',
     contact_email: user?.email ?? '',
     contact_phone: user?.phone_number.startsWith('+63') ? user.phone_number : '+63 ',
     special_requests: '',
   });
-  const navigate = useNavigate();
   const gallery = photos(room);
   const nightCount = nights(stay.checkIn, stay.checkOut);
   const availability = useQuery<{ rooms: Room[] }>(`/hotel/rooms?${new URLSearchParams({ check_in: stay.checkIn, check_out: stay.checkOut, guests: String(guests) })}`);
@@ -66,7 +66,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
         check_out: stay.checkOut,
         guest_count: guests,
       }));
-      navigate(`/reservations/${reservation.id}`);
+      setCreated(reservation);
     } catch (cause) {
       setError((cause as Error).message);
       availability.reload();
@@ -77,7 +77,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
 
   const total = Number(room.price_per_night) * nightCount;
 
-  return <Modal title={step === 1 ? room.room_type : 'Complete your booking'} className="room-detail-dialog" onClose={() => { if (!busy) onClose(); }}>
+  return <Modal title={created ? 'Reservation submitted' : step === 1 ? room.room_type : 'Complete your booking'} className={`room-detail-dialog ${step > 1 ? 'room-checkout-dialog' : ''}`} onClose={() => { if (!busy) onClose(); }}>
     <div className={`room-detail-layout ${step > 1 ? 'checkout-focus' : ''}`}>
       {step === 1 && <div className="room-detail-main">
         <div className="room-detail-photo">
@@ -104,10 +104,10 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
         </div>
       </div>}
       <div className={`room-detail-booking ${step > 1 ? 'focused' : ''}`}>
-        <ol className="booking-steps" aria-label="Booking progress">
+        {!created && <ol className="booking-steps" aria-label="Booking progress">
           {['Booking', 'Guest', 'Payment', 'Confirmation'].map((name, index) => <li key={name} className={step === index + 1 ? 'active' : step > index + 1 ? 'complete' : ''}><span>{step > index + 1 ? <Check size={13} /> : index + 1}</span><small>{name}</small></li>)}
-        </ol>
-        {user ? <form className="room-book-form" onSubmit={book}>
+        </ol>}
+        {created ? <div className="booking-created" role="status"><span className="booking-created-icon"><Check size={28} /></span><h3>Your room is held</h3><p>Reservation {created.reservation_reference} is awaiting confirmation. Open its details to confirm it and follow its progress.</p><Link className="button" to={`/reservations/${created.id}`}>View my reservation</Link></div> : user ? <form className="room-book-form" onSubmit={book}>
           {step === 1 && <>
             <div className="booking-step-heading"><h3>Booking details</h3><p>Check your dates and guests.</p></div>
             <div className="room-detail-price"><strong>{money(room.price_per_night)}</strong><span> / night</span></div>

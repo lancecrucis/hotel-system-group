@@ -968,6 +968,16 @@ td select {
   gap: 24px;
   align-items: start;
 }
+.reservation-progress ol { margin: 18px 0 0; padding: 0; list-style: none; }
+.reservation-progress li { position: relative; display: flex; gap: 13px; min-height: 66px; color: #888; }
+.reservation-progress li:not(:last-child)::after { content: ''; position: absolute; top: 27px; left: 13px; bottom: 0; width: 2px; background: #ddd; }
+.reservation-progress li.done:not(:last-child)::after { background: #222; }
+.progress-marker { position: relative; z-index: 1; display: grid; flex: 0 0 28px; place-items: center; width: 28px; height: 28px; border: 2px solid #bbb; border-radius: 50%; background: white; font-size: 11px; font-weight: 700; }
+.reservation-progress li.done .progress-marker, .reservation-progress li.current .progress-marker { border-color: #222; background: #222; color: white; }
+.reservation-progress li.current strong, .reservation-progress li.done strong { color: var(--ink); }
+.reservation-progress li strong { display: block; padding-top: 2px; font-size: 12px; }
+.reservation-progress li small { display: block; margin-top: 3px; font-size: 11px; }
+.progress-payment, .progress-stopped { margin: 2px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; }
 .details-list {
   margin: 15px 0 0;
   font-size: 12px;
@@ -1185,6 +1195,19 @@ dialog::backdrop {
   padding: 24px;
 }
 .room-detail-dialog:has(.checkout-focus) { min-height: 680px; }
+.room-detail-dialog.room-checkout-dialog { max-width: 620px; min-height: 0; }
+.room-detail-dialog.room-checkout-dialog .room-detail-booking.focused { min-height: 0; padding: 0 10px 10px; }
+.room-detail-dialog.room-checkout-dialog .room-book-form { min-height: 0; }
+.room-detail-dialog.room-checkout-dialog .booking-steps { margin-bottom: 22px; }
+.room-detail-dialog.room-checkout-dialog .payment-checkout-layout { grid-template-columns: 1fr; gap: 10px; }
+.room-detail-dialog.room-checkout-dialog .checkout-review, .room-detail-dialog.room-checkout-dialog .checkout-payment { padding: 15px; }
+.room-detail-dialog.room-checkout-dialog .checkout-review-row { padding: 7px 0; }
+.room-detail-dialog.room-checkout-dialog .payment-actions { max-width: none; }
+.booking-created { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 32px 16px; text-align: center; }
+.booking-created-icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #171717; color: white; }
+.booking-created h3, .booking-created p { margin: 0; }
+.booking-created p { max-width: 360px; color: var(--muted); }
+.booking-created .button { margin-top: 12px; }
 .room-search-dates { position: relative; }
 .room-date-trigger { display: flex; justify-content: space-between; width: 100%; min-height: 26px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; }
 .room-date-trigger:hover { background: transparent; }
