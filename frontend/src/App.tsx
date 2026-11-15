@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, Link } fro
 import { AuthProvider } from './app/providers/Auth';
 import { useAuth } from './app/providers/AuthContext';
 import { Layout } from './components/layout/Layout';
-import { Loading, ErrorBox, Empty } from './components/ui/common';
+import { Loading, ErrorBox, Empty } from '@/components/ui';
 import { AuthPage } from './features/account-management/pages/AuthPage';
 import { ForgotPassword, ResetPassword } from './features/account-management/pages/PasswordReset';
 import { Profile } from './features/account-management/pages/Profile';

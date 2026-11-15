@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
-import { useAuth } from '../../../app/providers/AuthContext';
-import { useQuery } from '../../../hooks/useQuery';
-import type { Reservation } from '../../../types/models';
-import { PageHeader, ErrorBox, Loading } from '../../../components/ui/common';
+import { useAuth } from '@/app/providers/AuthContext';
+import { useQuery } from '@/hooks/useQuery';
+import type { Reservation } from '@/types/models';
+import { PageHeader, ErrorBox, Loading } from '@/components/ui';
 import { ReservationTable } from '../components/ReservationTable';
-import { label } from '../../../utils/format';
+import { label } from '@/utils/format';
 export function Reservations() {
   const { user } = useAuth(),
     initial = { search: '', type: 'all', status: 'all' },

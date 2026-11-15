@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useQuery } from '../../../hooks/useQuery';
-import { useAuth } from '../../../app/providers/AuthContext';
-import { api, send } from '../../../services/client';
-import type { User } from '../../../types/models';
-import { PageHeader, ErrorBox, Success, Loading, Badge } from '../../../components/ui/common';
+import { useQuery } from '@/hooks/useQuery';
+import { useAuth } from '@/app/providers/AuthContext';
+import { api, send } from '@/services/client';
+import type { User } from '@/types/models';
+import { PageHeader, ErrorBox, Success, Loading, Badge } from '@/components/ui';
 export function Users() {
   const query = useQuery<{ users: User[] }>('/users'),
     { user } = useAuth(),

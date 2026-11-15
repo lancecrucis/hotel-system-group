@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../../app/providers/AuthContext';
-import { api, send } from '../../../services/client';
-import type { User } from '../../../types/models';
-import { ErrorBox, PageHeader } from '../../../components/ui/common';
+import { useAuth } from '@/app/providers/AuthContext';
+import { api, send } from '@/services/client';
+import type { User } from '@/types/models';
+import { ErrorBox, PageHeader } from '@/components/ui';
 export function AuthPage({ register = false }: { register?: boolean }) {
   const { setUser } = useAuth(),
     navigate = useNavigate(),

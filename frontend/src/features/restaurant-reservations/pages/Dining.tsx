@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '../../../hooks/useQuery';
-import { useAuth } from '../../../app/providers/AuthContext';
-import { api, send } from '../../../services/client';
-import type { Settings, Reservation } from '../../../types/models';
-import { ErrorBox, Loading } from '../../../components/ui/common';
-import { ContactFields } from '../../hotel-reservations/components/ContactFields';
-import { day } from '../../../utils/format';
+import { useQuery } from '@/hooks/useQuery';
+import { useAuth } from '@/app/providers/AuthContext';
+import { api, send } from '@/services/client';
+import type { Settings, Reservation } from '@/types/models';
+import { ErrorBox, Loading } from '@/components/ui';
+import { ContactFields } from '@/features/hotel-reservations/components/ContactFields';
+import { day } from '@/utils/format';
 
 interface Slot {
   start_time: string;

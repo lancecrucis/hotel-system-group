@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../services/client';
+import { api } from '@/services/client';
 export function useQuery<T>(path: string, refreshMs = 0) {
   const [state, setState] = useState<{ path: string; version: number; data: T | null; error: string }>({
       path: '',

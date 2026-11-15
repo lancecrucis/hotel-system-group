@@ -12,12 +12,11 @@ import {
   CalendarCheck,
   MessageCircle,
 } from 'lucide-react';
-import { useQuery } from '../../../hooks/useQuery';
-import type { Room, Settings } from '../../../types/models';
-import { money } from '../../../utils/format';
+import { useQuery } from '@/hooks/useQuery';
+import type { Room, Settings } from '@/types/models';
+import { money } from '@/utils/format';
 import { LandingNav } from '../components/LandingNav';
 import { ChatWidget } from '../components/ChatWidget';
-import '../landing.css';
 
 const HOTEL_NAME = 'LA Illustrada';
 

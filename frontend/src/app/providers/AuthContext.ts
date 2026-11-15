@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { User } from '../../types/models';
+import type { User } from '@/types/models';
 export const AuthContext = createContext<{
   user: User | null;
   loading: boolean;

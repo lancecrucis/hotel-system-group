@@ -2,12 +2,12 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Printer, Check, Clock } from 'lucide-react';
-import { useQuery } from '../../../hooks/useQuery';
-import { useAuth } from '../../../app/providers/AuthContext';
-import { api, send } from '../../../services/client';
-import type { Detail } from '../../../types/models';
-import { PageHeader, Badge, ErrorBox, Success, Loading, Modal } from '../../../components/ui/common';
-import { money, dateLabel, timestamp, label } from '../../../utils/format';
+import { useQuery } from '@/hooks/useQuery';
+import { useAuth } from '@/app/providers/AuthContext';
+import { api, send } from '@/services/client';
+import type { Detail } from '@/types/models';
+import { PageHeader, Badge, ErrorBox, Success, Loading, Modal } from '@/components/ui';
+import { money, dateLabel, timestamp, label } from '@/utils/format';
 const actionLabels: Record<string, string> = {
   confirmed: 'Confirm booking',
   checked_in: 'Check in',

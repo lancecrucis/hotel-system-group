@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { BedDouble, Users, Wifi, Coffee, CalendarDays, Search, ChevronDown } from 'lucide-react';
-import { useQuery } from '../../../hooks/useQuery';
-import type { Room } from '../../../types/models';
-import { ErrorBox, Empty, Loading } from '../../../components/ui/common';
+import { useQuery } from '@/hooks/useQuery';
+import type { Room } from '@/types/models';
+import { ErrorBox, Empty, Loading } from '@/components/ui';
 import { RoomDetailsModal } from '../components/RoomDetailsModal';
 import { StayCalendar } from '../components/StayCalendar';
-import { day, dateLabel, money } from '../../../utils/format';
+import { day, dateLabel, money } from '@/utils/format';
 
 function roomImage(room: Room) {
   const type = room.room_type.toLowerCase();

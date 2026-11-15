@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BedDouble, Check, Clock3, UtensilsCrossed, Users } from 'lucide-react';
-import { useQuery } from '../../../hooks/useQuery';
-import { api, send } from '../../../services/client';
-import type { Reservation, Room, Settings } from '../../../types/models';
-import { ErrorBox, Loading } from '../../../components/ui/common';
-import { dateLabel, day, money, nights } from '../../../utils/format';
+import { useQuery } from '@/hooks/useQuery';
+import { api, send } from '@/services/client';
+import type { Reservation, Room, Settings } from '@/types/models';
+import { ErrorBox, Loading } from '@/components/ui';
+import { dateLabel, day, money, nights } from '@/utils/format';
 
 type BookingType = 'hotel' | 'restaurant';
 interface Slot {

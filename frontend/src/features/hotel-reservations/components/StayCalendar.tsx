@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { day, dateLabel, nights } from '../../../utils/format';
+import { day, dateLabel, nights } from '@/utils/format';
 
 type Stay = { checkIn: string; checkOut: string };
 

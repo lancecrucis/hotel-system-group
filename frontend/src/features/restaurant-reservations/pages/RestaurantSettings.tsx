@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useQuery } from '../../../hooks/useQuery';
-import { api, send } from '../../../services/client';
-import type { Settings } from '../../../types/models';
-import { PageHeader, ErrorBox, Success, Loading } from '../../../components/ui/common';
+import { useQuery } from '@/hooks/useQuery';
+import { api, send } from '@/services/client';
+import type { Settings } from '@/types/models';
+import { PageHeader, ErrorBox, Success, Loading } from '@/components/ui';
 function SettingsForm({ settings, onSave }: { settings: Settings; onSave: () => void }) {
   const [error, setError] = useState(''),
     [message, setMessage] = useState(''),
