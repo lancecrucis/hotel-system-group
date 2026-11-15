@@ -26,7 +26,9 @@ export interface Room {
 }
 export interface Reservation {
   id: string;
-  user_id: string;
+  user_id: string | null;
+  created_by: string | null;
+  booking_source: 'online' | 'walk_in' | 'phone' | 'staff';
   reservation_type: 'hotel' | 'restaurant';
   status: string;
   total_amount: string;

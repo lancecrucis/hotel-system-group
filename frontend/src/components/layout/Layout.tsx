@@ -11,6 +11,7 @@ import {
   LogOut,
   UserRound,
   ArrowUpRight,
+  UserPlus,
 } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthContext';
 import { useQuery } from '../../hooks/useQuery';
@@ -96,6 +97,10 @@ export function Layout() {
               <NavLink to="/overview">
                 <LayoutDashboard size={16} />
                 Overview
+              </NavLink>
+              <NavLink to="/walk-in">
+                <UserPlus size={16} />
+                New walk-in
               </NavLink>
               <NavLink to="/manage/rooms">
                 <BedDouble size={16} />

@@ -135,8 +135,11 @@ restaurantRouter.post(
         start_time: time,
         guest_count: z.number().int().min(1).max(500),
         table_id: z.string().uuid().optional(),
+        walk_in: z.boolean().default(false),
       })
       .parse(req.body);
+    const staffWalkIn = data.walk_in && req.user!.role !== 'customer';
+    if (data.walk_in && !staffWalkIn) throw new HttpError(403, 'Staff access required for walk-in bookings.');
     const result = await transaction(async (c) => {
       const settings = (await c.query('SELECT * FROM restaurant_settings WHERE id=1 FOR UPDATE')).rows[0];
       const current = (
@@ -180,14 +183,18 @@ restaurantRouter.post(
       if (occupied + data.guest_count > settings.max_capacity)
         throw new HttpError(409, 'This time slot has filled up. Choose another time.');
       const inserted = await c.query(
-        `INSERT INTO reservations(user_id,reservation_type,total_amount,contact_name,contact_email,contact_phone,reservation_reference,hold_expires_at)
-      VALUES($1,'restaurant',0,$2,$3,$4,$5,now()+interval '15 minutes') RETURNING *`,
+        `INSERT INTO reservations(user_id,created_by,booking_source,reservation_type,status,total_amount,contact_name,contact_email,contact_phone,reservation_reference,hold_expires_at)
+      VALUES($1,$2,$3,'restaurant',$4,0,$5,$6,$7,$8,$9) RETURNING *`,
         [
+          staffWalkIn ? null : req.user!.id,
           req.user!.id,
+          staffWalkIn ? 'walk_in' : 'online',
+          staffWalkIn ? 'confirmed' : 'pending',
           data.contact_name,
           data.contact_email,
           data.contact_phone,
           `DIN-${randomBytes(5).toString('hex').toUpperCase()}`,
+          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
         ],
       );
       const r = inserted.rows[0];
@@ -206,10 +213,21 @@ restaurantRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        'pending',
-        'Dining time held for 15 minutes. Confirm to complete your booking.',
+        staffWalkIn ? 'confirmed' : 'pending',
+        staffWalkIn
+          ? 'Walk-in dining reservation created and confirmed by staff.'
+          : 'Dining time held for 15 minutes. Confirm to complete your booking.',
         req.user!.id,
       );
+      if (staffWalkIn)
+        await audit(
+          c,
+          req.user!.id,
+          'create_walk_in',
+          'reservation',
+          r.id,
+          `${r.reservation_reference}: dining reservation for ${data.contact_name}.`,
+        );
       return r;
     });
     res.status(201).json({ reservation: result });

@@ -128,10 +128,15 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   assert.equal(
     (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, owner.cookie))
       .status,
+    409,
+  );
+  assert.equal(
+    (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, staff.cookie))
+      .status,
     200,
   );
   assert.equal(
-    (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, owner.cookie))
+    (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, staff.cookie))
       .status,
     409,
   );
@@ -239,6 +244,32 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     ).status,
     409,
   );
+  assert.equal(
+    (
+      await request(
+        '/hotel/reservations',
+        'POST',
+        { ...hotelData, walk_in: true, check_in: today.tomorrow, check_out: today.later },
+        owner.cookie,
+      )
+    ).status,
+    403,
+  );
+  const walkIn = await request(
+    '/hotel/reservations',
+    'POST',
+    { ...hotelData, walk_in: true, check_in: today.tomorrow, check_out: today.later },
+    staff.cookie,
+  );
+  assert.equal(walkIn.status, 201);
+  reservationIds.push(walkIn.body.reservation.id);
+  assert.equal(walkIn.body.reservation.status, 'confirmed');
+  assert.equal(walkIn.body.reservation.user_id, null);
+  assert.equal(walkIn.body.reservation.created_by, staff.body.user.id);
+  assert.equal(walkIn.body.reservation.booking_source, 'walk_in');
+  const walkInDetail = await request(`/reservations/${walkIn.body.reservation.id}`, 'GET', undefined, staff.cookie);
+  assert.equal(walkInDetail.status, 200);
+  assert.equal(walkInDetail.body.history[0].new_status, 'confirmed');
   const settings = (await request('/restaurant/settings')).body.settings;
   const party = 2;
   const availability = await request(`/restaurant/availability?date=${today.distant}&guests=2`);
@@ -261,6 +292,11 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   const first = dining.find((r) => r.status === 201)!.body.reservation;
   assert.equal(
     (await request(`/reservations/${first.id}/status`, 'PATCH', { status: 'confirmed' }, owner.cookie))
+      .status,
+    409,
+  );
+  assert.equal(
+    (await request(`/reservations/${first.id}/status`, 'PATCH', { status: 'confirmed' }, staff.cookie))
       .status,
     200,
   );

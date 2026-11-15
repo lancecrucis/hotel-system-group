@@ -40,9 +40,9 @@ export function Overview() {
       <PageHeader
         title="Today"
         action={
-          <Link className="button" to="/rooms">
+          <Link className="button" to="/walk-in">
             <Plus size={17} />
-            New reservation
+            New walk-in
           </Link>
         }
       />

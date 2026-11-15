@@ -191,12 +191,13 @@ trackingRouter.post(
         id,
         `Recorded ${data.amount} via ${data.payment_method}.`,
       );
-      await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
-        r.user_id,
-        id,
-        'Payment recorded',
-        `Payment of ${data.amount} recorded for ${r.reservation_reference}.`,
-      ]);
+      if (r.user_id)
+        await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
+          r.user_id,
+          id,
+          'Payment recorded',
+          `Payment of ${data.amount} recorded for ${r.reservation_reference}.`,
+        ]);
     });
     res.status(201).json({ ok: true });
   }),
@@ -248,12 +249,13 @@ trackingRouter.post(
         id,
         `Refund ${data.refund_amount}: ${data.refund_reason}`,
       );
-      await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
-        r.user_id,
-        id,
-        'Refund recorded',
-        `A refund of ${data.refund_amount} was recorded for ${r.reservation_reference}.`,
-      ]);
+      if (r.user_id)
+        await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
+          r.user_id,
+          id,
+          'Refund recorded',
+          `A refund of ${data.refund_amount} was recorded for ${r.reservation_reference}.`,
+        ]);
     });
     res.status(201).json({ ok: true });
   }),

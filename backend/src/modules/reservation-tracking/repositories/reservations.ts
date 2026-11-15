@@ -16,7 +16,8 @@ export async function expireHolds(client: Pick<PoolClient, 'query'> = pool) {
     INSERT INTO reservation_status_history(reservation_id,previous_status,new_status,reason)
     SELECT id,'pending','expired','The 15-minute confirmation hold expired.' FROM expired
   ) INSERT INTO notifications(user_id,reservation_id,title,message)
-    SELECT user_id,id,'Reservation hold expired','Your hold for ' || reservation_reference || ' expired. Please book again.' FROM expired`);
+    SELECT user_id,id,'Reservation hold expired','Your hold for ' || reservation_reference || ' expired. Please book again.' FROM expired
+    WHERE user_id IS NOT NULL`);
 }
 export async function lockedReservation(client: PoolClient, id: string, user: Express.Request['user']) {
   const result = await client.query('SELECT * FROM reservations WHERE id=$1 FOR UPDATE', [id]);
@@ -27,7 +28,7 @@ export async function lockedReservation(client: PoolClient, id: string, user: Ex
 }
 export async function recordStatus(
   client: PoolClient,
-  r: { id: string; user_id: string; status: string; reservation_reference: string },
+  r: { id: string; user_id: string | null; status: string; reservation_reference: string },
   status: string,
   reason: string,
   actor?: string,
@@ -36,12 +37,13 @@ export async function recordStatus(
     `INSERT INTO reservation_status_history(reservation_id,previous_status,new_status,reason,changed_by) VALUES($1,$2,$3,$4,$5)`,
     [r.id, r.status || null, status, reason, actor ?? null],
   );
-  await client.query(`INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)`, [
-    r.user_id,
-    r.id,
-    `Reservation ${status.replaceAll('_', ' ')}`,
-    `${r.reservation_reference}: ${reason}`,
-  ]);
+  if (r.user_id)
+    await client.query(`INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)`, [
+      r.user_id,
+      r.id,
+      `Reservation ${status.replaceAll('_', ' ')}`,
+      `${r.reservation_reference}: ${reason}`,
+    ]);
 }
 export async function audit(
   client: Pick<PoolClient, 'query'>,

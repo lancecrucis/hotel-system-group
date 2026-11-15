@@ -148,8 +148,11 @@ hotelRouter.post(
         check_in: date,
         check_out: date,
         guest_count: z.number().int().min(1).max(6),
+        walk_in: z.boolean().default(false),
       })
       .parse(req.body);
+    const staffWalkIn = data.walk_in && req.user!.role !== 'customer';
+    if (data.walk_in && !staffWalkIn) throw new HttpError(403, 'Staff access required for walk-in bookings.');
     const result = await transaction(async (c) => {
       const rooms = await c.query('SELECT * FROM rooms WHERE id=$1 FOR UPDATE', [data.room_id]);
       const room = rooms.rows[0];
@@ -162,15 +165,19 @@ hotelRouter.post(
         throw new HttpError(409, 'This room was just booked for those dates. Choose another room or dates.');
       const reference = `HTL-${randomBytes(5).toString('hex').toUpperCase()}`;
       const inserted = await c.query(
-        `INSERT INTO reservations(user_id,reservation_type,total_amount,contact_name,contact_email,contact_phone,reservation_reference,hold_expires_at)
-      VALUES($1,'hotel',$2,$3,$4,$5,$6,now()+interval '15 minutes') RETURNING *`,
+        `INSERT INTO reservations(user_id,created_by,booking_source,reservation_type,status,total_amount,contact_name,contact_email,contact_phone,reservation_reference,hold_expires_at)
+      VALUES($1,$2,$3,'hotel',$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
         [
+          staffWalkIn ? null : req.user!.id,
           req.user!.id,
+          staffWalkIn ? 'walk_in' : 'online',
+          staffWalkIn ? 'confirmed' : 'pending',
           (Math.round(Number(room.price_per_night) * 100) * nights) / 100,
           data.contact_name,
           data.contact_email,
           data.contact_phone,
           reference,
+          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
         ],
       );
       const r = inserted.rows[0];
@@ -189,10 +196,21 @@ hotelRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        'pending',
-        'Room held for 15 minutes. Confirm to complete your booking.',
+        staffWalkIn ? 'confirmed' : 'pending',
+        staffWalkIn
+          ? 'Walk-in room reservation created and confirmed by staff.'
+          : 'Room held for 15 minutes. Confirm to complete your booking.',
         req.user!.id,
       );
+      if (staffWalkIn)
+        await audit(
+          c,
+          req.user!.id,
+          'create_walk_in',
+          'reservation',
+          r.id,
+          `${reference}: hotel reservation for ${data.contact_name}.`,
+        );
       return r;
     });
     res.status(201).json({ reservation: result });

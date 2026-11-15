@@ -1337,6 +1337,67 @@ dialog::backdrop {
 .confirmation-list > div > strong { text-align: right; font-size: 12px; }
 .confirmation-list strong small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; line-height: 1.5; }
 .confirmation-list .total strong { font-size: 18px; }
+
+/* Staff walk-in desk */
+.walk-in-page { max-width: 1120px; margin: 0 auto; }
+.walk-in-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 27px; }
+.walk-in-header h1 { margin-bottom: 7px; }
+.walk-in-header p { margin: 0; color: var(--muted); font-size: 13px; }
+.walk-in-type { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: #f0f0f0; }
+.walk-in-type button { min-height: 40px; padding: 8px 16px; border: 0; background: transparent; color: var(--muted); }
+.walk-in-type button:hover { background: #e7e7e7; }
+.walk-in-type button.active { background: white; color: var(--ink); box-shadow: 0 1px 4px #00000012; }
+.walk-in-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 22px; align-items: start; }
+.walk-in-main { gap: 16px; }
+.walk-in-section { padding: 24px; border-radius: 16px; }
+.walk-in-section-title { display: flex; align-items: flex-start; gap: 13px; margin-bottom: 20px; }
+.walk-in-section-title > span { display: grid; place-items: center; flex: 0 0 28px; height: 28px; border-radius: 50%; background: var(--ink); color: white; font-size: 12px; font-weight: 700; }
+.walk-in-section-title h2 { margin: 2px 0 3px; font-size: 16px; }
+.walk-in-section-title p { margin: 0; color: var(--muted); font-size: 11px; }
+.walk-in-schedule { display: grid; grid-template-columns: 1fr 1fr .7fr; gap: 12px; margin-bottom: 18px; }
+.walk-in-schedule.restaurant { grid-template-columns: 1fr 1fr; max-width: 520px; }
+.walk-in-room-list { display: flex; flex-direction: column; gap: 8px; }
+.walk-in-room { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 13px; min-height: 68px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+.walk-in-room:hover { border-color: #bdbdbd; }
+.walk-in-room.selected { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.walk-in-room input, .walk-in-times input { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+.walk-in-room-number { display: grid; place-items: center; min-width: 44px; height: 42px; border-radius: 9px; background: #f0f0f0; font-size: 12px; font-weight: 700; }
+.walk-in-room > span:nth-of-type(2) { display: flex; flex-direction: column; min-width: 0; }
+.walk-in-room > span:nth-of-type(2) strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.walk-in-room small { display: block; margin-top: 2px; font-weight: 400; }
+.walk-in-room > strong { text-align: right; font-size: 13px; }
+.walk-in-times { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.walk-in-times label { align-items: center; gap: 2px; padding: 12px 7px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); cursor: pointer; text-align: center; }
+.walk-in-times label:hover { border-color: #bdbdbd; }
+.walk-in-times label.selected { border-color: var(--ink); background: var(--ink); color: white; }
+.walk-in-times label.selected small { color: #d4d4d4; }
+.walk-in-times strong { color: inherit; font-size: 13px; }
+.walk-in-times small { margin-top: 1px; font-size: 10px; }
+.walk-in-summary { position: sticky; top: 168px; padding: 24px; border-radius: 16px; }
+.walk-in-summary h2 { margin-bottom: 18px; }
+.walk-in-summary-type { display: flex; align-items: center; gap: 10px; padding: 13px; border-radius: 12px; background: #f2f2f2; }
+.walk-in-summary dl { margin: 16px 0 18px; }
+.walk-in-summary dl > div { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.walk-in-summary dt { color: var(--muted); font-size: 11px; }
+.walk-in-summary dd { margin: 0; text-align: right; font-size: 12px; font-weight: 600; }
+.walk-in-summary .walk-in-total { padding-top: 15px; border-bottom: 0; }
+.walk-in-summary .walk-in-total dd { font-size: 15px; }
+.walk-in-confirm-note { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 11px; border: 1px dashed #a7a7a7; border-radius: 10px; font-size: 11px; }
+.walk-in-audit-note { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 12px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
+@media (max-width: 900px) {
+  .walk-in-layout { grid-template-columns: 1fr; }
+  .walk-in-summary { position: static; }
+}
+@media (max-width: 650px) {
+  .walk-in-header { align-items: stretch; flex-direction: column; }
+  .walk-in-type { width: 100%; }
+  .walk-in-type button { flex: 1; }
+  .walk-in-schedule, .walk-in-schedule.restaurant { grid-template-columns: 1fr; max-width: none; }
+  .walk-in-times { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .walk-in-room { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .walk-in-room > strong { grid-column: 2; text-align: left; }
+  .walk-in-room > svg { grid-column: 3; grid-row: 1 / span 2; }
+}
 @media (max-width: 760px) {
   .room-detail-dialog { padding: 17px; }
   .room-detail-layout { grid-template-columns: 1fr; gap: 18px; }
