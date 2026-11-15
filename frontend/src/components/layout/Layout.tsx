@@ -14,11 +14,11 @@ import {
   UserPlus,
   Home,
 } from 'lucide-react';
-import { useAuth } from '@/app/providers/AuthContext';
-import { useQuery } from '@/hooks/useQuery';
-import type { Notice } from '@/types/models';
+import { useAuth } from '../../app/providers/AuthContext';
+import { useQuery } from '../../hooks/useQuery';
+import type { Notice } from '../../types/models';
 import { useState } from 'react';
-import { ErrorBox } from '@/components/ui';
+import { ErrorBox } from '../ui/common';
 
 function NotificationLink() {
   const { data } = useQuery<{ notifications: Notice[] }>('/notifications', 30000);

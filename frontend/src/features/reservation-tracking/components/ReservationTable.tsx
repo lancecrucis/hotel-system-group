@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import type { Reservation } from '@/types/models';
-import { Badge, Empty } from '@/components/ui';
-import { dateLabel, money } from '@/utils/format';
+import type { Reservation } from '../../../types/models';
+import { Badge, Empty } from '../../../components/ui/common';
+import { dateLabel, money } from '../../../utils/format';
 export function ReservationTable({ reservations }: { reservations: Reservation[] }) {
   if (!reservations.length) return <Empty title="No reservations" />;
   return (

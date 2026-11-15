@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Plus, Pencil } from 'lucide-react';
-import { useQuery } from '@/hooks/useQuery';
-import { api, send } from '@/services/client';
-import type { Room } from '@/types/models';
-import { PageHeader, ErrorBox, Success, Loading, Badge, Modal } from '@/components/ui';
-import { money } from '@/utils/format';
+import { useQuery } from '../../../hooks/useQuery';
+import { api, send } from '../../../services/client';
+import type { Room } from '../../../types/models';
+import { PageHeader, ErrorBox, Success, Loading, Badge, Modal } from '../../../components/ui/common';
+import { money } from '../../../utils/format';
 export function ManageRooms() {
   const query = useQuery<{ rooms: Room[] }>('/hotel/rooms'),
     [editing, setEditing] = useState<Room | 'new' | null>(null),

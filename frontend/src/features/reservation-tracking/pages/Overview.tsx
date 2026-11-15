@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { LogIn, LogOut, BedDouble, UtensilsCrossed, Clock, Wallet, Plus } from 'lucide-react';
-import { useQuery } from '@/hooks/useQuery';
-import type { Reservation } from '@/types/models';
-import { PageHeader, ErrorBox, Loading } from '@/components/ui';
+import { useQuery } from '../../../hooks/useQuery';
+import type { Reservation } from '../../../types/models';
+import { PageHeader, ErrorBox, Loading } from '../../../components/ui/common';
 import { ReservationTable } from '../components/ReservationTable';
-import { money } from '@/utils/format';
+import { money } from '../../../utils/format';
 interface Summary {
   pending: number;
   arrivals: number;

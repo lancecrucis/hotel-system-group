@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Bell, CheckCheck } from 'lucide-react';
-import { useQuery } from '@/hooks/useQuery';
-import { api, send } from '@/services/client';
-import type { Notice } from '@/types/models';
-import { PageHeader, ErrorBox, Empty, Loading } from '@/components/ui';
-import { timestamp } from '@/utils/format';
+import { useQuery } from '../../../hooks/useQuery';
+import { api, send } from '../../../services/client';
+import type { Notice } from '../../../types/models';
+import { PageHeader, ErrorBox, Empty, Loading } from '../../../components/ui/common';
+import { timestamp } from '../../../utils/format';
 export function Notifications() {
   const query = useQuery<{ notifications: Notice[] }>('/notifications', 15000),
     [error, setError] = useState(''),

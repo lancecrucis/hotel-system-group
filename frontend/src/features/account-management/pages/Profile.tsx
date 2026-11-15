@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useAuth } from '@/app/providers/AuthContext';
-import { api, send } from '@/services/client';
-import type { User } from '@/types/models';
-import { ErrorBox, Success, PageHeader } from '@/components/ui';
-import { day } from '@/utils/format';
+import { useAuth } from '../../../app/providers/AuthContext';
+import { api, send } from '../../../services/client';
+import type { User } from '../../../types/models';
+import { ErrorBox, Success, PageHeader } from '../../../components/ui/common';
+import { day } from '../../../utils/format';
 export function Profile() {
   const { user, setUser } = useAuth(),
     [error, setError] = useState(''),

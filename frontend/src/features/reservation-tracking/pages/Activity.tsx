@@ -1,6 +1,6 @@
-import { useQuery } from '@/hooks/useQuery';
-import { PageHeader, ErrorBox, Empty, Loading } from '@/components/ui';
-import { label, timestamp } from '@/utils/format';
+import { useQuery } from '../../../hooks/useQuery';
+import { PageHeader, ErrorBox, Empty, Loading } from '../../../components/ui/common';
+import { label, timestamp } from '../../../utils/format';
 interface Log {
   id: string;
   action: string;

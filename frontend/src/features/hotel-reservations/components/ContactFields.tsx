@@ -1,4 +1,4 @@
-import { useAuth } from '@/app/providers/AuthContext';
+import { useAuth } from '../../../app/providers/AuthContext';
 
 export type ContactDetails = {
   contact_name: string;
