@@ -1,10 +1,301 @@
 # Hotel and Restaurant Reservation with Tracking System
 
-A functional prototype based on the supplied ERD. React + TypeScript + Vite, Node.js + Express + TypeScript, and real PostgreSQL persistence. Simple responsive screens for guests, reception staff, and administrators.
+A working school prototype of a hotel + restaurant booking system.
 
-## Run the system
+- **Frontend:** React + TypeScript + Vite
+- **Backend:** Node.js + Express + TypeScript
+- **Database:** real PostgreSQL (data is really saved, not faked)
+- **Users:** guests book, reception staff manage arrivals and payments, admins manage accounts
 
-Requires Git, Node.js 22.12+, npm 10+, and PostgreSQL server binaries. Windows installations under `C:\Program Files\PostgreSQL\<version>\bin` are detected automatically; on other systems add `initdb` and `pg_ctl` to PATH.
+---
+
+## 1. Install these first
+
+| Tool | Why you need it | What to remember |
+| --- | --- | --- |
+| [Git](https://git-scm.com/downloads) | to download the code | — |
+| [Node.js 22.12+](https://nodejs.org/en/download) | runs the app | the installer already includes npm |
+| [PostgreSQL](https://www.postgresql.org/download/) | the database itself | must include `initdb` and `pg_ctl` |
+
+> **Windows:** if you installed PostgreSQL in `C:\Program Files\PostgreSQL\<version>\`, the project finds it by itself. Nothing to configure.
+>
+> **Mac / Linux:** add the PostgreSQL `bin` folder to your PATH, then reopen the terminal.
+
+Not sure if you have everything? Run `npm run doctor` in step 3 — it tells you exactly what is missing.
+
+---
+
+## 2. Get the code
+
+Open PowerShell (or any terminal) and run:
+
+```powershell
+git clone https://github.com/lancecrucis/hotel-system-group.git
+cd hotel-system-group
+```
+
+No Git? Open the GitHub page, click **Code → Download ZIP**, extract it, then `cd` into the extracted folder.
+
+---
+
+## 3. Install the packages
+
+```powershell
+npm ci
+```
+
+- Run this **once**, from the folder that contains `package.json` (the project root).
+- It installs the packages for both the frontend and the backend. You do not run it twice.
+
+Then check your machine:
+
+```powershell
+npm run doctor
+```
+
+You want to see `Your machine is ready.` at the end.
+
+---
+
+## 4. Set up the database file
+
+**You do not need to do anything here.** `npm run dev` creates `backend/.env` for you on the first run, with a random database password.
+
+Just remember:
+
+- `backend/.env` is private. It is ignored by Git, so never commit it.
+- **Do not edit `PGPASSWORD` by hand.** The local database remembers the password it was first created with. Changing it in the file breaks the connection.
+
+---
+
+## 5. Run it
+
+One terminal is enough — this command runs both the frontend and the backend together.
+
+```powershell
+npm run dev
+```
+
+Then open **http://localhost:5173** in your browser.
+
+**What happens automatically on the first run:**
+
+1. Checks your machine (`doctor`)
+2. Creates `backend/.env` with a random password
+3. Starts a database just for this project
+4. Creates all the tables
+5. Adds demo rooms, tables, and accounts
+6. Starts the frontend and the backend
+
+**What is normal to see:** the terminal keeps printing logs and never "finishes". That means it is working. Leave the window open.
+
+**To stop everything:** press `Ctrl+C` in that terminal.
+
+### If `npm` does not work in PowerShell
+
+Windows blocks `npm.ps1` on some machines. Use `npm.cmd` instead:
+
+```powershell
+npm.cmd ci
+npm.cmd run doctor
+npm.cmd run dev
+```
+
+---
+
+## 6. Log in with a demo account
+
+These are also shown on the sign-in page.
+
+| Who | Email | Password |
+| --- | --- | --- |
+| Customer | `guest@example.com` | `Prototype123!` |
+| Reception staff | `staff@example.com` | `Prototype123!` |
+| Administrator | `admin@example.com` | `Prototype123!` |
+
+Use these only on your own machine with the demo data.
+
+---
+
+## 7. Try the whole flow (about 5 minutes)
+
+1. **Log in as the customer.**
+2. Click **Book a room**, pick your dates, choose a room, continue.
+3. Click **Confirm booking** — you have **15 minutes** to do this.
+4. Check it under **My reservations**.
+5. **Log out** and log in as staff.
+6. Open your booking under **All reservations**.
+7. Click **Check in**, then **Record payment**, then **Check out**.
+   - Checkout refuses until the balance is fully paid. That is on purpose.
+8. **For the restaurant:** book a table, confirm it, then as staff click
+   **Mark arrived → Seat guests → Complete visit**.
+
+**To see a refund:** record a hotel payment first, cancel the booking (or finish the stay), then record a refund against that original payment.
+
+---
+
+## 8. Rules of the prototype
+
+**Bookings**
+
+- An unconfirmed booking only holds the room for **15 minutes**, then it expires.
+- Confirming does not require any payment.
+- Hotel stays are **1 to 30 nights**.
+- Check-in is from **3 PM**, check-out by **11 AM**.
+- A room that still has a guest checked in cannot be booked again.
+- Cancelled and completed bookings cannot be brought back.
+
+**Restaurant**
+
+- Tables have **2, 4, or 6 seats**.
+- The system gives you the smallest table that fits your group.
+- A table is blocked for your **1-hour visit plus 30 minutes** of cleaning time.
+- Booking start times are every 30 minutes.
+- There is **no visual floor plan**.
+
+**Payments**
+
+- **No online payment.** No cards, no GCash, no automatic charging.
+- Payments and refunds are just records that staff type in for cash, bank transfer, or a card terminal.
+- A "refund" only marks that money was returned outside the system. **The app does not move money.**
+- Dining bills are not part of this system.
+
+**Everything else**
+
+- Notifications are **inside the app only** — no email, no SMS.
+- Password reset links appear **on screen** in local development and expire after 15 minutes.
+- Room photos are **URLs, not uploads**.
+- Lists stop at **500** reservations/users and **200** notifications/activity entries.
+- No housekeeping module, no multi-hotel support, no Booking.com/Agoda integration.
+- Prices display in **PHP (₱)**. To change currency, edit `frontend/src/utils/format.ts`.
+- Dates and times use the **Asia/Taipei** timezone.
+
+---
+
+## 9. Where the code lives
+
+```text
+hotel-system-group/
+├── backend/src/modules/       ← backend, split by feature
+├── frontend/src/features/     ← frontend, split by the same features
+├── database/migrations/       ← SQL changes, applied in order
+├── scripts/                   ← doctor + setup helpers
+├── tests/e2e/                 ← browser tests
+├── docs/                      ← setup, ERD, API, workflows, team notes
+└── package.json               ← all the commands
+```
+
+The four features repeat the same pattern. Learn it once, and every feature makes sense:
+
+| Folder | Job | Analogy |
+| --- | --- | --- |
+| `routes/` | decides which URL calls which function | the door |
+| `repositories/` | talks to the database | the kitchen |
+| `services/` | the business rules in between | the waiter |
+
+`backend/src/shared/` and `frontend/src/components/` are used by everyone, so coordinate before editing them.
+
+---
+
+## 10. Who owns what
+
+| Member | Feature folder | Handles |
+| --- | --- | --- |
+| 1 | `account-management` | Login, sessions, profiles, roles |
+| 2 | `hotel-reservations` | Rooms, availability, hotel bookings |
+| 3 | `restaurant-reservations` | Dining availability, tables, capacity |
+| 4 | `reservation-tracking` | Statuses, history, payments, refunds, notifications, dashboard |
+
+**Ask the group before changing:**
+
+- `frontend/src/components/` and `frontend/src/services/` (shared UI and API calls)
+- `backend/src/shared/` (helpers used by every module)
+- `database/migrations/` (everyone's data lives there)
+- the root `package.json`
+
+---
+
+## 11. Commands cheat sheet
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Set up everything and run the app |
+| `npm run doctor` | Check if your machine is ready |
+| `npm run dev:frontend` | Run only the frontend |
+| `npm run dev:backend` | Run only the backend |
+| `npm run db:start` / `npm run db:stop` | Start / stop the project database |
+| `npm run db:migrate` | Apply new database changes |
+| `npm run db:seed` | Add missing demo data |
+| `npm run db:check` | Test the database connection |
+| `npm run typecheck` | Find TypeScript errors |
+| `npm run lint` | Check code style |
+| `npm test` | Quick backend health tests |
+| `npm run test:system` | Test real booking flows, including two people booking at once |
+| `npm run test:e2e` | Test the real UI in a browser |
+| `npm run build` | Build both apps for deployment |
+| `npm run format` | Auto-format the code |
+
+**For the browser test on a new machine, run this once first:**
+
+```powershell
+npx playwright install chromium
+```
+
+---
+
+## 12. When something goes wrong
+
+| What you see | What it means | Fix |
+| --- | --- | --- |
+| `npm.ps1 cannot be loaded` | PowerShell blocked the npm script | use `npm.cmd run dev` instead |
+| `initdb` or `pg_ctl` was not found | PostgreSQL is missing or not on PATH | install PostgreSQL, or add its `bin` folder to PATH and reopen the terminal |
+| `EADDRINUSE` | something else is using port 5173, 3000, or 5433 | close the other app or terminal, then retry |
+| Password authentication failed | `PGPASSWORD` in `backend/.env` was edited | put the original password back, or delete `.local/` and `backend/.env`, then run `npm run dev` again |
+| `Cannot find module` after pulling | new packages were added | run `npm ci` again |
+| Page loads but every request fails | the backend is not running | check the terminal for an error — both servers must run from the same `npm run dev` |
+| Node version error | Node is older than 22.12 | install the current LTS from nodejs.org |
+
+---
+
+## 13. Database safety rules
+
+- The project database is `hotel_restaurant_dev` at `127.0.0.1:5433`.
+- Its files live in `.local/postgres/`. **Never edit or delete that folder by hand.**
+- It is separate from any PostgreSQL Windows service you may have installed. Leave that service alone.
+- Every member gets their own separate local database. Nothing in `.local/` or `.env` reaches GitHub.
+- `Ctrl+C` stops the app but not the database. To stop the database too:
+
+  ```powershell
+  npm run db:stop
+  ```
+
+- **Never change a migration that already ran.** Add a new `.sql` file to `database/migrations/` instead.
+- Demo seeding never overwrites existing accounts, rooms, or settings, so it is safe to run again.
+
+---
+
+## 14. Deployment (later, not needed for the demo)
+
+- `npm run build` puts the output in `frontend/dist/` and `backend/dist/`.
+- Start the API with `npm start --workspace backend`.
+- Serve the frontend with SPA fallback and proxy `/api` to Express on the same origin.
+- Set `NODE_ENV=production`, real PostgreSQL credentials, and `CLIENT_ORIGIN`.
+- Use HTTPS so session cookies stay secure.
+- Demo accounts and the local database helper are for local demos only. A real deployment needs restricted database roles, backups, monitoring, and real business policies.
+
+---
+
+## 15. Read more
+
+- [Setup details and more troubleshooting](docs/SETUP.md)
+- [ERD mapping](docs/database/ERD.md)
+- [API reference](docs/api/README.md)
+- [Workflow research](docs/architecture/WORKFLOWS.md)
+- [Team conventions](docs/team/README.md)
+
+---
+
+## Copy-paste quick start
 
 ```powershell
 git clone https://github.com/lancecrucis/hotel-system-group.git
@@ -14,97 +305,4 @@ npm run doctor
 npm run dev
 ```
 
-Open **http://localhost:5173**. The startup command creates a private `.env` if missing, starts the project-local database, applies pending migrations, seeds demo data without overwriting existing records, and runs both applications. Run it from the project root. In PowerShell use `npm.cmd` if `npm.ps1` is blocked.
-
-| Demo account    | Email             | Password      |
-| --------------- | ----------------- | ------------- |
-| Customer        | guest@example.com | Prototype123! |
-| Reception staff | staff@example.com | Prototype123! |
-| Administrator   | admin@example.com | Prototype123! |
-
-Demo credentials are shown on the sign-in page. Use only with local demonstration data. Demo seeding is disabled when `NODE_ENV=production`.
-
-## What works
-
-- Registration, login/logout, optional 30-day remembered sessions, local-development password reset, editable profiles, password hashing, HTTP-only sessions, role checks, and administrator role assignment.
-- Room availability by dates and party size; nightly pricing; room descriptions, amenities, cover/gallery image URLs; staff room creation/editing and maintenance controls.
-- Restaurant availability by date, time, and party size; automatically assigned tables; one-hour visits with a 30-minute table buffer and 30-minute start intervals.
-- Temporary booking holds, confirmation, cancellation with a reason, unique booking references, and a chronological status timeline.
-- Hotel check-in/check-out; restaurant arrival, seating, completion; no-show handling.
-- Staff-recorded payments, partial/full refunds, receipt references, outstanding balances, and overpayment/over-refund protection.
-- In-app notifications, read state, staff activity logs, a daily operations dashboard, search/filtering, and printable booking details.
-- Real database transactions serialize bookings for the same room or restaurant capacity, including simultaneous requests.
-
-## Try a complete workflow
-
-1. Sign in as a customer, choose **Book a room**, search dates, select a room, and continue to the confirmation page.
-2. Click **Confirm booking** within 15 minutes. The reservation and timeline appear under **My reservations**.
-3. Sign out and sign in as staff. Open the booking under **All reservations**.
-4. On its arrival date, **Check in**, **Record payment**, then **Check out**. Checkout requires the total room balance to be settled.
-5. For dining, choose a time and confirm. On the visit date, staff progress it through **Mark arrived → Seat guests → Complete visit**.
-6. To demonstrate refunds, record a hotel payment, cancel before arrival or finish the stay, then record a refund against the original payment. This records an external refund; it does not transfer money.
-
-## Prototype rules and limits
-
-- Prices are demonstration USD amounts. Change display currency in `frontend/src/utils/format.ts` before entering real prices. Property dates/times use **Asia/Taipei**, configured in the PostgreSQL pool and frontend formatting utility.
-- Hotel stays last 1–30 nights; checkout is exclusive, so consecutive stays can share a checkout/check-in date. A room with a guest still checked in cannot receive another check-in.
-- Check-in is advertised from 3 PM and checkout by 11 AM. Staff may process arrivals on the reservation date; no-shows cannot be marked before the scheduled arrival time.
-- A pending reservation holds inventory for 15 minutes. Confirmation secures it without an online payment. Expiry runs every minute and before key reads/writes. Terminal states cannot be reactivated.
-- Restaurant inventory includes individual tables with 2, 4, or 6 seats. The system assigns the smallest available table that fits the party. It holds that table for the one-hour visit plus a 30-minute buffer, and also checks overall seat capacity. The prototype has no visual floor plan.
-- Customers can confirm and cancel before service starts. Date/room/party changes use cancellation and a new booking in this prototype. Contact the property for past-booking changes. No cancellation fees are calculated automatically.
-- Payments and refunds are staff records of cash, transfers, or external card-terminal transactions. There is no online payment gateway, card storage, automatic collection, or automatic refund. Dining bills are outside the reservation model.
-- Notifications are in-app only. Password reset links appear on screen in local development and expire after 15 minutes; production password recovery requires an email service before it can be enabled. Room images use URLs rather than uploads.
-- Lists show at most 500 reservations/users and 200 notifications/activity events. There is no external hotel-channel integration, multi-property support, or housekeeping module.
-
-## Database and privacy
-
-The development database is `hotel_restaurant_dev` at `127.0.0.1:5433`. Its credentials live in `backend/.env`, and its PostgreSQL cluster files live in `.local/postgres/`. Both are ignored by Git. It is separate from the installed Windows PostgreSQL service. Do not manually edit or delete cluster files.
-
-Ctrl+C stops the app servers. To stop PostgreSQL separately:
-
-```powershell
-npm run db:stop
-```
-
-Schema migrations are versioned and checksum-checked. Add a new SQL migration rather than changing one already applied. Seeding is idempotent and preserves changes to existing accounts, rooms, settings, and demo bookings. The two seeded bookings use dates relative to their first creation, so they will eventually become historical.
-
-## Commands
-
-| Command                                        | Purpose                                                            |
-| ---------------------------------------------- | ------------------------------------------------------------------ |
-| `npm run dev`                                  | Set up database/schema/demo records and run frontend + backend     |
-| `npm run dev:frontend` / `npm run dev:backend` | Run one application                                                |
-| `npm run setup`                                | Create missing local environment configuration                     |
-| `npm run doctor`                               | Check Node.js, npm, and PostgreSQL prerequisites                   |
-| `npm run db:start` / `npm run db:stop`         | Start/stop the project PostgreSQL cluster                          |
-| `npm run db:migrate`                           | Apply new migrations                                               |
-| `npm run db:seed`                              | Add missing demo data                                              |
-| `npm run db:check`                             | Verify the database connection                                     |
-| `npm run typecheck`                            | Check both apps and backend test types                             |
-| `npm run lint`                                 | Lint both apps                                                     |
-| `npm run build`                                | Build both apps                                                    |
-| `npm test`                                     | Run HTTP health/readiness tests                                    |
-| `npm run test:system`                          | Exercise real PostgreSQL booking workflows and concurrent requests |
-| `npm run test:e2e`                             | Run the Chromium UI workflow and responsive-layout test            |
-| `npm run format`                               | Format project source and documentation                            |
-
-For browser testing on a new machine, first run `npx playwright install chromium`. The system integration test requires a started, migrated, seeded database. It creates unique test users/rooms/bookings and deletes its own records afterward. Browser tests do the same and save overview/mobile screenshots in `docs/screenshots/`.
-
-## Four-member ownership
-
-| Member | Matching frontend feature / backend module | Responsibility                                                               |
-| ------ | ------------------------------------------ | ---------------------------------------------------------------------------- |
-| 1      | `account-management`                       | Accounts, sessions, profiles, roles                                          |
-| 2      | `hotel-reservations`                       | Rooms, inventory, hotel bookings                                             |
-| 3      | `restaurant-reservations`                  | Dining availability, capacity, settings, bookings                            |
-| 4      | `reservation-tracking`                     | Status workflow, history, payments, refunds, notifications, dashboard, audit |
-
-Common configuration, HTTP/database helpers, shared UI, and frontend API types are outside the feature modules. Coordinate changes to those files and migrations. Future-work directories retain `.gitkeep` markers.
-
-Read [setup details](docs/SETUP.md), [ERD mapping](docs/database/ERD.md), [API reference](docs/api/README.md), [workflow research](docs/architecture/WORKFLOWS.md), and [team conventions](docs/team/README.md).
-
-## Deployment
-
-`npm run build` creates `frontend/dist/` and `backend/dist/`. Run the API with `npm start --workspace backend`. Serve the frontend with SPA fallback and proxy `/api` to Express on the same origin. Set `NODE_ENV=production`, real PostgreSQL credentials and `CLIENT_ORIGIN`; use HTTPS for secure session cookies. Apply migrations separately with the development tooling available.
-
-The local cluster helper and publicly documented demo accounts are for local demonstrations. A deployed system needs restricted database roles, managed backups, operational monitoring, real business policies, and delivery/payment integrations as applicable.
+Then open http://localhost:5173 and log in as `guest@example.com` / `Prototype123!`.
