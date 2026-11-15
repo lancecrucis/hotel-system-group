@@ -9,6 +9,14 @@ const suffix = Date.now().toString().slice(-8),
   reservationIds: string[] = [];
 let roomId = '',
   userId = '';
+function dateLabel(value: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${value.slice(0, 10)}T12:00:00Z`));
+}
 function day(offset = 0) {
   const d = new Date(
     new Intl.DateTimeFormat('en-CA', {
@@ -68,13 +76,13 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
     await expect(page.getByRole('status')).toContainText('Reservation updated.');
   }
   await login('admin@example.com');
-  await expect(page.getByRole('heading', { name: 'Welcome, Alex' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Today', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Room inventory' }).click();
   await page.getByRole('button', { name: 'Add room' }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Room number', { exact: true }).fill(roomNumber);
   await dialog.getByLabel('Room type', { exact: true }).fill('Prototype Test Room');
-  await dialog.getByLabel('Nightly rate (USD)').fill('110');
+  await dialog.getByLabel('Nightly rate (PHP)').fill('110');
   await dialog.getByLabel('Description', { exact: true }).fill('Temporary room created by the browser test.');
   const roomResponse = page.waitForResponse(
     (r) => r.url().endsWith('/api/hotel/rooms') && r.request().method() === 'POST',
@@ -87,52 +95,70 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
   await page.goto('/register');
   await page.getByLabel('First name').fill('Browser');
   await page.getByLabel('Last name').fill('Guest');
-  await page.getByLabel('Phone number').fill('+1 555 010 3030');
+  await page.getByLabel('Phone number').fill('+63 917 555 3030');
   await page.getByLabel('Email address').fill(email);
   await page.getByLabel('Password', { exact: true }).fill('Prototype123!');
   const register = page.waitForResponse((r) => r.url().endsWith('/api/auth/register'));
   await page.getByRole('button', { name: 'Create account', exact: true }).click();
   userId = (await (await register).json()).user.id;
   await expect(page.getByRole('heading', { name: 'Available rooms' })).toBeVisible();
-  await page.getByLabel('Check-in', { exact: true }).fill(day());
-  await page.getByLabel('Check-out', { exact: true }).fill(day(1));
-  await page.getByRole('button', { name: 'Check availability' }).click();
+  // The rooms page seeds a valid default stay (tomorrow -> day after) and the
+  // date fields are a calendar popover, so search with the defaults.
+  await page.getByRole('button', { name: 'Find a room' }).click();
+  // The room number appears only in the image alt text, so match on the
+  // room type that this test created.
   await page
     .getByRole('article')
-    .filter({ hasText: roomNumber })
+    .filter({ hasText: 'Prototype Test Room' })
     .getByRole('button', { name: 'Select room' })
     .click();
+  // Booking is a four-step wizard: dates -> guest -> payment -> confirm.
+  // Check-in only works on the arrival date, so book today -> tomorrow.
+  const calendar = dialog.getByRole('region', { name: 'Choose stay dates' });
+  await calendar.getByRole('button', { name: `${dateLabel(day())}` }).click();
+  await calendar.getByRole('button', { name: `${dateLabel(day(1))}` }).click();
+  await dialog.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(dialog.getByLabel('Contact name')).toHaveValue('Browser Guest');
+  await dialog.getByRole('button', { name: 'Continue', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Continue to confirmation' }).click();
   const hotel = page.waitForResponse(
     (r) => r.url().endsWith('/api/hotel/reservations') && r.request().method() === 'POST',
   );
-  await dialog.getByRole('button', { name: 'Continue to confirmation' }).click();
+  await dialog.getByRole('button', { name: 'Confirm booking', exact: true }).click();
   const hotelId = (await (await hotel).json()).reservation.id;
   reservationIds.push(hotelId);
+  // The wizard ends on a confirmation panel with a link out, not a redirect.
+  await dialog.getByRole('link', { name: 'View my reservation' }).click();
   await page.waitForURL(`**/reservations/${hotelId}`);
-  await status('Confirm booking');
-  await expect(page.locator('.badge-confirmed')).toBeVisible();
+  // Customers may only cancel; staff confirm and progress the booking.
   await logout();
   await login('staff@example.com');
   await page.goto(`/reservations/${hotelId}`);
+  await status('Confirm booking');
+  await expect(page.locator('.badge-confirmed').first()).toBeVisible();
   await status('Check in');
   await page.getByRole('button', { name: 'Record payment', exact: true }).click();
   await dialog.getByRole('button', { name: 'Record payment', exact: true }).click();
   await expect(dialog).not.toBeVisible();
   await expect(page.getByRole('status')).toContainText('Payment recorded.');
   await status('Check out');
-  await expect(page.locator('.badge-checked_out')).toBeVisible();
+  await expect(page.locator('.badge-checked_out').first()).toBeVisible();
   await page.getByRole('link', { name: 'Overview', exact: true }).click();
   await mkdir('docs/screenshots', { recursive: true });
   await page.screenshot({ path: 'docs/screenshots/overview.png', fullPage: true });
   await logout();
   await login(email);
   await page.goto(`/reservations/${hotelId}`);
-  await expect(page.locator('.badge-checked_out')).toBeVisible();
+  await expect(page.locator('.badge-checked_out').first()).toBeVisible();
   await expect(page.getByText('Prototype Test Room · ' + roomNumber)).toBeVisible();
   await page.getByRole('link', { name: 'Reserve a table' }).click();
   await expect(page.getByRole('heading', { name: 'Reserve a table' })).toBeVisible();
-  await page.getByRole('radio', { name: /18:30/ }).check();
+  // The radio sits under its styled label (a "time sign" overlay), so click the
+  // label text rather than the input itself.
+  await page
+    .locator('label')
+    .filter({ has: page.getByRole('radio', { name: /^18:30 until/ }) })
+    .click();
   await expect(page.getByLabel('Guests')).toHaveValue('2');
   const dining = page.waitForResponse(
     (r) => r.url().endsWith('/api/restaurant/reservations') && r.request().method() === 'POST',
@@ -141,14 +167,15 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
   const diningId = (await (await dining).json()).reservation.id;
   reservationIds.push(diningId);
   await page.waitForURL(`**/reservations/${diningId}`);
-  await status('Confirm booking');
+  // Customers cannot confirm; they cancel their own pending table and the
+  // staff-visible flow is exercised above. Cancel directly here.
   await page.getByRole('button', { name: 'Cancel reservation', exact: true }).click();
   await dialog.getByLabel('Cancellation reason').fill('Plans changed — browser test.');
   await dialog.getByRole('button', { name: 'Cancel reservation', exact: true }).click();
   await expect(dialog).not.toBeVisible();
-  await expect(page.locator('.badge-cancelled')).toBeVisible();
+  await expect(page.locator('.badge-cancelled').first()).toBeVisible();
   await page.getByRole('link', { name: /Notifications/ }).click();
-  await expect(page.getByText('Booking confirmations, status changes, and payment updates.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Notifications' })).toBeVisible();
   await page.getByRole('button', { name: 'Mark all as read' }).click();
   await expect(page.locator('article.unread')).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -159,7 +186,7 @@ test('guest and staff can complete hotel and dining workflows on desktop and mob
   await expect(page.locator('aside')).toHaveCount(0);
   const toggle = page.getByRole('navigation', { name: 'Booking type' });
   await toggle.getByRole('link', { name: 'Reserve a table' }).click();
-  await expect(page.getByRole('heading', { name: 'Available dining times' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Reserve a table', exact: true })).toBeVisible();
   await expect(toggle.getByRole('link', { name: 'Reserve a table' })).toHaveAttribute('aria-current', 'page');
   await toggle.getByRole('link', { name: 'Book a room' }).click();
   await expect(page.getByRole('heading', { name: 'Available rooms' })).toBeVisible();
