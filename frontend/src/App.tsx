@@ -17,6 +17,7 @@ import { Overview } from './features/reservation-tracking/pages/Overview';
 import { Notifications } from './features/reservation-tracking/pages/Notifications';
 import { Activity } from './features/reservation-tracking/pages/Activity';
 import { WalkInReservation } from './features/reservation-tracking/pages/WalkInReservation';
+import { Landing } from './features/landing/pages/Landing';
 
 function Guard({ staff = false, admin = false }: { staff?: boolean; admin?: boolean }) {
   const { user } = useAuth(),
@@ -51,8 +52,9 @@ function AppRoutes() {
     );
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route element={<Layout />}>
-        <Route index element={<Start />} />
+        <Route path="home" element={<Start />} />
         <Route path="rooms" element={<Rooms />} />
         <Route path="dining" element={<Dining />} />
         <Route path="login" element={<AuthPage />} />

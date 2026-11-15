@@ -12,6 +12,7 @@ import {
   UserRound,
   ArrowUpRight,
   UserPlus,
+  Home,
 } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthContext';
 import { useQuery } from '../../hooks/useQuery';
@@ -57,6 +58,11 @@ export function Layout() {
               </NavLink>
             </nav>
             <div className="user-actions">
+              {!staff && (
+                <Link className="header-icon" to="/" title="Hotel home" aria-label="Hotel home">
+                  <Home size={18} />
+                </Link>
+              )}
               {user ? (
                 <>
                   <NavLink
