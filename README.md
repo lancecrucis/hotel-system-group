@@ -34,7 +34,78 @@ git clone https://github.com/lancecrucis/hotel-system-group.git
 cd hotel-system-group
 ```
 
-No Git? Open the GitHub page, click **Code → Download ZIP**, extract it, then `cd` into the extracted folder.
+The project must be installed with Git. Do not use **Code → Download ZIP**, because a ZIP download does not include the Git history or make it easy to receive future updates.
+
+### Branch workflow
+
+`main` is the shared, stable branch. Do not make feature changes directly on `main`.
+
+Each member should:
+
+1. Update their local `main` branch.
+2. Create a separate branch for their work, such as `lance`, `member-name/feature-name`, or `feature/feature-name`.
+3. Make and test changes only on that branch.
+4. Push the branch to GitHub.
+5. Open a pull request from the work branch into `main`.
+
+For example:
+
+```powershell
+git switch main
+git pull origin main
+git switch -c your-name/short-feature-name
+```
+
+Replace `your-name/short-feature-name` with your own branch name. If the team has already assigned you a branch, switch to that branch instead of creating another one.
+
+### Get the latest code after cloning
+
+If you already cloned the project, do not clone it again. From the project folder, run:
+
+```powershell
+git status
+git switch main
+git pull origin main
+```
+
+Then update your working branch with the latest `main`:
+
+```powershell
+git switch your-name/short-feature-name
+git merge main
+npm ci
+```
+
+If Git reports conflicts, resolve the marked files, test the project, and then complete the merge. Never delete other members' changes just to make the merge finish.
+
+### Push your work and open a pull request
+
+When your changes are tested:
+
+```powershell
+git status
+git add .
+git commit -m "Describe the change"
+git push -u origin your-name/short-feature-name
+```
+
+On GitHub:
+
+1. Open the repository and choose **Compare & pull request** for your pushed branch.
+2. Set the base branch to `main`.
+3. Add a clear title and explain what changed and how you tested it.
+4. Request the required reviewer(s).
+5. Wait for checks and approval, then merge the pull request when it is approved.
+
+After the pull request is merged, refresh your local `main` before starting the next task:
+
+```powershell
+git switch main
+git pull origin main
+git branch -d your-name/short-feature-name
+```
+
+If the branch is still needed, keep it instead of deleting it. The branch deletion command only removes your local copy; it does not delete the project or other branches.
 
 ---
 
