@@ -52,18 +52,27 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     await pool.end();
   });
   const register = async (name: string) => {
+    const email = `test-${name}-${suffix}@example.com`;
+    const password = 'Integration123!';
     const r = await request('/auth/register', 'POST', {
       first_name: 'Integration',
       last_name: name,
-      email: `test-${name}-${suffix}@example.com`,
-      password: 'Integration123!',
+      email,
+      password,
+      confirm_password: password,
       phone_number: '+63 917 123 4567',
-      role: 'admin',
     });
-    assert.equal(r.status, 201);
-    assert.equal(r.body.user.role, 'customer');
-    userIds.push(r.body.user.id);
-    return r;
+    assert.equal(r.status, 201, `register ${name}: ${JSON.stringify(r.body)}`);
+    // Registration no longer returns user or a session — verify email, then log in.
+    const verifyToken = new URL(r.body.verify_link).searchParams.get('token');
+    assert.ok(verifyToken, `register ${name} should return verify_link`);
+    const verified = await request(`/auth/verify-email?token=${encodeURIComponent(verifyToken!)}`);
+    assert.equal(verified.status, 200, `verify ${name}: ${JSON.stringify(verified.body)}`);
+    const login = await request('/auth/login', 'POST', { email, password });
+    assert.equal(login.status, 200, `login ${name}: ${JSON.stringify(login.body)}`);
+    assert.equal(login.body.user.role, 'customer');
+    userIds.push(login.body.user.id);
+    return login;
   };
   const owner = await register('owner'),
     other = await register('other'),
