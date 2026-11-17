@@ -55,20 +55,15 @@ export function ManageRooms() {
       />
       <ErrorBox message={query.error} />
       <Success message={message} />
-      <div className="panel flush">
+      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white">
         {query.loading ? (
           <Loading />
         ) : (
-          <div className="table-wrap">
-            <table>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr>
-                  <th>Room</th>
-                  <th>Type</th>
-                  <th>Capacity</th>
-                  <th>Rate / night</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  {['Room', 'Type', 'Capacity', 'Rate / night', 'Status', 'Action'].map((heading) => <th className="whitespace-nowrap bg-[#fcfcfc] px-5 py-[17px] text-[10px] font-semibold uppercase tracking-[.6px] text-[#888]" key={heading}>{heading}</th>)}
                 </tr>
               </thead>
               <tbody>
@@ -90,7 +85,7 @@ export function ManageRooms() {
                     </td>
                     <td>
                       <button
-                        className="secondary small"
+                        className="inline-flex min-h-[34px] items-center justify-center gap-2 rounded-full border border-[#dedede] bg-white px-3 py-[7px] text-xs font-semibold text-[#1d1d1d]"
                         onClick={() => {
                           setEditing(r);
                           setError('');
@@ -115,7 +110,7 @@ export function ManageRooms() {
           }}
         >
           <ErrorBox message={error} />
-          <form className="form-grid" onSubmit={save}>
+          <form className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1" onSubmit={save}>
             <label>
               Room number
               <input name="room_number" defaultValue={room?.room_number} required maxLength={20} />
@@ -168,7 +163,7 @@ export function ManageRooms() {
                 required
               />
             </label>
-            <label className="full">
+            <label className="col-span-full max-[500px]:col-span-auto">
               Status
               <select name="status" defaultValue={room?.status ?? 'available'}>
                 <option value="available">Available for booking</option>
@@ -176,11 +171,11 @@ export function ManageRooms() {
                 <option value="inactive">Inactive</option>
               </select>
             </label>
-            <label className="full">
+            <label className="col-span-full max-[500px]:col-span-auto">
               Description
               <textarea name="description" defaultValue={room?.description ?? ''} maxLength={2000} />
             </label>
-            <label className="full">
+            <label className="col-span-full max-[500px]:col-span-auto">
               Amenities
               <input
                 name="special_amenities"
@@ -189,11 +184,11 @@ export function ManageRooms() {
                 placeholder="Balcony, coffee maker"
               />
             </label>
-            <label className="checkbox">
+            <label className="flex flex-row items-center gap-[9px]">
               <input name="has_wifi" type="checkbox" defaultChecked={room?.has_wifi ?? true} />
               Wi-Fi included
             </label>
-            <label className="checkbox">
+            <label className="flex flex-row items-center gap-[9px]">
               <input
                 name="breakfast_included"
                 type="checkbox"
@@ -201,7 +196,7 @@ export function ManageRooms() {
               />
               Breakfast included
             </label>
-            <label className="full">
+            <label className="col-span-full max-[500px]:col-span-auto">
               Cover image URL <span className="muted">(optional)</span>
               <input
                 name="image_url"
@@ -210,7 +205,7 @@ export function ManageRooms() {
                 placeholder="https://…"
               />
             </label>
-            <label className="full">
+            <label className="col-span-full max-[500px]:col-span-auto">
               Gallery image URLs <span className="muted">(one per line, up to 8)</span>
               <textarea
                 name="images"
@@ -218,7 +213,7 @@ export function ManageRooms() {
                 rows={3}
               />
             </label>
-            <div className="full">
+            <div className="col-span-full max-[500px]:col-span-auto">
               <button disabled={busy}>{busy ? 'Saving…' : 'Save room'}</button>
             </div>
           </form>

@@ -77,15 +77,15 @@ export function Dining() {
 
   return (
     <>
-      <div className="dining-photo">
-        <img src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
+      <div className="mb-6 h-[190px] overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-[#f0f0f0] max-[500px]:h-[140px]">
+        <img className="block h-full w-full object-cover object-[center_53%]" src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
       </div>
-      <div className="dining-form-heading">
-        <h1>Reserve a table</h1>
-        <span>1-hour visit · 30 minutes between bookings</span>
+      <div className="mx-auto mb-5 flex max-w-[820px] items-baseline justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
+        <h1 className="m-0 text-[32px] font-semibold leading-[1.15] tracking-[-1px]">Reserve a table</h1>
+        <span className="text-xs text-[#6e6e6e]">1-hour visit · 30 minutes between bookings</span>
       </div>
-      <form className="panel dining-reservation-form" onSubmit={book}>
-        <div className="form-grid dining-form-fields">
+      <form className="mx-auto max-w-[820px] rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[19px]" onSubmit={book}>
+        <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
           <label>
             Dining date
             <input
@@ -116,14 +116,14 @@ export function Dining() {
             />
           </label>
         </div>
-        <fieldset className="dining-time-fieldset">
-          <legend>Dining time</legend>
-          <div className="dining-time-signs">
+        <fieldset className="mt-[26px] min-w-0 border-0 p-0">
+          <legend className="mb-2.5 p-0 text-[13px] font-semibold">Dining time</legend>
+          <div className="grid grid-cols-4 gap-2.5 max-[500px]:grid-cols-2">
             {query.data?.slots.map((item) => {
               const status = slotStatus(item);
               const disabled = status.tone === 'fit' || status.tone === 'full';
               return (
-                <label className={`time-sign time-sign-${status.tone}`} key={item.start_time}>
+                <label className={`relative flex min-h-[92px] cursor-pointer flex-col items-start gap-0.5 rounded-[14px] border px-3.5 py-[13px] transition ${status.tone === 'fit' || status.tone === 'full' ? 'cursor-not-allowed bg-[#f4f4f4] text-[#969696]' : 'bg-white hover:border-[#777]'} ${time === item.start_time ? 'border-[#161616] shadow-[0_0_0_2px_#161616_inset]' : 'border-[#dedede]'}`} key={item.start_time}>
                   <input
                     type="radio"
                     name="dining-time"
@@ -135,9 +135,9 @@ export function Dining() {
                       setError('');
                     }}
                   />
-                  <span className="time-sign-time">{item.start_time.slice(0, 5)}</span>
-                  <span className="time-sign-range">until {item.end_time.slice(0, 5)}</span>
-                  <span className="time-sign-status">{status.label}</span>
+                  <span className="text-[17px] font-semibold tracking-[-.3px]">{item.start_time.slice(0, 5)}</span>
+                  <span className="text-[11px]">until {item.end_time.slice(0, 5)}</span>
+                  <span className="mt-auto text-[11px] text-[#606060]">{status.label}</span>
                 </label>
               );
             })}
@@ -157,20 +157,20 @@ export function Dining() {
         <ErrorBox message={error} />
         {user ? (
           <>
-            <div className="dining-form-divider" />
-            <h2>Contact details</h2>
-            <div className="form-grid">
+            <div className="my-7 border-t border-[#e8e8e8]" />
+            <h2 className="mb-[18px] text-[17px] font-semibold">Contact details</h2>
+            <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
               <ContactFields />
             </div>
-            <div className="dining-form-actions">
-              <span>Confirm within 15 minutes.</span>
+            <div className="mt-6 flex items-center justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
+              <span className="text-xs text-[#6e6e6e]">Confirm within 15 minutes.</span>
               <button disabled={busy || query.loading || !slot?.available || !date || !guests}>
                 {busy ? 'Holding your time…' : 'Continue to confirmation'}
               </button>
             </div>
           </>
         ) : (
-          <div className="dining-form-actions">
+          <div className="mt-6 flex items-center justify-between gap-4">
             <Link className="button" to="/login" state={{ from: '/dining' }}>
               Sign in to reserve
             </Link>

@@ -42,12 +42,12 @@ export function Notifications() {
       {query.loading && !query.data ? (
         <Loading />
       ) : query.data?.notifications.length ? (
-        <div className="panel flush notifications">
+        <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white">
           {query.data.notifications.map((n) => (
-            <article key={n.id} className={n.is_read ? '' : 'unread'}>
+            <article key={n.id} className={`flex gap-[13px] border-b border-[#f0f0f0] p-5 last:border-b-0 ${n.is_read ? '' : 'bg-[#fafafa]'}`}>
               <Bell size={19} />
               <div>
-                <div className="split">
+                <div className="flex flex-wrap items-center justify-between gap-4">
                   <strong>{n.title}</strong>
                   <small>{timestamp(n.created_at)}</small>
                 </div>

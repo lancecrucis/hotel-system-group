@@ -18,17 +18,12 @@ function PasswordStrength({ password }: { password: string }) {
   const passed = tests.filter((t) => t.pass).length;
   if (!password) return null;
   return (
-    <div className="stack" style={{ gap: 4 }}>
-      <div className="split" style={{ gap: 4 }}>
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
           <span
             key={n}
-            style={{
-              flex: 1,
-              height: 4,
-              borderRadius: 2,
-              background: n <= passed ? '#161616' : '#e0e0e0',
-            }}
+              className={`h-1 flex-1 rounded-sm ${n <= passed ? 'bg-[#161616]' : 'bg-[#e0e0e0]'}`}
           />
         ))}
       </div>
@@ -87,15 +82,15 @@ export function AuthPage({ register = false }: { register?: boolean }) {
   }
 
   return (
-    <div className="auth-page">
+    <div className="max-w-[720px]">
       <PageHeader title={register ? 'Create account' : 'Login'} />
-      <div className="panel">
+      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
         {success && <Success message={success} />}
         {!success && (
-          <form onSubmit={submit} className="stack">
+          <form onSubmit={submit} className="flex flex-col gap-[18px]">
             {register && (
-              <div className="form-grid">
+              <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
                 <label>
                   First name
                   <input name="first_name" required maxLength={80} autoComplete="given-name" />
@@ -104,7 +99,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                   Last name
                   <input name="last_name" required maxLength={80} autoComplete="family-name" />
                 </label>
-                <label className="full">
+                <label className="col-span-full max-[500px]:col-span-auto">
                   Phone number
                   <input
                     name="phone_number"
@@ -134,7 +129,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
             </label>
             <label>
               Password
-              <div style={{ position: 'relative', width: '100%' }}>
+              <div className="relative w-full">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -144,14 +139,13 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete={register ? 'new-password' : 'current-password'}
-                  style={{ paddingRight: 44 }}
+                  className="pr-11"
                 />
                 <button
                   type="button"
-                  className="icon-button"
+                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#6e6e6e] hover:text-[#1d1d1d]"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  style={{ position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)' }}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -176,19 +170,19 @@ export function AuthPage({ register = false }: { register?: boolean }) {
               </>
             )}
             {!register && (
-              <div className="split auth-options">
-                <label className="checkbox">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <label className="flex flex-row items-center gap-[9px]">
                   <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me
                 </label>
                 <Link to="/forgot-password">Forgot password?</Link>
               </div>
             )}
-            <button type="submit" disabled={busy}>
+            <button className="w-full" type="submit" disabled={busy}>
               {busy ? (register ? 'Creating account…' : 'Logging in…') : register ? 'Create account' : 'Login'}
             </button>
           </form>
         )}
-        <p className="muted">
+        <p className="text-[#6e6e6e]">
           {success ? (
             <Link to="/login">Go to login</Link>
           ) : (
@@ -197,15 +191,15 @@ export function AuthPage({ register = false }: { register?: boolean }) {
         </p>
       </div>
       {!register && !success && (
-        <div className="demo-box">
+        <div className="mt-6 rounded-[20px] border border-[#e8e8e8] bg-white p-6">
           <strong>Demo accounts</strong>
           <p>
             Password: <code>Prototype123!</code>
           </p>
-          <div className="actions">
+          <div className="flex flex-wrap items-center gap-2.5">
             {(['guest', 'staff', 'admin'] as const).map((role) => (
               <button
-                className="secondary small"
+                className="min-h-[34px] rounded-full border border-[#dedede] bg-white px-3 py-[7px] text-xs font-semibold text-[#1d1d1d] hover:bg-[#f5f5f5]"
                 key={role}
                 onClick={() => {
                   setEmail(`${role}@example.com`);

@@ -32,10 +32,10 @@ export function Profile() {
   return (
     <>
       <PageHeader title="Profile" />
-      <div className="panel narrow">
+      <div className="max-w-[720px] rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[19px]">
         <ErrorBox message={error} />
         <Success message={message} />
-        <form className="form-grid" onSubmit={submit}>
+        <form className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1" onSubmit={submit}>
           <label>
             First name
             <input name="first_name" defaultValue={user!.first_name} required maxLength={80} />
@@ -62,11 +62,11 @@ export function Profile() {
             Date of birth <span className="muted">(optional)</span>
             <input type="date" name="date_of_birth" defaultValue={user!.date_of_birth ?? ''} max={day()} />
           </label>
-          <label className="full">
+          <label className="col-span-full max-[500px]:col-span-auto">
             Email
             <input value={user!.email} disabled />
           </label>
-          <div className="full">
+          <div className="col-span-full max-[500px]:col-span-auto">
             <button disabled={busy}>{busy ? 'Saving…' : 'Save profile'}</button>
           </div>
         </form>

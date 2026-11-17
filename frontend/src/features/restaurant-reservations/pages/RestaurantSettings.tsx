@@ -32,10 +32,10 @@ function SettingsForm({ settings, onSave }: { settings: Settings; onSave: () => 
     }
   }
   return (
-    <div className="panel narrow">
+    <div className="max-w-[720px] rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[19px]">
       <ErrorBox message={error} />
       <Success message={message} />
-      <form className="form-grid" onSubmit={save}>
+      <form className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1" onSubmit={save}>
         <label>
           Total seating capacity
           <input
@@ -66,8 +66,8 @@ function SettingsForm({ settings, onSave }: { settings: Settings; onSave: () => 
           Closing time
           <input type="time" name="closing_time" required defaultValue={settings.closing_time.slice(0, 5)} />
         </label>
-        <p className="full muted">1-hour visits · 30 minutes between bookings · Times every 30 minutes.</p>
-        <div className="full">
+        <p className="col-span-full text-[#6e6e6e] max-[500px]:col-span-auto">1-hour visits · 30 minutes between bookings · Times every 30 minutes.</p>
+        <div className="col-span-full max-[500px]:col-span-auto">
           <button disabled={busy}>{busy ? 'Saving…' : 'Save settings'}</button>
         </div>
       </form>
