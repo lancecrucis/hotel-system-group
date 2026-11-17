@@ -33,9 +33,9 @@ export function ForgotPassword() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="max-w-[720px]">
       <PageHeader title="Forgot password" />
-      <div className="panel">
+      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
         {message && <p className="muted">{message}</p>}
         {resetLink && (
@@ -45,7 +45,7 @@ export function ForgotPassword() {
             </span>
           </div>
         )}
-        <form className="stack" onSubmit={submit}>
+        <form className="flex flex-col gap-[18px]" onSubmit={submit}>
           <label>
             Email address
             <input
@@ -102,9 +102,9 @@ export function ResetPassword() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="max-w-[720px]">
       <PageHeader title="Reset password" />
-      <div className="panel">
+      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error || (!token ? 'Reset link is missing or invalid.' : '')} />
         {done ? (
           <>
@@ -112,10 +112,10 @@ export function ResetPassword() {
             <Link className="button" to="/login">Log in</Link>
           </>
         ) : (
-          <form className="stack" onSubmit={submit}>
+          <form className="flex flex-col gap-[18px]" onSubmit={submit}>
             <label>
               New password
-              <div style={{ position: 'relative', width: '100%' }}>
+              <div className="relative w-full">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
@@ -124,14 +124,13 @@ export function ResetPassword() {
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ paddingRight: 44 }}
+                  className="pr-11"
                 />
                 <button
                   type="button"
-                  className="icon-button"
+                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#6e6e6e] hover:text-[#1d1d1d]"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  style={{ position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)' }}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -200,13 +199,13 @@ export function VerifyEmail() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="max-w-[720px]">
       <PageHeader title="Verify email" />
-      <div className="panel">
+      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
         {busy && <p className="muted">Verifying…</p>}
         {message && (
-          <div className="stack">
+          <div className="flex flex-col gap-[18px]">
             <div className="notice success"><span>{message}</span></div>
             <Link className="button" to="/login">Log in</Link>
           </div>
@@ -220,7 +219,7 @@ export function VerifyEmail() {
           </div>
         )}
         {(error || (!token && !message)) && (
-          <form className="stack" onSubmit={resend}>
+          <form className="flex flex-col gap-[18px]" onSubmit={resend}>
             <p className="muted">Enter your email to receive a new verification link.</p>
             <label>
               Email address
