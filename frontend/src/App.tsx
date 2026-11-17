@@ -39,13 +39,13 @@ function AppRoutes() {
   const { loading, error } = useAuth();
   if (loading)
     return (
-      <div className="boot">
+      <div className="mx-auto my-[100px] max-w-[600px] p-6">
         <Loading />
       </div>
     );
   if (error)
     return (
-      <div className="boot">
+      <div className="mx-auto my-[100px] max-w-[600px] p-6">
         <ErrorBox message="API unavailable. Start npm run dev and retry." />
         <button onClick={() => window.location.reload()}>Retry connection</button>
       </div>

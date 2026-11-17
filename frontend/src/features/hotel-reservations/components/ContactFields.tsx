@@ -16,7 +16,7 @@ export function ContactFields({ value, onChange }: { value?: ContactDetails; onC
   const update = (field: keyof ContactDetails, next: string) => value && onChange?.({ ...value, [field]: next });
   return (
     <>
-      <label className="full">
+      <label className="col-span-full">
         Contact name
         <input
           name="contact_name"
@@ -45,7 +45,7 @@ export function ContactFields({ value, onChange }: { value?: ContactDetails; onC
           autoComplete="tel"
         />
       </label>
-      <label className="full">
+      <label className="col-span-full">
         Special requests <span className="muted">(optional)</span>
         <textarea name="special_requests" {...(value ? { value: value.special_requests, onChange: (event) => update('special_requests', event.target.value) } : {})} maxLength={2000} rows={3} placeholder="Requests" />
       </label>
