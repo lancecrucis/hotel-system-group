@@ -165,12 +165,12 @@ export function Landing() {
   const openHours = settings.data?.settings;
 
   return (
-    <div className="lp-root" id="top">
+    <div className="bg-[#f6f2ea] text-[#1b1a17]" id="top">
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
-      <section className="lp-hero">
-        <div className="lp-hero-media">
+      <section className="relative flex min-h-screen items-end overflow-hidden bg-[#16211b] text-[#f6f2ea]">
+        <div className="absolute inset-0">
           <img
             src="/images/landing/hero-1920.webp"
             srcSet="/images/landing/hero-800.webp 800w, /images/landing/hero-1280.webp 1280w, /images/landing/hero-1920.webp 1920w"
@@ -179,27 +179,27 @@ export function Landing() {
             fetchPriority="high"
           />
         </div>
-        <div className="lp-hero-scrim" />
-        <div className="lp-shell lp-hero-inner">
-          <div className="lp-hero-content">
-            <span className="lp-hero-eyebrow">Tagaytay Ridge · Est. 1998</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#16211b]/90 via-[#16211b]/20 to-transparent" />
+        <div className="relative mx-auto w-full max-w-[1280px] px-12 pb-[100px] pt-[180px] max-[900px]:px-[22px] max-[900px]:pb-[88px] max-[640px]:pt-[140px]">
+          <div className="max-w-[680px]">
+            <span className="mb-5 inline-block text-[10px] font-semibold uppercase tracking-[.26em] text-[#e6d6b8]">Tagaytay Ridge · Est. 1998</span>
             <h1>
               Quiet luxury above <em>the ridge</em>
             </h1>
-            <p className="lp-hero-copy">
+            <p className="max-w-[580px] text-[16px] leading-[1.75] text-[#f6f2ea]/80">
               {HOTEL_NAME} is a boutique hotel and restaurant where warm Filipino hospitality meets
               considered, contemporary comfort. Rooms that open to the garden, and a table that is
               always yours.
             </p>
-            <div className="lp-hero-actions">
-              <Link className="lp-btn" to="/rooms">
+            <div className="flex flex-wrap gap-3.5 max-[640px]:[&>a]:w-full">
+              <Link className="bg-[#b08d57] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
                 Find a Room <ArrowRight size={15} />
               </Link>
-              <Link className="lp-btn lp-btn-outline" to="/dining">
+              <Link className="border border-[#f6f2ea]/60 px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#f6f2ea] no-underline" to="/dining">
                 Book a Table
               </Link>
             </div>
-            <dl className="lp-hero-meta">
+            <dl className="mt-14 flex max-w-[560px] flex-wrap gap-x-[34px] gap-y-4 border-t border-white/20 pt-[26px]">
               <div>
                 <dt>{rooms.data?.rooms.length ? `${rooms.data.rooms.length}` : '6'}</dt>
                 <dd>Rooms &amp; suites</dd>
@@ -226,9 +226,9 @@ export function Landing() {
       </section>
 
       {/* ---------------- rooms ---------------- */}
-      <section className="lp-section lp-rooms" id="rooms">
-        <div className="lp-shell">
-          <div className="lp-section-head lp-reveal">
+      <section className="bg-[#f6f2ea] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
+        <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
+          <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
               <span className="lp-eyebrow">Accommodation</span>
               <h2 className="lp-section-title">Rooms designed for slow mornings</h2>
@@ -238,18 +238,18 @@ export function Landing() {
             </Link>
           </div>
 
-          <div className="lp-room-grid">
+          <div className="grid grid-cols-3 gap-[30px] max-[1080px]:grid-cols-2 max-[640px]:grid-cols-1">
             {cards.map((card, index) => (
               <article
-                className="lp-room-card lp-reveal"
+                className="flex flex-col border border-[#ded6c9] bg-white transition hover:-translate-y-1.5 hover:border-[#b08d57]/50 hover:shadow-[0_22px_44px_rgba(27,26,23,.12)]"
                 key={card.type}
                 style={{ transitionDelay: `${index * 90}ms` }}
               >
-                <figure className="lp-room-figure">
+                <figure className="relative aspect-[4/3] overflow-hidden bg-[#eee5d8]">
                   <img src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
                   <figcaption className="lp-room-tag">{card.type}</figcaption>
                 </figure>
-                <div className="lp-room-body">
+                <div className="flex flex-1 flex-col p-[26px] pb-7">
                   <h3>{card.type}</h3>
                   <p className="lp-room-desc">{card.description}</p>
                   <div className="lp-room-facts">
@@ -291,8 +291,8 @@ export function Landing() {
       </section>
 
       {/* ---------------- restaurant ---------------- */}
-      <section className="lp-section lp-dining" id="restaurant">
-        <div className="lp-shell lp-dining-grid">
+      <section className="relative overflow-hidden bg-[#16211b] px-0 py-[110px] text-[#f6f2ea] max-[900px]:py-[76px]" id="restaurant">
+        <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div className="lp-dining-copy lp-reveal">
             <span className="lp-eyebrow">The Restaurant</span>
             <h2>Farm-to-table dining, garden-side</h2>
@@ -323,7 +323,7 @@ export function Landing() {
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
-          <figure className="lp-dining-figure lp-reveal">
+          <figure className="relative order-2 aspect-[5/6] overflow-hidden max-[900px]:aspect-[4/3]">
             <img
               src="/images/landing/dining-1280.webp"
               alt="The LA Illustrada restaurant, set with white linen beside garden windows"
@@ -335,8 +335,8 @@ export function Landing() {
       </section>
 
       {/* ---------------- contact ---------------- */}
-      <section className="lp-section lp-contact" id="contact">
-        <div className="lp-shell lp-contact-grid">
+      <section className="bg-[#eee5d8] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
+        <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div className="lp-reveal">
             <span className="lp-eyebrow">Contact Us</span>
             <h2 className="lp-section-title">We would love to hear from you</h2>
@@ -364,7 +364,7 @@ export function Landing() {
             </dl>
           </div>
 
-          <div className="lp-contact-card lp-reveal">
+          <div className="border border-[#ded6c9] bg-white px-10 py-11 max-[900px]:px-[26px]">
             <h3>Plan your visit</h3>
             <p>
               Booking takes about two minutes. Sign in with your account, choose your dates, and
@@ -411,9 +411,9 @@ export function Landing() {
       </section>
 
       {/* ---------------- footer ---------------- */}
-      <footer className="lp-footer">
-        <div className="lp-shell">
-          <div className="lp-footer-top">
+      <footer className="bg-[#101912] px-0 pt-[76px] text-[#f6f2ea]/70">
+        <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
+          <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-14 pb-[60px] max-[900px]:grid-cols-1 max-[900px]:gap-[38px] max-[900px]:pb-11">
             <div>
               <span className="lp-brand">
                 <span className="lp-brand-mark">LA Illustrada</span>
@@ -452,7 +452,7 @@ export function Landing() {
               </ul>
             </div>
           </div>
-          <div className="lp-footer-bottom">
+          <div className="flex flex-wrap items-center justify-between gap-5 border-t border-white/10 py-[26px] pb-[30px] text-[11.5px] text-white/45">
             <span>© 2026 LA Illustrada Hotel &amp; Restaurant</span>
             <span>
               <MapPin size={12} aria-hidden="true" style={{ verticalAlign: '-1px' }} /> Tagaytay

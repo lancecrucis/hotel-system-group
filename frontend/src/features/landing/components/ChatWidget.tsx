@@ -114,30 +114,30 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="lp-chat">
+    <div className="fixed bottom-[26px] right-[26px] z-[80] flex flex-col items-end gap-3.5 max-[900px]:bottom-4 max-[900px]:right-4">
       {open && (
-        <section className="lp-chat-panel" aria-label="Concierge chat">
-          <header className="lp-chat-head">
-            <span className="lp-chat-avatar">
+        <section className="flex h-[520px] w-[356px] max-h-[calc(100vh-120px)] max-w-[calc(100vw-36px)] flex-col overflow-hidden rounded-2xl border border-[#ded6c9] bg-white shadow-[0_26px_60px_rgba(22,33,27,.26)]" aria-label="Concierge chat">
+          <header className="flex items-center gap-3 bg-[#16211b] px-5 py-[17px] text-[#f6f2ea]">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#d8c3a0]/20 text-[#e6d6b8]">
               <Sparkles size={17} />
             </span>
-            <div>
+            <div className="flex min-w-0 flex-1 flex-col leading-[1.35]">
               <b>LA Illustrada Concierge</b>
               <span>Typically replies in a few seconds</span>
             </div>
-            <button className="lp-chat-close" onClick={() => toggle(false)} aria-label="Close chat">
+            <button className="border-0 bg-transparent p-1 text-[#f6f2ea]/70 hover:text-white" onClick={() => toggle(false)} aria-label="Close chat">
               <X size={17} />
             </button>
           </header>
 
-          <div className="lp-chat-log" ref={logRef} role="log" aria-live="polite">
+          <div className="flex flex-1 flex-col gap-3 overflow-y-auto bg-[#fdfcfa] px-[18px] py-5" ref={logRef} role="log" aria-live="polite">
             {messages.map((message, index) => (
-              <div key={index} className={`lp-chat-msg ${message.from}`}>
+              <div key={index} className={`max-w-[84%] rounded-[14px] px-[15px] py-[11px] text-[13px] leading-[1.6] ${message.from === 'bot' ? 'self-start rounded-bl-[4px] bg-[#f3ece1] text-[#1b1a17]' : 'self-end rounded-br-[4px] bg-[#16211b] text-[#f6f2ea]'}`}>
                 {message.text}
               </div>
             ))}
             {typing && (
-              <div className="lp-chat-typing" aria-label="Concierge is typing">
+              <div className="flex self-start gap-[5px] rounded-[14px] rounded-bl-[4px] bg-[#f3ece1] px-4 py-3.5" aria-label="Concierge is typing">
                 <i />
                 <i />
                 <i />
@@ -146,9 +146,9 @@ export function ChatWidget() {
           </div>
 
           {messages.length <= 1 && (
-            <div className="lp-chat-suggestions">
+            <div className="flex flex-wrap gap-[7px] bg-[#fdfcfa] px-[18px] pb-3.5">
               {quickReplies.map((reply) => (
-                <button key={reply} className="lp-chat-chip" onClick={() => ask(reply)}>
+                <button key={reply} className="rounded-full border border-[#ded6c9] bg-white px-[13px] py-[7px] text-[11.5px] text-[#625b51]" onClick={() => ask(reply)}>
                   {reply}
                 </button>
               ))}
@@ -156,7 +156,7 @@ export function ChatWidget() {
           )}
 
           <form
-            className="lp-chat-form"
+            className="flex items-center gap-2 border-t border-[#ded6c9] bg-white px-3.5 py-3"
             onSubmit={(e) => {
               e.preventDefault();
               ask(draft);
@@ -173,13 +173,13 @@ export function ChatWidget() {
               <Send size={16} />
             </button>
           </form>
-          <p className="lp-chat-foot">Automated assistant for general questions.</p>
+          <p className="bg-white pb-[11px] text-center text-[10px] text-[#9c9a92]">Automated assistant for general questions.</p>
         </section>
       )}
 
       {!open && (
         <span className="lp-chat-tooltip-wrap">
-          <button className="lp-chat-tooltip" onClick={() => toggle(true)}>
+          <button className="rounded-full border border-[#ded6c9] bg-white px-4 py-[9px] text-xs font-medium text-[#1b1a17] shadow-[0_10px_26px_rgba(27,26,23,.16)]" onClick={() => toggle(true)}>
             <Sparkles size={13} aria-hidden="true" /> Questions?
           </button>
         </span>
@@ -188,14 +188,14 @@ export function ChatWidget() {
       {!open && (
         <span className="lp-chat-fab-wrap">
           <button
-            className="lp-chat-fab"
+            className="relative flex h-[60px] w-[60px] items-center justify-center rounded-full border-0 bg-[#16211b] p-0 text-[#e6d6b8] shadow-[0_14px_32px_rgba(22,33,27,.34)] transition hover:-translate-y-0.5"
             onClick={() => toggle(true)}
             aria-expanded={false}
             aria-label="Open concierge chat"
           >
             <MessageCircle size={25} />
           </button>
-          {unread > 0 && <span className="lp-chat-badge">{unread}</span>}
+          {unread > 0 && <span className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#f6f2ea] bg-[#b08d57] text-[11px] font-bold text-white">{unread}</span>}
         </span>
       )}
     </div>
