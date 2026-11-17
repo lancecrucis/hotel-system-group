@@ -16,12 +16,12 @@ export function Activity() {
     <>
       <PageHeader title="Activity log" />
       <ErrorBox message={query.error} />
-      <div className="panel flush">
+      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
         {query.loading && !query.data ? (
           <Loading />
         ) : query.data?.logs.length ? (
-          <div className="table-wrap">
-            <table>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr>
                   <th>Time</th>

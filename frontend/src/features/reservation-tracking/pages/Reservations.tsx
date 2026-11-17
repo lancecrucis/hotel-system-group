@@ -25,7 +25,7 @@ export function Reservations() {
         }
       />
       <form
-        className="panel search-form reservation-search"
+        className="mb-5 grid grid-cols-[1fr_1fr_.65fr_auto] items-end gap-4 rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1 max-[500px]:gap-3"
         onSubmit={(e) => {
           e.preventDefault();
           setSearch({ ...filters });
@@ -76,7 +76,7 @@ export function Reservations() {
         </button>
       </form>
       <ErrorBox message={query.error} />
-      <div className="panel flush">
+      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
         {query.loading && !query.data ? (
           <Loading />
         ) : (

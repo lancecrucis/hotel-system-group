@@ -47,28 +47,28 @@ export function Overview() {
         }
       />
       <ErrorBox message={stats.error || bookings.error} />
-      <div className="stats-grid">
+      <div className="grid grid-cols-3 gap-4 max-[800px]:grid-cols-2 max-[500px]:gap-2.5">
         {cards.map((c) => (
-          <div className="stat-card" key={c.name}>
+          <div className="flex items-center justify-between gap-3 rounded-[14px] border border-[#e8e8e8] bg-white p-5 max-[500px]:p-[15px]">
             <div>
-              <span className="muted">{c.name}</span>
-              <strong>{c.value ?? '—'}</strong>
+              <span className="text-xs text-[#6e6e6e]">{c.name}</span>
+              <strong className="block text-[30px] font-semibold tracking-[-.7px] max-[500px]:text-[25px]">{c.value ?? '—'}</strong>
             </div>
             <c.icon size={21} />
           </div>
         ))}
       </div>
-      <div className="section-heading">
+      <div className="my-9 flex items-center justify-between gap-4">
         <h2>Today’s service</h2>
         <Link to="/reservations">View all reservations →</Link>
       </div>
-      <div className="panel flush">
+      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
         {bookings.loading && !bookings.data ? <Loading /> : <ReservationTable reservations={today} />}
       </div>
-      <div className="section-heading">
+      <div className="my-9 flex items-center justify-between gap-4">
         <h2>Recent bookings</h2>
       </div>
-      <div className="panel flush">
+      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
         <ReservationTable reservations={bookings.data?.reservations.slice(0, 6) ?? []} />
       </div>
     </>
