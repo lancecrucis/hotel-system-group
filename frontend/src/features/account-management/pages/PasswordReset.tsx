@@ -37,9 +37,9 @@ export function ForgotPassword() {
       <PageHeader title="Forgot password" />
       <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
-        {message && <p className="muted">{message}</p>}
+        {message && <p className="text-[#6e6e6e]">{message}</p>}
         {resetLink && (
-          <div className="notice success">
+          <div className="mb-5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px]">
             <span>
               Dev link: <a href={resetLink}>Reset your password</a>
             </span>
@@ -108,8 +108,8 @@ export function ResetPassword() {
         <ErrorBox message={error || (!token ? 'Reset link is missing or invalid.' : '')} />
         {done ? (
           <>
-            {message && <p className="muted">{message}</p>}
-            <Link className="button" to="/login">Log in</Link>
+            {message && <p className="text-[#6e6e6e]">{message}</p>}
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline" to="/login">Log in</Link>
           </>
         ) : (
           <form className="flex flex-col gap-[18px]" onSubmit={submit}>
@@ -203,16 +203,16 @@ export function VerifyEmail() {
       <PageHeader title="Verify email" />
       <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
-        {busy && <p className="muted">Verifying…</p>}
+        {busy && <p className="text-[#6e6e6e]">Verifying…</p>}
         {message && (
           <div className="flex flex-col gap-[18px]">
-            <div className="notice success"><span>{message}</span></div>
-            <Link className="button" to="/login">Log in</Link>
+            <div className="mb-5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px]"><span>{message}</span></div>
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline" to="/login">Log in</Link>
           </div>
         )}
-        {resendMessage && <p className="muted">{resendMessage}</p>}
+        {resendMessage && <p className="text-[#6e6e6e]">{resendMessage}</p>}
         {resendLink && (
-          <div className="notice success">
+          <div className="mb-5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px]">
             <span>
               Dev link: <a href={resendLink}>Verify now</a>
             </span>
@@ -220,7 +220,7 @@ export function VerifyEmail() {
         )}
         {(error || (!token && !message)) && (
           <form className="flex flex-col gap-[18px]" onSubmit={resend}>
-            <p className="muted">Enter your email to receive a new verification link.</p>
+            <p className="text-[#6e6e6e]">Enter your email to receive a new verification link.</p>
             <label>
               Email address
               <input

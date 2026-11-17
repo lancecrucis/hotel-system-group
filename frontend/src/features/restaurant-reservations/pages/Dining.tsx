@@ -171,7 +171,7 @@ export function Dining() {
           </>
         ) : (
           <div className="mt-6 flex items-center justify-between gap-4">
-            <Link className="button" to="/login" state={{ from: '/dining' }}>
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to="/login" state={{ from: '/dining' }}>
               Sign in to reserve
             </Link>
           </div>

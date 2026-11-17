@@ -59,7 +59,7 @@ export function Profile() {
             />
           </label>
           <label>
-            Date of birth <span className="muted">(optional)</span>
+            Date of birth <span className="text-[#6e6e6e]">(optional)</span>
             <input type="date" name="date_of_birth" defaultValue={user!.date_of_birth ?? ''} max={day()} />
           </label>
           <label className="col-span-full max-[500px]:col-span-auto">

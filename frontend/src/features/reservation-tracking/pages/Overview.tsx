@@ -40,7 +40,7 @@ export function Overview() {
       <PageHeader
         title="Today"
         action={
-          <Link className="button" to="/walk-in">
+          <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to="/walk-in">
             <Plus size={17} />
             New walk-in
           </Link>

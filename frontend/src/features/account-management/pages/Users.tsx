@@ -28,19 +28,15 @@ export function Users() {
       <PageHeader title="Users & roles" />
       <ErrorBox message={query.error || error} />
       <Success message={message} />
-      <div className="panel flush">
+      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white">
         {query.loading && !query.data ? (
           <Loading />
         ) : (
-          <div className="table-wrap">
-            <table>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Role</th>
-                  <th>Assign role</th>
+                  {['Name', 'Email', 'Phone', 'Role', 'Assign role'].map((heading) => <th className="whitespace-nowrap bg-[#fcfcfc] px-5 py-[17px] text-[10px] font-semibold uppercase tracking-[.6px] text-[#888]" key={heading}>{heading}</th>)}
                 </tr>
               </thead>
               <tbody>

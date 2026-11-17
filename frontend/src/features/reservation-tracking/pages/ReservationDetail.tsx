@@ -113,14 +113,14 @@ export function ReservationDetail() {
   }
   return (
     <>
-      <Link className="back-link" to="/reservations">
+      <Link className="mb-4 inline-flex items-center gap-1.5 text-xs text-[#6e6e6e]" to="/reservations">
         <ArrowLeft size={16} />
         All reservations
       </Link>
       <PageHeader
         title={r.reservation_reference}
         action={
-          <button className="secondary no-print" onClick={() => window.print()}>
+          <button className="print:hidden rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold text-[#1d1d1d]" onClick={() => window.print()}>
             <Printer size={17} />
             Print details
           </button>
@@ -129,21 +129,21 @@ export function ReservationDetail() {
       <ErrorBox message={query.error || error} />
       <Success message={success} />
       {r.status === 'pending' && (
-        <div className="notice warning">
+        <div className="mb-5 flex items-start gap-2.5 rounded-[7px] border border-dashed border-[#b8b8b8] bg-[#f5f5f5] px-[15px] py-[13px] text-[13px] text-[#424242]">
           <Clock size={20} />
           <div>
             <strong>Confirm by {timestamp(r.hold_expires_at!)}</strong>
           </div>
         </div>
       )}
-      <div className="detail-grid">
-        <div className="stack">
-          <section className="panel">
-            <div className="split">
+      <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(290px,.75fr)] items-start gap-[18px] max-[1200px]:grid-cols-1">
+        <div className="flex flex-col gap-3">
+          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
+            <div className="flex items-center justify-between gap-4">
               <h2>Reservation details</h2>
               <Badge status={r.status} />
             </div>
-            <dl className="details-list">
+            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#e8e8e8] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#6e6e6e] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs max-[500px]:[&>div]:grid-cols-[1fr_1.3fr]">
               {r.hotel ? (
                 <>
                   <div>
@@ -229,7 +229,7 @@ export function ReservationDetail() {
               </div>
               <div>
                 <dt>Special requests</dt>
-                <dd className="preserve">
+                <dd className="whitespace-pre-wrap break-words">
                   {r.hotel?.special_requests || r.restaurant?.special_requests || 'None'}
                 </dd>
               </div>
@@ -241,15 +241,15 @@ export function ReservationDetail() {
               )}
             </dl>
           </section>
-          <section className="panel">
+          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
             <h2>Status timeline</h2>
-            <ol className="timeline">
+            <ol className="relative ml-1 list-none space-y-5 border-l-2 border-[#ddd] pl-7">
               {history.map((h) => (
                 <li key={h.id}>
-                  <span className="timeline-dot">
+                  <span className="absolute -left-[15px] grid h-7 w-7 place-items-center rounded-full border-2 border-[#222] bg-[#222] text-white">
                     <Check size={12} />
                   </span>
-                  <div className="split">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
                     <strong>{label(h.new_status)}</strong>
                     <small>{timestamp(h.changed_at)}</small>
                   </div>
@@ -260,23 +260,23 @@ export function ReservationDetail() {
             </ol>
           </section>
         </div>
-        <div className="stack">
-          <section className={`panel reservation-progress reservation-progress-primary ${stopped ? 'stopped' : ''}`} aria-label="Reservation progress">
-            <div className="progress-heading"><div><h2>Reservation progress</h2></div><Badge status={r.status} /></div>
-            <ol>
+        <div className="flex flex-col gap-3">
+          <section className={`rounded-[20px] border border-[#e8e8e8] bg-white p-5 ${stopped ? 'opacity-80' : ''}`} aria-label="Reservation progress">
+            <div className="flex items-start justify-between gap-4"><div><h2 className="m-0 text-xl font-semibold">Reservation progress</h2></div><Badge status={r.status} /></div>
+            <ol className="mt-[17px] list-none space-y-3 p-0">
               {stages.map((stage, index) => {
                 const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
-                return <li key={stage.key} className={`${stage.done ? 'done' : current ? 'current' : ''} ${stage.key === 'refund' ? 'refund' : ''}`} aria-current={current ? 'step' : undefined}>
-                  <span className="progress-marker">{stage.done ? <Check size={15} /> : index + 1}</span>
-                  <div><strong>{stage.name}</strong>{stage.detail && <small className="progress-detail">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
+                return <li key={stage.key} className="flex items-start gap-3" aria-current={current ? 'step' : undefined}>
+                  <span className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-[11px] font-bold ${stage.done || current ? 'border-[#222] bg-[#222] text-white' : 'border-[#bbb] bg-white text-[#777]'}`}>{stage.done ? <Check size={15} /> : index + 1}</span>
+                  <div className="flex flex-col"><strong className={stage.done || current ? 'text-[#1d1d1d]' : 'text-[#888]'}>{stage.name}</strong>{stage.detail && <small className="font-semibold text-[#1d1d1d]">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
                 </li>;
               })}
             </ol>
-            {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
+            {stopped && <p className="mt-4 text-xs text-[#6e6e6e]">Reservation {label(r.status).toLowerCase()}.</p>}
           </section>
-          <section className="panel">
+          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
-            <dl className="details-list">
+            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#e8e8e8] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#6e6e6e] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs">
               <div>
                 <dt>Total</dt>
                 <dd>{money(r.total_amount)}</dd>
@@ -289,12 +289,12 @@ export function ReservationDetail() {
                 <dt>Refunds recorded</dt>
                 <dd>{money(r.refunded_amount)}</dd>
               </div>
-              <div className="total">
+              <div className="border-b-0 pt-4 font-semibold">
                 <dt>{['cancelled', 'no_show'].includes(r.status) ? 'Net retained' : 'Balance due'}</dt>
                 <dd>{money(['cancelled', 'no_show'].includes(r.status) ? paid : balance)}</dd>
               </div>
             </dl>
-            <p className="muted small-text">
+            <p className="text-xs text-[#6e6e6e]">
               {r.reservation_type === 'hotel' ? 'Pay at the property.' : 'Meal billed at the restaurant.'}
             </p>
             {staff &&
@@ -302,7 +302,7 @@ export function ReservationDetail() {
               ['confirmed', 'checked_in'].includes(r.status) &&
               balance > 0 && (
                 <button
-                  className="secondary full-width no-print"
+                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
                   onClick={() => {
                     setError('');
                     setFinancial('payment');
@@ -315,7 +315,7 @@ export function ReservationDetail() {
               refundable.length > 0 &&
               ['cancelled', 'checked_out', 'completed', 'no_show'].includes(r.status) && (
                 <button
-                  className="secondary full-width no-print"
+                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
                   onClick={() => {
                     setError('');
                     setFinancial('refund');
@@ -325,7 +325,7 @@ export function ReservationDetail() {
                 </button>
               )}
             {(payments.length > 0 || refunds.length > 0) && (
-              <div className="transaction-list">
+              <div className="mt-4 space-y-3 border-t border-[#e8e8e8] pt-4">
                 {payments.map((p) => (
                   <div key={p.id}>
                     <strong>
@@ -348,9 +348,9 @@ export function ReservationDetail() {
             )}
           </section>
           {allowed_actions.length > 0 && (
-            <section className="panel no-print">
+            <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] no-print">
               <h2>Next actions</h2>
-              <div className="stack">
+              <div className="flex flex-col gap-[18px]">
                 {allowed_actions.map((s) => (
                   <button
                     key={s}
@@ -378,7 +378,7 @@ export function ReservationDetail() {
         >
           <ErrorBox message={error} />
           <form
-            className="stack"
+            className="flex flex-col gap-[18px]"
             onSubmit={(e) => {
               e.preventDefault();
               const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -411,10 +411,10 @@ export function ReservationDetail() {
           }}
         >
           <ErrorBox message={error} />
-          <div className="notice warning">
+          <div className="mb-5 flex items-start gap-2.5 rounded-[7px] border border-dashed border-[#b8b8b8] bg-[#f5f5f5] px-[15px] py-[13px] text-[13px] text-[#424242]">
             Record money already collected or refunded outside this app. This action does not move money.
           </div>
-          <form className="stack" onSubmit={financialSubmit}>
+          <form className="flex flex-col gap-[18px]" onSubmit={financialSubmit}>
             {financial === 'payment' ? (
               <>
                 <label>

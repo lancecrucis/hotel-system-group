@@ -95,16 +95,16 @@ export function WalkInReservation() {
   }
 
   return (
-    <div className="walk-in-page">
-      <header className="walk-in-header">
+    <div className="mx-auto max-w-[1120px]">
+      <header className="mb-[27px] flex items-end justify-between gap-6 max-[650px]:items-stretch max-[650px]:flex-col">
         <div>
           <h1>New walk-in reservation</h1>
           <p>Enter the guest’s details and confirm their reservation at the front desk.</p>
         </div>
-        <div className="walk-in-type" role="group" aria-label="Reservation type">
+        <div className="flex gap-1 rounded-full border border-[#e8e8e8] bg-[#f0f0f0] p-1" role="group" aria-label="Reservation type">
           <button
             type="button"
-            className={type === 'hotel' ? 'active' : ''}
+            className={`min-h-10 rounded-full border-0 bg-transparent px-4 py-2 text-[#6e6e6e] ${type === 'hotel' ? 'bg-white text-[#1d1d1d] shadow-[0_1px_4px_#00000012]' : ''}`}
             aria-pressed={type === 'hotel'}
             onClick={() => switchType('hotel')}
           >
@@ -112,7 +112,7 @@ export function WalkInReservation() {
           </button>
           <button
             type="button"
-            className={type === 'restaurant' ? 'active' : ''}
+            className={`min-h-10 rounded-full border-0 bg-transparent px-4 py-2 text-[#6e6e6e] ${type === 'restaurant' ? 'bg-white text-[#1d1d1d] shadow-[0_1px_4px_#00000012]' : ''}`}
             aria-pressed={type === 'restaurant'}
             onClick={() => switchType('restaurant')}
           >
@@ -121,18 +121,18 @@ export function WalkInReservation() {
         </div>
       </header>
 
-      <form className="walk-in-layout" onSubmit={create}>
-        <div className="walk-in-main stack">
-          <section className="panel walk-in-section">
-            <div className="walk-in-section-title">
+      <form className="grid grid-cols-[minmax(0,1fr)_330px] items-start gap-[22px] max-[900px]:grid-cols-1" onSubmit={create}>
+        <div className="flex flex-col gap-4">
+          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
+            <div className="mb-5 flex items-start gap-[13px]">
               <span>1</span>
               <div>
                 <h2>Guest information</h2>
                 <p>No customer account is required.</p>
               </div>
             </div>
-            <div className="form-grid">
-              <label className="full">
+            <div className="grid grid-cols-2 gap-[18px] max-[650px]:grid-cols-1">
+              <label className="col-span-full max-[650px]:col-span-auto">
                 Guest name
                 <input name="contact_name" required minLength={2} placeholder="Full name" disabled={busy} />
               </label>
@@ -155,8 +155,8 @@ export function WalkInReservation() {
             </div>
           </section>
 
-          <section className="panel walk-in-section">
-            <div className="walk-in-section-title">
+          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
+            <div className="mb-5 flex items-start gap-[13px]">
               <span>2</span>
               <div>
                 <h2>{type === 'hotel' ? 'Stay and room' : 'Dining date and time'}</h2>
@@ -165,7 +165,7 @@ export function WalkInReservation() {
             </div>
             {type === 'hotel' ? (
               <>
-                <div className="walk-in-schedule">
+                <div className="grid grid-cols-[1fr_1fr_.7fr] gap-3 mb-[18px] max-[650px]:grid-cols-1">
                   <label>
                     Check-in
                     <input type="date" min={day()} value={checkIn} onChange={(e) => { setCheckIn(e.target.value); setRoomId(''); }} disabled={busy} />
@@ -183,23 +183,23 @@ export function WalkInReservation() {
                 </div>
                 {rooms.loading ? <Loading /> : <ErrorBox message={rooms.error} />}
                 {!rooms.loading && !rooms.error && (
-                  <div className="walk-in-room-list" role="radiogroup" aria-label="Available rooms">
+                  <div className="flex flex-col gap-2" role="radiogroup" aria-label="Available rooms">
                     {availableRooms.map((room) => (
-                      <label className={`walk-in-room ${roomId === room.id ? 'selected' : ''}`} key={room.id}>
+                      <label className={`grid min-h-[68px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-[13px] rounded-xl border p-[10px_13px] ${roomId === room.id ? 'border-[#1d1d1d] shadow-[inset_0_0_0_1px_#1d1d1d]' : 'border-[#e8e8e8]'} max-[650px]:grid-cols-[auto_minmax(0,1fr)_auto]`} key={room.id}>
                         <input type="radio" name="selected-room" value={room.id} checked={roomId === room.id} onChange={() => setRoomId(room.id)} />
-                        <span className="walk-in-room-number">{room.room_number}</span>
+                        <span className="grid min-w-11 place-items-center rounded-[9px] bg-[#f0f0f0] py-3 text-xs font-bold">{room.room_number}</span>
                         <span><strong>{room.room_type}</strong><small>{room.bed_count} {room.bed_type} · up to {room.capacity}</small></span>
                         <strong>{money(room.price_per_night)}<small>/night</small></strong>
                         {roomId === room.id && <Check size={18} />}
                       </label>
                     ))}
-                    {!availableRooms.length && <p className="muted">No rooms are available for these dates and guest count.</p>}
+                    {!availableRooms.length && <p className="text-[#6e6e6e]">No rooms are available for these dates and guest count.</p>}
                   </div>
                 )}
               </>
             ) : (
               <>
-                <div className="walk-in-schedule restaurant">
+                <div className="mb-[18px] grid max-w-[520px] grid-cols-2 gap-3 max-[650px]:max-w-none max-[650px]:grid-cols-1">
                   <label>
                     Dining date
                     <input type="date" min={day()} value={diningDate} onChange={(e) => { setDiningDate(e.target.value); setTime(''); }} disabled={busy} />
@@ -213,24 +213,24 @@ export function WalkInReservation() {
                 </div>
                 {dining.loading ? <Loading /> : <ErrorBox message={dining.error} />}
                 {!dining.loading && !dining.error && (
-                  <div className="walk-in-times" role="radiogroup" aria-label="Available dining times">
+                  <div className="grid grid-cols-4 gap-2 max-[650px]:grid-cols-2" role="radiogroup" aria-label="Available dining times">
                     {availableSlots.map((slot) => (
-                      <label className={time === slot.start_time ? 'selected' : ''} key={slot.start_time}>
+                      <label className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-xl border px-2 py-3 text-center ${time === slot.start_time ? 'border-[#1d1d1d] bg-[#1d1d1d] text-white' : 'border-[#e8e8e8] text-[#6e6e6e]'}`} key={slot.start_time}>
                         <input type="radio" name="selected-time" value={slot.start_time} checked={time === slot.start_time} onChange={() => setTime(slot.start_time)} />
                         <Clock3 size={16} />
                         <strong>{slot.start_time.slice(0, 5)}</strong>
                         <small>until {slot.end_time.slice(0, 5)}</small>
                       </label>
                     ))}
-                    {!availableSlots.length && <p className="muted">No dining times are available for this date and party size.</p>}
+                    {!availableSlots.length && <p className="text-[#6e6e6e]">No dining times are available for this date and party size.</p>}
                   </div>
                 )}
               </>
             )}
           </section>
 
-          <section className="panel walk-in-section">
-            <div className="walk-in-section-title">
+          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
+            <div className="mb-5 flex items-start gap-[13px]">
               <span>3</span>
               <div>
                 <h2>Special requests</h2>
@@ -244,9 +244,9 @@ export function WalkInReservation() {
           </section>
         </div>
 
-        <aside className="panel walk-in-summary">
+        <aside className="sticky top-[168px] rounded-[16px] border border-[#e8e8e8] bg-white p-6 max-[900px]:static">
           <h2>Reservation summary</h2>
-          <div className="walk-in-summary-type">
+          <div className="flex items-center gap-2.5 rounded-xl bg-[#f2f2f2] p-[13px]">
             {type === 'hotel' ? <BedDouble size={20} /> : <UtensilsCrossed size={20} />}
             <strong>{type === 'hotel' ? 'Hotel stay' : 'Restaurant table'}</strong>
           </div>
@@ -256,23 +256,23 @@ export function WalkInReservation() {
                 <div><dt>Dates</dt><dd>{dateLabel(checkIn)} – {dateLabel(checkOut)}</dd></div>
                 <div><dt>Room</dt><dd>{selectedRoom ? `${selectedRoom.room_type} · ${selectedRoom.room_number}` : 'Select a room'}</dd></div>
                 <div><dt>Stay</dt><dd>{stayNights} {stayNights === 1 ? 'night' : 'nights'}</dd></div>
-                <div className="walk-in-total"><dt>Total</dt><dd>{money(total)}</dd></div>
+                <div className="border-b-0 pt-4 font-semibold"><dt>Total</dt><dd>{money(total)}</dd></div>
               </>
             ) : (
               <>
                 <div><dt>Date</dt><dd>{dateLabel(diningDate)}</dd></div>
                 <div><dt>Time</dt><dd>{selectedTime ? `${selectedTime.start_time.slice(0, 5)} – ${selectedTime.end_time.slice(0, 5)}` : 'Select a time'}</dd></div>
                 <div><dt>Guests</dt><dd>{guests}</dd></div>
-                <div className="walk-in-total"><dt>Charge</dt><dd>Meal billed at restaurant</dd></div>
+                <div className="border-b-0 pt-4 font-semibold"><dt>Charge</dt><dd>Meal billed at restaurant</dd></div>
               </>
             )}
           </dl>
-          <div className="walk-in-confirm-note"><Check size={16} /><span>This walk-in will be confirmed immediately.</span></div>
+          <div className="mb-4 flex items-center gap-2 rounded-[10px] border border-dashed border-[#a7a7a7] p-[11px] text-[11px]"><Check size={16} /><span>This walk-in will be confirmed immediately.</span></div>
           <ErrorBox message={error} />
-          <button className="full-width" disabled={busy || (type === 'hotel' ? !selectedRoom : !selectedTime)}>
+          <button className="w-full" disabled={busy || (type === 'hotel' ? !selectedRoom : !selectedTime)}>
             {busy ? 'Creating reservation…' : 'Create confirmed reservation'}
           </button>
-          <p className="walk-in-audit-note"><Users size={14} /> Your staff account will be recorded as the creator.</p>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[10px] text-[#6e6e6e]"><Users size={14} /> Your staff account will be recorded as the creator.</p>
         </aside>
       </form>
     </div>
