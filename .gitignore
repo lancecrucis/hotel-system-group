@@ -13,3 +13,4 @@ test-results/
 playwright-report/
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json

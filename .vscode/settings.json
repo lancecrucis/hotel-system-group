@@ -1,0 +1,9 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "frontend/.oxlintrc.json": true,
+    "frontend/tsconfig.app.json": true,
+    "frontend/tsconfig.node.json": true
+  }
+}
