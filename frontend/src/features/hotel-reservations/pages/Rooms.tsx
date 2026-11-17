@@ -24,7 +24,7 @@ export function Rooms() {
   return (
     <>
       <form
-        className="room-search-bar"
+        className="grid grid-cols-[minmax(190px,1.15fr)_minmax(330px,2fr)_minmax(145px,.8fr)_auto] items-stretch gap-2.5 rounded-[22px] border border-[#e8e8e8] bg-[#f1f1f1] p-3 max-[1200px]:grid-cols-2 max-[800px]:grid-cols-2 max-[500px]:grid-cols-1"
         onSubmit={(e) => {
           e.preventDefault();
           setDateOpen(false);
@@ -32,9 +32,9 @@ export function Rooms() {
           query.reload();
         }}
       >
-        <label className="room-search-field">
+        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] rounded-[14px] border border-[#e5e5e5] bg-white px-[15px] py-[11px] max-[500px]:min-h-16">
           <BedDouble size={20} aria-hidden="true" />
-          <span className="room-search-content">
+          <span className="relative flex min-w-0 flex-1 flex-col">
             <span>Room type</span>
             <select
               value={filters.room_type}
@@ -50,20 +50,20 @@ export function Rooms() {
                 <option value={filters.room_type}>{filters.room_type}</option>
               )}
             </select>
-            <ChevronDown className="room-search-chevron" size={16} aria-hidden="true" />
+            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#515151]" size={16} aria-hidden="true" />
           </span>
         </label>
-        <div className="room-search-field room-search-dates">
+        <div className="relative flex min-h-[72px] min-w-0 items-center gap-[13px] rounded-[14px] border border-[#e5e5e5] bg-white px-[15px] py-[11px] max-[500px]:min-h-16">
           <CalendarDays size={20} aria-hidden="true" />
-          <div className="room-search-content">
+          <div className="flex min-w-0 flex-1 flex-col">
             <span>Check-in & check-out</span>
-            <button type="button" className="room-date-trigger" aria-expanded={dateOpen} aria-label="Choose check-in and check-out dates" onClick={() => setDateOpen(!dateOpen)}>{dateLabel(filters.check_in)} <span aria-hidden="true">→</span> {dateLabel(filters.check_out)} <ChevronDown size={16} /></button>
+            <button type="button" className="flex min-h-[26px] w-full items-center justify-between border-0 bg-transparent p-0 text-[13px] font-semibold text-[#1d1d1d]" aria-expanded={dateOpen} aria-label="Choose check-in and check-out dates" onClick={() => setDateOpen(!dateOpen)}>{dateLabel(filters.check_in)} <span className="mx-1.5 text-[#6e6e6e]" aria-hidden="true">→</span> {dateLabel(filters.check_out)} <ChevronDown size={16} /></button>
           </div>
-          {dateOpen && <div className="room-search-calendar-popover"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="room-date-done" onClick={() => setDateOpen(false)}>Done</button></div>}
+          {dateOpen && <div className="absolute left-0 top-[calc(100%+10px)] z-20 w-[min(370px,90vw)] rounded-[18px] border border-[#e8e8e8] bg-white p-3.5 shadow-[0_18px_50px_#0002]"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="mt-3 w-full" onClick={() => setDateOpen(false)}>Done</button></div>}
         </div>
-        <label className="room-search-field">
+        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] rounded-[14px] border border-[#e5e5e5] bg-white px-[15px] py-[11px] max-[500px]:min-h-16">
           <Users size={20} aria-hidden="true" />
-          <span className="room-search-content">
+          <span className="relative flex min-w-0 flex-1 flex-col">
             <span>Guests</span>
             <select
               value={filters.guests}
@@ -75,28 +75,28 @@ export function Rooms() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="room-search-chevron" size={16} aria-hidden="true" />
+            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#515151]" size={16} aria-hidden="true" />
           </span>
         </label>
-        <button disabled={query.loading}>
+        <button className="min-h-[72px] whitespace-nowrap rounded-[14px] max-[500px]:min-h-16" disabled={query.loading}>
           Find a room <Search size={18} />
         </button>
       </form>
-      <div className="section-heading">
-        <h1 className="booking-heading">Available rooms</h1>
-        <span className="muted">{query.data?.rooms.filter((r) => r.available).length ?? 0} rooms</span>
+      <div className="my-9 flex items-center justify-between gap-4">
+        <h1 className="m-0 text-[25px] font-semibold tracking-[-.8px]">Available rooms</h1>
+        <span className="text-[#6e6e6e]">{query.data?.rooms.filter((r) => r.available).length ?? 0} rooms</span>
       </div>
       <ErrorBox message={query.error} />
       {query.loading ? (
         <Loading />
       ) : (
-        <div className="room-grid">
+        <div className="grid grid-cols-3 gap-6 max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1">
           {query.data?.rooms
             .filter((r) => r.available)
             .map((room) => (
-              <article className="room-card" key={room.id}>
+              <article className="overflow-hidden rounded-[22px] border border-[#e8e8e8] bg-white shadow-[0_2px_8px_#00000003] transition hover:border-[#cecece] hover:shadow-[0_6px_24px_#00000008]" key={room.id}>
                 <img
-                  className="room-image"
+                  className="h-[176px] w-full object-cover"
                   src={room.image_url || roomImage(room)}
                   alt={`${room.room_type}, room ${room.room_number}`}
                   onError={(e) => {
@@ -104,35 +104,35 @@ export function Rooms() {
                     e.currentTarget.src = roomImage(room);
                   }}
                 />
-                <div className="room-body">
-                  <div className="split">
-                    <h3>{room.room_type}</h3>
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="flex-1 text-lg font-semibold tracking-[-.4px]">{room.room_type}</h3>
                   </div>
-                  <div className="amenities">
-                    <span>
+                  <div className="my-[17px] flex flex-wrap items-center gap-x-[13px] gap-y-[9px] text-[11px] text-[#797979]">
+                    <span className="flex items-center gap-[5px]">
                       <Users size={15} />
                       {room.capacity} guests
                     </span>
-                    <span>
+                    <span className="flex items-center gap-[5px]">
                       <BedDouble size={15} />
                       {room.bed_count} {room.bed_type}
                     </span>
                     {room.has_wifi && (
-                      <span>
+                      <span className="flex items-center gap-[5px]">
                         <Wifi size={15} />
                         Wi-Fi
                       </span>
                     )}
                     {room.breakfast_included && (
-                      <span>
+                      <span className="flex items-center gap-[5px]">
                         <Coffee size={15} />
                         Breakfast
                       </span>
                     )}
                   </div>
-                  <div className="room-price">
+                  <div className="mt-[18px] flex items-center justify-between gap-2.5 border-t border-[#e8e8e8] pt-[17px]">
                     <span>
-                      <strong>{money(room.price_per_night)}</strong>
+                      <strong className="text-[23px] font-semibold tracking-[-.7px]">{money(room.price_per_night)}</strong>
                       <small> / night</small>
                     </span>
                     <button
