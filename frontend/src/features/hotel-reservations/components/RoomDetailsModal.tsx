@@ -77,35 +77,35 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
 
   const total = Number(room.price_per_night) * nightCount;
 
-  return <Modal title={created ? 'Reservation submitted' : step === 1 ? room.room_type : 'Complete your booking'} className={`room-detail-dialog ${step > 1 ? 'room-checkout-dialog' : ''}`} onClose={() => { if (!busy) onClose(); }}>
-    <div className={`room-detail-layout ${step > 1 ? 'checkout-focus' : ''}`}>
-      {step === 1 && <div className="room-detail-main">
-        <div className="room-detail-photo">
-          <img src={gallery[photo]} alt={`${room.room_type} view ${photo + 1} of ${gallery.length}`} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = roomImage(room); }} />
-          {gallery.length > 1 && <div className="room-photo-controls">
-            <button type="button" aria-label="Previous photo" onClick={() => setPhoto((photo - 1 + gallery.length) % gallery.length)}><ChevronLeft size={20} /></button>
+  return <Modal title={created ? 'Reservation submitted' : step === 1 ? room.room_type : 'Complete your booking'} className="max-w-[1100px] w-[calc(100%-34px)] rounded-[20px] p-7 max-[760px]:p-[17px]" onClose={() => { if (!busy) onClose(); }}>
+    <div className={`${step > 1 ? 'block' : 'grid grid-cols-[minmax(0,1.35fr)_minmax(320px,.9fr)] gap-7 max-[760px]:grid-cols-1'}`}>
+      {step === 1 && <div>
+        <div className="relative overflow-hidden rounded-[18px] bg-[#eee]">
+          <img className="block h-[340px] w-full object-cover max-[760px]:h-[250px]" src={gallery[photo]} alt={`${room.room_type} view ${photo + 1} of ${gallery.length}`} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = roomImage(room); }} />
+          {gallery.length > 1 && <div className="absolute bottom-3.5 right-3.5 flex items-center gap-[9px] rounded-full bg-white/95 p-[5px] text-xs font-semibold">
+            <button className="min-h-0 border-0 bg-transparent p-1.5 text-[#1d1d1d]" type="button" aria-label="Previous photo" onClick={() => setPhoto((photo - 1 + gallery.length) % gallery.length)}><ChevronLeft size={20} /></button>
             <span>{photo + 1} / {gallery.length}</span>
-            <button type="button" aria-label="Next photo" onClick={() => setPhoto((photo + 1) % gallery.length)}><ChevronRight size={20} /></button>
+            <button className="min-h-0 border-0 bg-transparent p-1.5 text-[#1d1d1d]" type="button" aria-label="Next photo" onClick={() => setPhoto((photo + 1) % gallery.length)}><ChevronRight size={20} /></button>
           </div>}
         </div>
-        <div className="room-photo-thumbnails" aria-label="Room photos">
-          {gallery.map((image, index) => <button type="button" key={`${image}-${index}`} className={photo === index ? 'active' : ''} aria-label={`Show room photo ${index + 1}`} aria-pressed={photo === index} onClick={() => setPhoto(index)}><img src={image} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = roomImage(room); }} /></button>)}
+        <div className="mt-2.5 flex gap-[9px] overflow-x-auto p-0.5" aria-label="Room photos">
+          {gallery.map((image, index) => <button type="button" key={`${image}-${index}`} className={`h-[60px] w-[82px] shrink-0 overflow-hidden rounded-[9px] border-2 bg-[#eee] p-0 ${photo === index ? 'border-[#1d1d1d]' : 'border-transparent'}`} aria-label={`Show room photo ${index + 1}`} aria-pressed={photo === index} onClick={() => setPhoto(index)}><img className="h-full w-full object-cover" src={image} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = roomImage(room); }} /></button>)}
         </div>
-        <div className="room-detail-info">
+        <div className="pt-[18px]">
           <h3>Room details</h3>
-          <div className="room-detail-facts">
-            <span><Users size={17} /> Up to {room.capacity} guests</span>
-            <span><BedDouble size={17} /> {room.bed_count} {room.bed_type}</span>
-            {room.has_wifi && <span><Wifi size={17} /> Wi-Fi</span>}
-            {room.breakfast_included && <span><Coffee size={17} /> Breakfast included</span>}
+          <div className="mb-4 flex flex-wrap gap-[9px]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e8e8e8] px-2.5 py-[7px] text-xs"><Users size={17} /> Up to {room.capacity} guests</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e8e8e8] px-2.5 py-[7px] text-xs"><BedDouble size={17} /> {room.bed_count} {room.bed_type}</span>
+            {room.has_wifi && <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e8e8e8] px-2.5 py-[7px] text-xs"><Wifi size={17} /> Wi-Fi</span>}
+            {room.breakfast_included && <span className="inline-flex items-center gap-1.5 rounded-full border border-[#e8e8e8] px-2.5 py-[7px] text-xs"><Coffee size={17} /> Breakfast included</span>}
           </div>
           {room.description && <p>{room.description}</p>}
           {room.special_amenities && <p>{room.special_amenities}</p>}
         </div>
       </div>}
-      <div className={`room-detail-booking ${step > 1 ? 'focused' : ''}`}>
-        {!created && <ol className="booking-steps" aria-label="Booking progress">
-          {['Booking', 'Guest', 'Payment', 'Confirmation'].map((name, index) => <li key={name} className={step === index + 1 ? 'active' : step > index + 1 ? 'complete' : ''}><span>{step > index + 1 ? <Check size={13} /> : index + 1}</span><small>{name}</small></li>)}
+      <div className={`self-start rounded-[18px] border border-[#e8e8e8] p-5 ${step > 1 ? 'mx-auto w-full max-w-[1020px] border-0 p-0' : ''}`}>
+        {!created && <ol className="mb-6 grid list-none grid-cols-4 gap-0 p-0" aria-label="Booking progress">
+          {['Booking', 'Guest', 'Payment', 'Confirmation'].map((name, index) => <li key={name} className={`flex flex-col items-center gap-2 text-center text-[#777] ${step >= index + 1 ? 'text-[#1d1d1d]' : ''}`}><span className={`grid h-9 w-9 place-items-center rounded-full border-2 text-sm font-bold ${step > index ? 'border-[#1d1d1d] bg-[#1d1d1d] text-white' : 'border-[#bcbcbc] bg-white'}`}>{step > index + 1 ? <Check size={13} /> : index + 1}</span><small className="font-semibold text-inherit">{name}</small></li>)}
         </ol>}
         {created ? <div className="booking-created" role="status"><span className="booking-created-icon"><Check size={28} /></span><h3>Your room is held</h3><p>Reservation {created.reservation_reference} is awaiting confirmation. Open its details to confirm it and follow its progress.</p><Link className="button" to={`/reservations/${created.id}`}>View my reservation</Link></div> : user ? <form className="room-book-form" onSubmit={book}>
           {step === 1 && <>
