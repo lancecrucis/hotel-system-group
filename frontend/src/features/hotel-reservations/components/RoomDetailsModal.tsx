@@ -109,21 +109,21 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
         </ol>}
         {created ? <div className="flex flex-col items-center gap-3 text-center" role="status"><span className="grid h-14 w-14 place-items-center rounded-full bg-[#161616] text-white"><Check size={28} /></span><h3>Your room is held</h3><p>Reservation {created.reservation_reference} is awaiting confirmation. Open its details to confirm it and follow its progress.</p><Link className="button" to={`/reservations/${created.id}`}>View my reservation</Link></div> : user ? <form className="flex flex-col gap-2.5" onSubmit={book}>
           {step === 1 && <>
-            <div className="booking-step-heading"><h3>Booking details</h3><p>Check your dates and guests.</p></div>
-            <div className="room-detail-price"><strong>{money(room.price_per_night)}</strong><span> / night</span></div>
+            <div><h3>Booking details</h3><p>Check your dates and guests.</p></div>
+            <div className="mb-4"><strong className="text-[23px] tracking-[-.6px]">{money(room.price_per_night)}</strong><span className="text-[#6e6e6e]"> / night</span></div>
             <StayCalendar value={stay} onChange={setStay} />
-            <label className="room-detail-guests">Guests
+            <label className="mt-3">Guests
               <select value={guests} onChange={(event) => setGuests(Number(event.target.value))}>
                 {Array.from({ length: Math.min(6, room.capacity) }, (_, index) => index + 1).map((count) => <option key={count} value={count}>{count} {count === 1 ? 'guest' : 'guests'}</option>)}
               </select>
             </label>
-            <div className="room-availability" role="status">
+            <div className="mt-2.5 flex min-h-[30px] items-center gap-1.5 text-xs font-semibold" role="status">
               {availability.loading ? 'Checking availability…' : availability.error ? 'Could not check availability' : available ? <><Check size={16} /> Available for these dates</> : 'Unavailable for these dates'}
             </div>
             <ErrorBox message={availability.error} />
-            <div className="room-detail-total"><span>{money(room.price_per_night)} × {nightCount} {nightCount === 1 ? 'night' : 'nights'}</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
-            <p className="room-detail-dates">{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</p>
-            <button type="button" className="room-book-button" disabled={availability.loading || !available} onClick={() => setStep(2)}>Continue</button>
+            <div className="flex justify-between gap-2.5 border-t border-[#e8e8e8] pt-[13px]"><span>{money(room.price_per_night)} × {nightCount} {nightCount === 1 ? 'night' : 'nights'}</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
+            <p className="my-[3px] mb-[18px] text-[11px] text-[#6e6e6e]">{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</p>
+            <button type="button" className="mt-[5px] w-full" disabled={availability.loading || !available} onClick={() => setStep(2)}>Continue</button>
           </>}
           {step === 2 && <>
             <div className="flex items-start justify-between gap-6 border-b border-[#e8e8e8] pb-[17px] max-[760px]:block"><div><h3>Guest information</h3><p>Who should we contact about this stay?</p></div><div className="grid min-w-[250px] grid-cols-2 gap-x-[22px] gap-y-0 text-right max-[760px]:mt-3 max-[760px]:text-left"><span className="col-span-2 text-xs font-semibold">{room.room_type}</span><strong className="text-[17px]">{money(total)}</strong><small className="col-span-2">{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</small></div></div>
@@ -131,7 +131,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
             <div className="grid grid-cols-[.65fr_1.35fr] gap-[9px]"><button type="button" className="secondary" onClick={() => setStep(1)}>Back</button><button>Continue</button></div>
           </>}
           {step === 3 && <>
-            <div className="booking-step-heading payment-heading"><h3>Review and payment</h3><p>Check your stay, then choose how you will pay.</p></div>
+            <div className="mb-5 text-center"><h3>Review and payment</h3><p>Check your stay, then choose how you will pay.</p></div>
             <div className="grid grid-cols-[.9fr_1.1fr] gap-4 max-[760px]:grid-cols-1">
               <section className="rounded-2xl border border-[#e8e8e8] p-[21px]" aria-labelledby="stay-summary-title">
                 <div className="mb-2.5 flex items-center justify-between gap-4"><h4 id="stay-summary-title">Stay summary</h4><button type="button" className="min-h-0 border-0 bg-transparent p-1 text-xs underline" onClick={() => setStep(1)}>Edit</button></div>
@@ -145,23 +145,23 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
                 <p className="mt-2.5 text-left text-[11px] text-[#6e6e6e]">Your reservation will be held for 15 minutes while you confirm it.</p>
               </section>
             </div>
-            <div className="booking-step-actions payment-actions"><button type="button" className="secondary" onClick={() => setStep(2)}>Back</button><button type="button" onClick={() => setStep(4)}>Continue to confirmation</button></div>
+            <div className="ml-auto mt-[18px] grid max-w-[470px] grid-cols-[.65fr_1.35fr] gap-[9px]"><button type="button" className="secondary" onClick={() => setStep(2)}>Back</button><button type="button" onClick={() => setStep(4)}>Continue to confirmation</button></div>
           </>}
           {step === 4 && <>
-            <div className="booking-step-heading confirmation-heading"><h3>Confirm your booking</h3><p>One last check before we hold your room.</p></div>
-            <div className="confirmation-list">
+            <div className="mb-5 text-center"><h3>Confirm your booking</h3><p>One last check before we hold your room.</p></div>
+            <div className="border-t border-[#e8e8e8]">
               <div><span>Room</span><strong>{room.room_type}</strong></div>
               <div><span>Stay</span><strong>{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</strong></div>
               <div><span>Guests</span><strong>{guests} {guests === 1 ? 'guest' : 'guests'}</strong></div>
               <div><span>Contact</span><strong>{contact.contact_name}<small>{contact.contact_email}<br />{contact.contact_phone}</small></strong></div>
               <div><span>Payment</span><strong>At the property</strong></div>
-              <div className="total"><span>Total due at property</span><strong>{money(total)}</strong></div>
+              <div className="flex justify-between gap-3 border-b border-[#e8e8e8] px-1 py-[13px] font-semibold"><span>Total due at property</span><strong>{money(total)}</strong></div>
             </div>
             <ErrorBox message={error} />
-            <div className="booking-step-actions"><button type="button" className="secondary" disabled={busy} onClick={() => setStep(3)}>Back</button><button disabled={busy || !available}>{busy ? 'Holding your room…' : 'Confirm booking'}</button></div>
-            <p className="muted small-text">Your room will be held for 15 minutes.</p>
+            <div className="mt-2.5 grid grid-cols-[.65fr_1.35fr] gap-[9px]"><button type="button" className="secondary" disabled={busy} onClick={() => setStep(3)}>Back</button><button disabled={busy || !available}>{busy ? 'Holding your room…' : 'Confirm booking'}</button></div>
+            <p className="text-xs text-[#6e6e6e]">Your room will be held for 15 minutes.</p>
           </>}
-        </form> : <div className="room-book-form"><Link className="button room-book-button" to="/login" state={{ from: '/rooms' }}>Log in to book room</Link><Link to="/register">Create an account</Link></div>}
+        </form> : <div className="flex flex-col gap-2.5"><Link className="button w-full" to="/login" state={{ from: '/rooms' }}>Log in to book room</Link><Link to="/register">Create an account</Link></div>}
       </div>
     </div>
   </Modal>;
