@@ -13,6 +13,14 @@ const schema = z.object({
   PGDATABASE: z.string().min(1),
   PGUSER: z.string().min(1),
   PGPASSWORD: z.string().min(1),
+  // Email (all optional — defaults to dev console logging)
+  EMAIL_PROVIDER: z.enum(['console', 'smtp']).default('console'),
+  EMAIL_FROM: z.string().email().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  APP_BASE_URL: z.string().url().optional(),
 });
 
 const parsed = schema.safeParse(process.env);
