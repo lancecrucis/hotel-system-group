@@ -131,8 +131,8 @@ export function WalkInReservation() {
                 <p>No customer account is required.</p>
               </div>
             </div>
-            <div className="form-grid">
-              <label className="full">
+            <div className="grid grid-cols-2 gap-[18px] max-[650px]:grid-cols-1">
+              <label className="col-span-full max-[650px]:col-span-auto">
                 Guest name
                 <input name="contact_name" required minLength={2} placeholder="Full name" disabled={busy} />
               </label>
@@ -165,7 +165,7 @@ export function WalkInReservation() {
             </div>
             {type === 'hotel' ? (
               <>
-                <div className="walk-in-schedule">
+                <div className="grid grid-cols-[1fr_1fr_.7fr] gap-3 mb-[18px] max-[650px]:grid-cols-1">
                   <label>
                     Check-in
                     <input type="date" min={day()} value={checkIn} onChange={(e) => { setCheckIn(e.target.value); setRoomId(''); }} disabled={busy} />
@@ -183,11 +183,11 @@ export function WalkInReservation() {
                 </div>
                 {rooms.loading ? <Loading /> : <ErrorBox message={rooms.error} />}
                 {!rooms.loading && !rooms.error && (
-                  <div className="walk-in-room-list" role="radiogroup" aria-label="Available rooms">
+                  <div className="flex flex-col gap-2" role="radiogroup" aria-label="Available rooms">
                     {availableRooms.map((room) => (
-                      <label className={`walk-in-room ${roomId === room.id ? 'selected' : ''}`} key={room.id}>
+                      <label className={`grid min-h-[68px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-[13px] rounded-xl border p-[10px_13px] ${roomId === room.id ? 'border-[#1d1d1d] shadow-[inset_0_0_0_1px_#1d1d1d]' : 'border-[#e8e8e8]'} max-[650px]:grid-cols-[auto_minmax(0,1fr)_auto]`} key={room.id}>
                         <input type="radio" name="selected-room" value={room.id} checked={roomId === room.id} onChange={() => setRoomId(room.id)} />
-                        <span className="walk-in-room-number">{room.room_number}</span>
+                        <span className="grid min-w-11 place-items-center rounded-[9px] bg-[#f0f0f0] py-3 text-xs font-bold">{room.room_number}</span>
                         <span><strong>{room.room_type}</strong><small>{room.bed_count} {room.bed_type} · up to {room.capacity}</small></span>
                         <strong>{money(room.price_per_night)}<small>/night</small></strong>
                         {roomId === room.id && <Check size={18} />}
@@ -199,7 +199,7 @@ export function WalkInReservation() {
               </>
             ) : (
               <>
-                <div className="walk-in-schedule restaurant">
+                <div className="mb-[18px] grid max-w-[520px] grid-cols-2 gap-3 max-[650px]:max-w-none max-[650px]:grid-cols-1">
                   <label>
                     Dining date
                     <input type="date" min={day()} value={diningDate} onChange={(e) => { setDiningDate(e.target.value); setTime(''); }} disabled={busy} />
@@ -213,9 +213,9 @@ export function WalkInReservation() {
                 </div>
                 {dining.loading ? <Loading /> : <ErrorBox message={dining.error} />}
                 {!dining.loading && !dining.error && (
-                  <div className="walk-in-times" role="radiogroup" aria-label="Available dining times">
+                  <div className="grid grid-cols-4 gap-2 max-[650px]:grid-cols-2" role="radiogroup" aria-label="Available dining times">
                     {availableSlots.map((slot) => (
-                      <label className={time === slot.start_time ? 'selected' : ''} key={slot.start_time}>
+                      <label className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-xl border px-2 py-3 text-center ${time === slot.start_time ? 'border-[#1d1d1d] bg-[#1d1d1d] text-white' : 'border-[#e8e8e8] text-[#6e6e6e]'}`} key={slot.start_time}>
                         <input type="radio" name="selected-time" value={slot.start_time} checked={time === slot.start_time} onChange={() => setTime(slot.start_time)} />
                         <Clock3 size={16} />
                         <strong>{slot.start_time.slice(0, 5)}</strong>
@@ -246,7 +246,7 @@ export function WalkInReservation() {
 
         <aside className="sticky top-[168px] rounded-[16px] border border-[#e8e8e8] bg-white p-6 max-[900px]:static">
           <h2>Reservation summary</h2>
-          <div className="walk-in-summary-type">
+          <div className="flex items-center gap-2.5 rounded-xl bg-[#f2f2f2] p-[13px]">
             {type === 'hotel' ? <BedDouble size={20} /> : <UtensilsCrossed size={20} />}
             <strong>{type === 'hotel' ? 'Hotel stay' : 'Restaurant table'}</strong>
           </div>
@@ -267,12 +267,12 @@ export function WalkInReservation() {
               </>
             )}
           </dl>
-          <div className="walk-in-confirm-note"><Check size={16} /><span>This walk-in will be confirmed immediately.</span></div>
+          <div className="mb-4 flex items-center gap-2 rounded-[10px] border border-dashed border-[#a7a7a7] p-[11px] text-[11px]"><Check size={16} /><span>This walk-in will be confirmed immediately.</span></div>
           <ErrorBox message={error} />
-          <button className="full-width" disabled={busy || (type === 'hotel' ? !selectedRoom : !selectedTime)}>
+          <button className="w-full" disabled={busy || (type === 'hotel' ? !selectedRoom : !selectedTime)}>
             {busy ? 'Creating reservation…' : 'Create confirmed reservation'}
           </button>
-          <p className="walk-in-audit-note"><Users size={14} /> Your staff account will be recorded as the creator.</p>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[10px] text-[#6e6e6e]"><Users size={14} /> Your staff account will be recorded as the creator.</p>
         </aside>
       </form>
     </div>
