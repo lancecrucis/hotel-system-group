@@ -107,7 +107,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
         {!created && <ol className="mb-6 grid list-none grid-cols-4 gap-0 p-0" aria-label="Booking progress">
           {['Booking', 'Guest', 'Payment', 'Confirmation'].map((name, index) => <li key={name} className={`flex flex-col items-center gap-2 text-center text-[#777] ${step >= index + 1 ? 'text-[#1d1d1d]' : ''}`}><span className={`grid h-9 w-9 place-items-center rounded-full border-2 text-sm font-bold ${step > index ? 'border-[#1d1d1d] bg-[#1d1d1d] text-white' : 'border-[#bcbcbc] bg-white'}`}>{step > index + 1 ? <Check size={13} /> : index + 1}</span><small className="font-semibold text-inherit">{name}</small></li>)}
         </ol>}
-        {created ? <div className="flex flex-col items-center gap-3 text-center" role="status"><span className="grid h-14 w-14 place-items-center rounded-full bg-[#161616] text-white"><Check size={28} /></span><h3>Your room is held</h3><p>Reservation {created.reservation_reference} is awaiting confirmation. Open its details to confirm it and follow its progress.</p><Link className="button" to={`/reservations/${created.id}`}>View my reservation</Link></div> : user ? <form className="flex flex-col gap-2.5" onSubmit={book}>
+        {created ? <div className="flex flex-col items-center gap-3 text-center" role="status"><span className="grid h-14 w-14 place-items-center rounded-full bg-[#161616] text-white"><Check size={28} /></span><h3>Your room is held</h3><p>Reservation {created.reservation_reference} is awaiting confirmation. Open its details to confirm it and follow its progress.</p><Link className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to={`/reservations/${created.id}`}>View my reservation</Link></div> : user ? <form className="flex flex-col gap-2.5" onSubmit={book}>
           {step === 1 && <>
             <div><h3>Booking details</h3><p>Check your dates and guests.</p></div>
             <div className="mb-4"><strong className="text-[23px] tracking-[-.6px]">{money(room.price_per_night)}</strong><span className="text-[#6e6e6e]"> / night</span></div>
@@ -161,7 +161,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
             <div className="mt-2.5 grid grid-cols-[.65fr_1.35fr] gap-[9px]"><button type="button" className="secondary" disabled={busy} onClick={() => setStep(3)}>Back</button><button disabled={busy || !available}>{busy ? 'Holding your room…' : 'Confirm booking'}</button></div>
             <p className="text-xs text-[#6e6e6e]">Your room will be held for 15 minutes.</p>
           </>}
-        </form> : <div className="flex flex-col gap-2.5"><Link className="button w-full" to="/login" state={{ from: '/rooms' }}>Log in to book room</Link><Link to="/register">Create an account</Link></div>}
+        </form> : <div className="flex flex-col gap-2.5"><Link className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to="/login" state={{ from: '/rooms' }}>Log in to book room</Link><Link to="/register">Create an account</Link></div>}
       </div>
     </div>
   </Modal>;

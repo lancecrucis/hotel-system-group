@@ -427,9 +427,9 @@ export function Landing() {
           <div className="flex flex-wrap items-center justify-between gap-5 border-t border-white/10 py-[26px] pb-[30px] text-[11.5px] text-white/45">
             <span>© 2026 LA Illustrada Hotel &amp; Restaurant</span>
             <span>
-              <MapPin size={12} aria-hidden="true" style={{ verticalAlign: '-1px' }} /> Tagaytay
+              <MapPin className="-mb-px" size={12} aria-hidden="true" /> Tagaytay
               Ridge, Cavite
-              <Clock size={12} aria-hidden="true" style={{ margin: '0 0 0 14px', verticalAlign: '-1px' }} />{' '}
+              <Clock className="ml-3.5 -mb-px" size={12} aria-hidden="true" />{' '}
               Front desk 24 hours
             </span>
           </div>
