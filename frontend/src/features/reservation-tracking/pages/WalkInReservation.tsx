@@ -95,16 +95,16 @@ export function WalkInReservation() {
   }
 
   return (
-    <div className="walk-in-page">
-      <header className="walk-in-header">
+    <div className="mx-auto max-w-[1120px]">
+      <header className="mb-[27px] flex items-end justify-between gap-6 max-[650px]:items-stretch max-[650px]:flex-col">
         <div>
           <h1>New walk-in reservation</h1>
           <p>Enter the guest’s details and confirm their reservation at the front desk.</p>
         </div>
-        <div className="walk-in-type" role="group" aria-label="Reservation type">
+        <div className="flex gap-1 rounded-full border border-[#e8e8e8] bg-[#f0f0f0] p-1" role="group" aria-label="Reservation type">
           <button
             type="button"
-            className={type === 'hotel' ? 'active' : ''}
+            className={`min-h-10 rounded-full border-0 bg-transparent px-4 py-2 text-[#6e6e6e] ${type === 'hotel' ? 'bg-white text-[#1d1d1d] shadow-[0_1px_4px_#00000012]' : ''}`}
             aria-pressed={type === 'hotel'}
             onClick={() => switchType('hotel')}
           >
@@ -112,7 +112,7 @@ export function WalkInReservation() {
           </button>
           <button
             type="button"
-            className={type === 'restaurant' ? 'active' : ''}
+            className={`min-h-10 rounded-full border-0 bg-transparent px-4 py-2 text-[#6e6e6e] ${type === 'restaurant' ? 'bg-white text-[#1d1d1d] shadow-[0_1px_4px_#00000012]' : ''}`}
             aria-pressed={type === 'restaurant'}
             onClick={() => switchType('restaurant')}
           >
@@ -121,9 +121,9 @@ export function WalkInReservation() {
         </div>
       </header>
 
-      <form className="walk-in-layout" onSubmit={create}>
-        <div className="walk-in-main stack">
-          <section className="panel walk-in-section">
+      <form className="grid grid-cols-[minmax(0,1fr)_330px] items-start gap-[22px] max-[900px]:grid-cols-1" onSubmit={create}>
+        <div className="flex flex-col gap-4">
+          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
             <div className="walk-in-section-title">
               <span>1</span>
               <div>
@@ -155,7 +155,7 @@ export function WalkInReservation() {
             </div>
           </section>
 
-          <section className="panel walk-in-section">
+          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
             <div className="walk-in-section-title">
               <span>2</span>
               <div>
@@ -229,7 +229,7 @@ export function WalkInReservation() {
             )}
           </section>
 
-          <section className="panel walk-in-section">
+          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
             <div className="walk-in-section-title">
               <span>3</span>
               <div>
@@ -244,7 +244,7 @@ export function WalkInReservation() {
           </section>
         </div>
 
-        <aside className="panel walk-in-summary">
+        <aside className="sticky top-[168px] rounded-[16px] border border-[#e8e8e8] bg-white p-6 max-[900px]:static">
           <h2>Reservation summary</h2>
           <div className="walk-in-summary-type">
             {type === 'hotel' ? <BedDouble size={20} /> : <UtensilsCrossed size={20} />}

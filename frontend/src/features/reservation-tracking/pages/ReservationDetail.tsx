@@ -136,14 +136,14 @@ export function ReservationDetail() {
           </div>
         </div>
       )}
-      <div className="detail-grid">
-        <div className="stack">
-          <section className="panel">
-            <div className="split">
+      <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(290px,.75fr)] items-start gap-[18px] max-[1200px]:grid-cols-1">
+        <div className="flex flex-col gap-3">
+          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
+            <div className="flex items-center justify-between gap-4">
               <h2>Reservation details</h2>
               <Badge status={r.status} />
             </div>
-            <dl className="details-list">
+            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#e8e8e8] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#6e6e6e] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs max-[500px]:[&>div]:grid-cols-[1fr_1.3fr]">
               {r.hotel ? (
                 <>
                   <div>
@@ -241,7 +241,7 @@ export function ReservationDetail() {
               )}
             </dl>
           </section>
-          <section className="panel">
+          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
             <h2>Status timeline</h2>
             <ol className="timeline">
               {history.map((h) => (
@@ -260,8 +260,8 @@ export function ReservationDetail() {
             </ol>
           </section>
         </div>
-        <div className="stack">
-          <section className={`panel reservation-progress reservation-progress-primary ${stopped ? 'stopped' : ''}`} aria-label="Reservation progress">
+        <div className="flex flex-col gap-3">
+          <section className={`rounded-[20px] border border-[#e8e8e8] bg-white p-5 ${stopped ? 'opacity-80' : ''}`} aria-label="Reservation progress">
             <div className="progress-heading"><div><h2>Reservation progress</h2></div><Badge status={r.status} /></div>
             <ol>
               {stages.map((stage, index) => {
@@ -274,9 +274,9 @@ export function ReservationDetail() {
             </ol>
             {stopped && <p className="progress-stopped">Reservation {label(r.status).toLowerCase()}.</p>}
           </section>
-          <section className="panel">
+          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
-            <dl className="details-list">
+            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#e8e8e8] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#6e6e6e] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs">
               <div>
                 <dt>Total</dt>
                 <dd>{money(r.total_amount)}</dd>
@@ -348,9 +348,9 @@ export function ReservationDetail() {
             )}
           </section>
           {allowed_actions.length > 0 && (
-            <section className="panel no-print">
+            <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] no-print">
               <h2>Next actions</h2>
-              <div className="stack">
+              <div className="flex flex-col gap-[18px]">
                 {allowed_actions.map((s) => (
                   <button
                     key={s}
