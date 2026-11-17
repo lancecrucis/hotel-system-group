@@ -27,11 +27,10 @@
     "db:migrate": "npm run db:migrate --workspace backend",
     "db:seed": "npm run db:seed --workspace backend",
     "test:system": "npm run test:system --workspace backend",
-    "test:e2e": "playwright test",
-    "format": "prettier --write \"frontend/src/**/*.{ts,tsx,css}\" \"backend/src/**/*.{ts,tsx}\" \"backend/scripts/*.{ts,mjs}\" \"backend/tests/**/*.ts\" \"tests/e2e/*.ts\" \"scripts/*.mjs\" \"docs/**/*.md\" \"*.{json,ts,md}\""
+    "format": "prettier --write \"frontend/src/**/*.{ts,tsx,css}\" \"backend/src/**/*.{ts,tsx}\" \"backend/scripts/*.{ts,mjs}\" \"backend/tests/**/*.ts\" \"scripts/*.mjs\" \"docs/**/*.md\" \"*.{json,ts,md}\"",
+    "test:auth": "tsx --test backend/tests/integration/auth.test.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.65.0",
     "concurrently": "^10.0.7",
     "prettier": "^3.9.10"
   }

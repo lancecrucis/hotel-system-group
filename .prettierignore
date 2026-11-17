@@ -1,8 +1,0 @@
-node_modules
-.local
-dist
-package-lock.json
-test-results
-playwright-report
-*.png
-*.jpg
