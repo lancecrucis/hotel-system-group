@@ -21,6 +21,7 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   APP_BASE_URL: z.string().url().optional(),
+  SMS_PROVIDER: z.enum(['console', 'twilio']).default('console'),
 });
 
 const parsed = schema.safeParse(process.env);
