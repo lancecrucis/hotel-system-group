@@ -7,16 +7,21 @@ try {
   await c.query('BEGIN');
   await c.query('SELECT pg_advisory_xact_lock(987322)');
   const password = await hashPassword('Prototype123!');
-  for (const [role, first, email] of [
+  const demoAccounts = [
     ['admin', 'Alex', 'admin@example.com'],
     ['staff', 'Sam', 'staff@example.com'],
     ['customer', 'Jamie', 'guest@example.com'],
-  ]) {
+  ] as const;
+  for (const [role, first, email] of demoAccounts) {
     await c.query(
-      `INSERT INTO users(role,first_name,last_name,email,password_hash,phone_number) VALUES($1,$2,'Demo',$3,$4,'+63 917 123 4567') ON CONFLICT(email) DO NOTHING`,
+      `INSERT INTO users(role,first_name,last_name,email,password_hash,phone_number,email_verified_at) VALUES($1,$2,'Demo',$3,$4,'+63 917 123 4567',now()) ON CONFLICT(email) DO NOTHING`,
       [role, first, email, password],
     );
   }
+  await c.query(
+    'UPDATE users SET email_verified_at=COALESCE(email_verified_at,now()) WHERE email = ANY($1::text[])',
+    [demoAccounts.map(([, , email]) => email)],
+  );
   const rooms = [
     [
       '101',
