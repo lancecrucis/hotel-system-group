@@ -230,10 +230,10 @@ export function Landing() {
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
-              <span className="lp-eyebrow">Accommodation</span>
-              <h2 className="lp-section-title">Rooms designed for slow mornings</h2>
+              <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#b08d57]">Accommodation</span>
+              <h2 className="font-serif text-[42px] font-normal leading-[1.1] tracking-[-.02em] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
             </div>
-            <Link className="lp-quiet-link" to="/rooms">
+            <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#625b51] no-underline" to="/rooms">
               View all rooms
             </Link>
           </div>
@@ -247,35 +247,35 @@ export function Landing() {
               >
                 <figure className="relative aspect-[4/3] overflow-hidden bg-[#eee5d8]">
                   <img src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
-                  <figcaption className="lp-room-tag">{card.type}</figcaption>
+                  <figcaption className="absolute bottom-0 left-0 bg-[#16211b]/90 px-[15px] py-2 text-[10px] uppercase tracking-[.18em] text-white">{card.type}</figcaption>
                 </figure>
                 <div className="flex flex-1 flex-col p-[26px] pb-7">
-                  <h3>{card.type}</h3>
-                  <p className="lp-room-desc">{card.description}</p>
-                  <div className="lp-room-facts">
-                    <span>
+                  <h3 className="font-serif text-[23px] font-normal">{card.type}</h3>
+                  <p className="mb-5 flex-1 text-[13.5px] leading-[1.65] text-[#625b51]">{card.description}</p>
+                  <div className="mb-5 flex flex-wrap gap-x-4 gap-y-[7px] border-t border-[#ded6c9] pt-4 text-[11.5px] text-[#625b51]">
+                    <span className="inline-flex items-center gap-1.5">
                       <Users size={13} /> {card.capacity} guests
                     </span>
-                    <span>
+                    <span className="inline-flex items-center gap-1.5">
                       <BedDouble size={13} /> {card.bedCount} {card.bedType}
                     </span>
                     {card.amenities.includes('Wi-Fi') && (
-                      <span>
+                      <span className="inline-flex items-center gap-1.5">
                         <Wifi size={13} /> Wi-Fi
                       </span>
                     )}
                     {card.amenities.includes('Breakfast') && (
-                      <span>
+                      <span className="inline-flex items-center gap-1.5">
                         <Coffee size={13} /> Breakfast
                       </span>
                     )}
                   </div>
-                  <div className="lp-room-foot">
-                    <span className="lp-room-price">
-                      <strong>{money(card.price)}</strong>
-                      <small>per night</small>
+                  <div className="flex items-end justify-between gap-4">
+                    <span className="flex flex-col gap-0.5">
+                      <strong className="font-serif text-[21px] font-normal">{money(card.price)}</strong>
+                      <small className="text-[10px] uppercase tracking-[.16em] text-[#625b51]">per night</small>
                     </span>
-                    <Link className="lp-quiet-link" to="/rooms">
+                    <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#625b51] no-underline" to="/rooms">
                       Reserve
                     </Link>
                   </div>
@@ -283,7 +283,7 @@ export function Landing() {
               </article>
             ))}
           </div>
-          <p className="lp-rooms-note lp-reveal">
+          <p className="mt-[34px] text-[12.5px] text-[#625b51]">
             Rates are per night. Deluxe rooms and suites include breakfast; Standard rooms do not.
             Availability and final pricing are confirmed when you book.
           </p>
@@ -293,33 +293,33 @@ export function Landing() {
       {/* ---------------- restaurant ---------------- */}
       <section className="relative overflow-hidden bg-[#16211b] px-0 py-[110px] text-[#f6f2ea] max-[900px]:py-[76px]" id="restaurant">
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
-          <div className="lp-dining-copy lp-reveal">
-            <span className="lp-eyebrow">The Restaurant</span>
-            <h2>Farm-to-table dining, garden-side</h2>
-            <p>
+          <div>
+            <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#e6d6b8]">The Restaurant</span>
+            <h2 className="font-serif text-[46px] font-normal leading-[1.1] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
+            <p className="max-w-[470px] text-[15px] leading-[1.8] text-[#f6f2ea]/75">
               Our kitchen cooks with what the season gives us — highland vegetables, herbs from the
               terrace, and fish brought in each morning. Breakfast, lunch, and dinner are served in a
               light-filled room that opens onto the garden.
             </p>
-            <ul className="lp-dining-list">
-              <li>
+            <ul className="my-[30px] grid max-w-[470px] list-none gap-0 p-0">
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px] first:border-t">
                 <b>Breakfast</b>
                 <span>Daily · 6:30 – 10:30</span>
               </li>
-              <li>
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px]">
                 <b>Lunch</b>
                 <span>Daily · 11:30 – 14:30</span>
               </li>
-              <li>
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px]">
                 <b>Dinner</b>
                 <span>Daily · 18:00 – 22:00</span>
               </li>
-              <li>
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px]">
                 <b>Dress</b>
                 <span>Smart casual</span>
               </li>
             </ul>
-            <Link className="lp-btn" to="/dining">
+            <Link className="inline-flex items-center gap-2 bg-[#d8c3a0] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#16211b] no-underline" to="/dining">
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
@@ -338,26 +338,26 @@ export function Landing() {
       <section className="bg-[#eee5d8] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div className="lp-reveal">
-            <span className="lp-eyebrow">Contact Us</span>
-            <h2 className="lp-section-title">We would love to hear from you</h2>
-            <dl className="lp-contact-details">
-              <div className="lp-contact-row">
+            <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#b08d57]">Contact Us</span>
+            <h2 className="font-serif text-[42px] font-normal leading-[1.1] tracking-[-.02em] max-[640px]:text-[34px]">We would love to hear from you</h2>
+            <dl className="mt-[34px] grid">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Address</dt>
                 <dd>88 Illustrada Avenue, Tagaytay Ridge, Cavite 4120</dd>
               </div>
-              <div className="lp-contact-row">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Phone</dt>
                 <dd>
                   <a href="tel:+639175550142">+63 917 555 0142</a>
                 </dd>
               </div>
-              <div className="lp-contact-row">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Email</dt>
                 <dd>
                   <a href="mailto:stay@lailustrada.example">stay@lailustrada.example</a>
                 </dd>
               </div>
-              <div className="lp-contact-row">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Front desk</dt>
                 <dd>Open 24 hours, every day</dd>
               </div>
@@ -370,9 +370,9 @@ export function Landing() {
               Booking takes about two minutes. Sign in with your account, choose your dates, and
               you will have a confirmation reference right away.
             </p>
-            <div className="lp-contact-options">
-              <div className="lp-contact-option">
-                <span className="lp-contact-icon">
+            <div className="mb-[30px] grid">
+              <div className="flex items-center gap-4 border-t border-[#ded6c9] py-4">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#eee5d8] text-[#b08d57]">
                   <BedDouble size={17} />
                 </span>
                 <div>
@@ -380,8 +380,8 @@ export function Landing() {
                   <span>Search live availability and nightly rates</span>
                 </div>
               </div>
-              <div className="lp-contact-option">
-                <span className="lp-contact-icon">
+              <div className="flex items-center gap-4 border-t border-[#ded6c9] py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#eee5d8] text-[#b08d57]">
                   <CalendarCheck size={17} />
                 </span>
                 <div>
@@ -389,8 +389,8 @@ export function Landing() {
                   <span>Lunch and dinner, every day of the week</span>
                 </div>
               </div>
-              <div className="lp-contact-option">
-                <span className="lp-contact-icon">
+              <div className="flex items-center gap-4 border-t border-[#ded6c9] py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#eee5d8] text-[#b08d57]">
                   <MessageCircle size={17} />
                 </span>
                 <div>
@@ -399,7 +399,7 @@ export function Landing() {
                 </div>
               </div>
             </div>
-            <Link className="lp-btn lp-btn-dark" to="/rooms">
+            <Link className="inline-flex items-center gap-2 bg-[#16211b] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
               Start a Booking <ArrowRight size={15} />
             </Link>
             <p className="lp-contact-note">
