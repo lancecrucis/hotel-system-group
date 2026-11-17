@@ -136,7 +136,7 @@ export function Rooms() {
                       <small> / night</small>
                     </span>
                     <button
-                      className="small"
+                      className="min-h-[34px] rounded-full px-3 py-[7px] text-xs"
                       onClick={() => setSelected(room)}
                     >
                       Select room

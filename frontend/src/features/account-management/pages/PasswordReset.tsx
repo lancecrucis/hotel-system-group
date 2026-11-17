@@ -108,7 +108,7 @@ export function ResetPassword() {
         <ErrorBox message={error || (!token ? 'Reset link is missing or invalid.' : '')} />
         {done ? (
           <>
-            {message && <p className="muted">{message}</p>}
+            {message && <p className="text-[#6e6e6e]">{message}</p>}
             <Link className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline" to="/login">Log in</Link>
           </>
         ) : (

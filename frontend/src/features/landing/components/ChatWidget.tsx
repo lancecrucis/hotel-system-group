@@ -169,7 +169,7 @@ export function ChatWidget() {
               placeholder="Ask about rooms, dining, or your stay…"
               aria-label="Your message"
             />
-            <button className="lp-chat-send" disabled={!draft.trim()} aria-label="Send message">
+            <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-0 bg-[#16211b] p-0 text-[#e6d6b8] disabled:opacity-45" disabled={!draft.trim()} aria-label="Send message">
               <Send size={16} />
             </button>
           </form>
@@ -178,7 +178,7 @@ export function ChatWidget() {
       )}
 
       {!open && (
-        <span className="lp-chat-tooltip-wrap">
+        <span className="relative">
           <button className="rounded-full border border-[#ded6c9] bg-white px-4 py-[9px] text-xs font-medium text-[#1b1a17] shadow-[0_10px_26px_rgba(27,26,23,.16)]" onClick={() => toggle(true)}>
             <Sparkles size={13} aria-hidden="true" /> Questions?
           </button>
@@ -186,7 +186,7 @@ export function ChatWidget() {
       )}
 
       {!open && (
-        <span className="lp-chat-fab-wrap">
+        <span className="relative">
           <button
             className="relative flex h-[60px] w-[60px] items-center justify-center rounded-full border-0 bg-[#16211b] p-0 text-[#e6d6b8] shadow-[0_14px_32px_rgba(22,33,27,.34)] transition hover:-translate-y-0.5"
             onClick={() => toggle(true)}

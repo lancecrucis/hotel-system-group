@@ -120,7 +120,7 @@ export function ReservationDetail() {
       <PageHeader
         title={r.reservation_reference}
         action={
-          <button className="no-print rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold text-[#1d1d1d]" onClick={() => window.print()}>
+          <button className="print:hidden rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold text-[#1d1d1d]" onClick={() => window.print()}>
             <Printer size={17} />
             Print details
           </button>
@@ -302,7 +302,7 @@ export function ReservationDetail() {
               ['confirmed', 'checked_in'].includes(r.status) &&
               balance > 0 && (
                 <button
-                  className="no-print w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
+                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
                   onClick={() => {
                     setError('');
                     setFinancial('payment');
@@ -315,7 +315,7 @@ export function ReservationDetail() {
               refundable.length > 0 &&
               ['cancelled', 'checked_out', 'completed', 'no_show'].includes(r.status) && (
                 <button
-                  className="no-print w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
+                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
                   onClick={() => {
                     setError('');
                     setFinancial('refund');
@@ -378,7 +378,7 @@ export function ReservationDetail() {
         >
           <ErrorBox message={error} />
           <form
-            className="stack"
+            className="flex flex-col gap-[18px]"
             onSubmit={(e) => {
               e.preventDefault();
               const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -411,10 +411,10 @@ export function ReservationDetail() {
           }}
         >
           <ErrorBox message={error} />
-          <div className="notice warning">
+          <div className="mb-5 flex items-start gap-2.5 rounded-[7px] border border-dashed border-[#b8b8b8] bg-[#f5f5f5] px-[15px] py-[13px] text-[13px] text-[#424242]">
             Record money already collected or refunded outside this app. This action does not move money.
           </div>
-          <form className="stack" onSubmit={financialSubmit}>
+          <form className="flex flex-col gap-[18px]" onSubmit={financialSubmit}>
             {financial === 'payment' ? (
               <>
                 <label>

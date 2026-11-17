@@ -124,7 +124,7 @@ export function WalkInReservation() {
       <form className="grid grid-cols-[minmax(0,1fr)_330px] items-start gap-[22px] max-[900px]:grid-cols-1" onSubmit={create}>
         <div className="flex flex-col gap-4">
           <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
-            <div className="walk-in-section-title">
+            <div className="mb-5 flex items-start gap-[13px]">
               <span>1</span>
               <div>
                 <h2>Guest information</h2>
@@ -156,7 +156,7 @@ export function WalkInReservation() {
           </section>
 
           <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
-            <div className="walk-in-section-title">
+            <div className="mb-5 flex items-start gap-[13px]">
               <span>2</span>
               <div>
                 <h2>{type === 'hotel' ? 'Stay and room' : 'Dining date and time'}</h2>
@@ -193,7 +193,7 @@ export function WalkInReservation() {
                         {roomId === room.id && <Check size={18} />}
                       </label>
                     ))}
-                    {!availableRooms.length && <p className="muted">No rooms are available for these dates and guest count.</p>}
+                    {!availableRooms.length && <p className="text-[#6e6e6e]">No rooms are available for these dates and guest count.</p>}
                   </div>
                 )}
               </>
@@ -222,7 +222,7 @@ export function WalkInReservation() {
                         <small>until {slot.end_time.slice(0, 5)}</small>
                       </label>
                     ))}
-                    {!availableSlots.length && <p className="muted">No dining times are available for this date and party size.</p>}
+                    {!availableSlots.length && <p className="text-[#6e6e6e]">No dining times are available for this date and party size.</p>}
                   </div>
                 )}
               </>
@@ -230,7 +230,7 @@ export function WalkInReservation() {
           </section>
 
           <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
-            <div className="walk-in-section-title">
+            <div className="mb-5 flex items-start gap-[13px]">
               <span>3</span>
               <div>
                 <h2>Special requests</h2>
@@ -256,14 +256,14 @@ export function WalkInReservation() {
                 <div><dt>Dates</dt><dd>{dateLabel(checkIn)} – {dateLabel(checkOut)}</dd></div>
                 <div><dt>Room</dt><dd>{selectedRoom ? `${selectedRoom.room_type} · ${selectedRoom.room_number}` : 'Select a room'}</dd></div>
                 <div><dt>Stay</dt><dd>{stayNights} {stayNights === 1 ? 'night' : 'nights'}</dd></div>
-                <div className="walk-in-total"><dt>Total</dt><dd>{money(total)}</dd></div>
+                <div className="border-b-0 pt-4 font-semibold"><dt>Total</dt><dd>{money(total)}</dd></div>
               </>
             ) : (
               <>
                 <div><dt>Date</dt><dd>{dateLabel(diningDate)}</dd></div>
                 <div><dt>Time</dt><dd>{selectedTime ? `${selectedTime.start_time.slice(0, 5)} – ${selectedTime.end_time.slice(0, 5)}` : 'Select a time'}</dd></div>
                 <div><dt>Guests</dt><dd>{guests}</dd></div>
-                <div className="walk-in-total"><dt>Charge</dt><dd>Meal billed at restaurant</dd></div>
+                <div className="border-b-0 pt-4 font-semibold"><dt>Charge</dt><dd>Meal billed at restaurant</dd></div>
               </>
             )}
           </dl>

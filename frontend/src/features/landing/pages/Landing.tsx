@@ -17,7 +17,6 @@ import type { Room, Settings } from '../../../types/models';
 import { money } from '../../../utils/format';
 import { LandingNav } from '../components/LandingNav';
 import { ChatWidget } from '../components/ChatWidget';
-import '../landing.css';
 
 const HOTEL_NAME = 'LA Illustrada';
 
@@ -123,37 +122,10 @@ function toCard(room: (typeof featured)[number]): Card {
   };
 }
 
-/** Reveals sections once as they scroll into view. */
-function useReveal() {
-  useEffect(() => {
-    const items = Array.from(document.querySelectorAll<HTMLElement>('.lp-reveal'));
-    if (!items.length) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      items.forEach((item) => item.classList.add('is-visible'));
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -60px' },
-    );
-    items.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
-  }, []);
-}
-
 export function Landing() {
   const rooms = useQuery<{ rooms: Room[] }>('/hotel/rooms?guests=1');
   const settings = useQuery<{ settings: Settings }>('/restaurant/settings');
   const { hash } = useLocation();
-  useReveal();
-
   // Navbar links point at #rooms / #restaurant / #contact — scroll once mounted.
   useEffect(() => {
     if (!hash) return;
@@ -219,7 +191,7 @@ export function Landing() {
             </dl>
           </div>
         </div>
-        <div className="lp-scroll-cue" aria-hidden="true">
+        <div className="absolute bottom-[30px] left-1/2 flex -translate-x-1/2 flex-col items-center gap-[9px] text-[9px] uppercase tracking-[.26em] text-white/60" aria-hidden="true">
           <span />
           Scroll
         </div>
@@ -329,7 +301,7 @@ export function Landing() {
               alt="The LA Illustrada restaurant, set with white linen beside garden windows"
               loading="lazy"
             />
-            <span className="lp-dining-frame" aria-hidden="true" />
+            <span className="pointer-events-none absolute inset-4 border border-white/30" aria-hidden="true" />
           </figure>
         </div>
       </section>
@@ -337,7 +309,7 @@ export function Landing() {
       {/* ---------------- contact ---------------- */}
       <section className="bg-[#eee5d8] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
-          <div className="lp-reveal">
+          <div>
             <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#b08d57]">Contact Us</span>
             <h2 className="font-serif text-[42px] font-normal leading-[1.1] tracking-[-.02em] max-[640px]:text-[34px]">We would love to hear from you</h2>
             <dl className="mt-[34px] grid">
@@ -402,7 +374,7 @@ export function Landing() {
             <Link className="inline-flex items-center gap-2 bg-[#16211b] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
               Start a Booking <ArrowRight size={15} />
             </Link>
-            <p className="lp-contact-note">
+            <p className="mt-5 text-[11px] leading-[1.6] text-[#625b51]">
               New here? <Link to="/register">Create an account</Link> first, or{' '}
               <Link to="/login">sign in</Link> if you already have one.
             </p>
@@ -415,15 +387,15 @@ export function Landing() {
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-14 pb-[60px] max-[900px]:grid-cols-1 max-[900px]:gap-[38px] max-[900px]:pb-11">
             <div>
-              <span className="lp-brand">
-                <span className="lp-brand-mark">LA Illustrada</span>
-                <span className="lp-brand-sub">Hotel &amp; Restaurant</span>
+              <span className="flex flex-col text-[#f6f2ea]">
+                <span className="font-serif text-[21px] tracking-[.08em]">LA Illustrada</span>
+                <span className="text-[9px] uppercase tracking-[.28em] text-[#d8c3a0]">Hotel &amp; Restaurant</span>
               </span>
-              <p className="lp-footer-blurb">
+              <p className="max-w-[330px] text-[13px] leading-[1.75] text-white/60">
                 A boutique hotel and restaurant on the Tagaytay ridge, welcoming guests since 1998.
               </p>
             </div>
-            <div className="lp-footer-col">
+            <div>
               <h4>Explore</h4>
               <ul>
                 <li>
@@ -437,7 +409,7 @@ export function Landing() {
                 </li>
               </ul>
             </div>
-            <div className="lp-footer-col">
+            <div>
               <h4>Guest access</h4>
               <ul>
                 <li>
