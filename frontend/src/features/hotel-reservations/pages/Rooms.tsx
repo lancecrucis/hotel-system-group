@@ -57,9 +57,9 @@ export function Rooms() {
           <CalendarDays size={20} aria-hidden="true" />
           <div className="flex min-w-0 flex-1 flex-col">
             <span>Check-in & check-out</span>
-            <button type="button" className="flex min-h-[26px] w-full items-center justify-between border-0 bg-transparent p-0 text-[13px] font-semibold text-[#1d1d1d]" aria-expanded={dateOpen} aria-label="Choose check-in and check-out dates" onClick={() => setDateOpen(!dateOpen)}>{dateLabel(filters.check_in)} <span className="mx-1.5 text-[#6e6e6e]" aria-hidden="true">→</span> {dateLabel(filters.check_out)} <ChevronDown size={16} /></button>
+            <button type="button" className="flex min-h-[26px] w-full items-center justify-between border-0 bg-transparent p-0 text-[13px] font-semibold text-[#54220e]" aria-expanded={dateOpen} aria-label="Choose check-in and check-out dates" onClick={() => setDateOpen(!dateOpen)}>{dateLabel(filters.check_in)} <span className="mx-1.5 text-[#806348]" aria-hidden="true">→</span> {dateLabel(filters.check_out)} <ChevronDown size={16} /></button>
           </div>
-          {dateOpen && <div className="absolute left-0 top-[calc(100%+10px)] z-20 w-[min(370px,90vw)] rounded-[18px] border border-[#e8e8e8] bg-white p-3.5 shadow-[0_18px_50px_#0002]"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="mt-3 w-full" onClick={() => setDateOpen(false)}>Done</button></div>}
+          {dateOpen && <div className="absolute left-0 top-[calc(100%+10px)] z-20 w-[min(370px,90vw)] border border-[#c8a783] bg-[#f3e1c7] p-3.5 shadow-[0_18px_50px_rgba(55,24,8,.18)]"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="mt-3 w-full" onClick={() => setDateOpen(false)}>Done</button></div>}
         </div>
         <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
           <Users size={20} aria-hidden="true" />

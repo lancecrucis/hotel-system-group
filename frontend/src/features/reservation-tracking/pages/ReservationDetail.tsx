@@ -268,7 +268,7 @@ export function ReservationDetail() {
                 const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
                 return <li key={stage.key} className="flex items-start gap-3" aria-current={current ? 'step' : undefined}>
                   <span className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-[11px] font-bold ${stage.done || current ? 'border-[#642c14] bg-[#642c14] text-white' : 'border-[#c8a783] bg-[#fff8ee] text-[#806348]'}`}>{stage.done ? <Check size={15} /> : index + 1}</span>
-                  <div className="flex flex-col"><strong className={stage.done || current ? 'text-[#1d1d1d]' : 'text-[#888]'}>{stage.name}</strong>{stage.detail && <small className="font-semibold text-[#1d1d1d]">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
+                  <div className="flex flex-col"><strong className={stage.done || current ? 'text-[#54220e]' : 'text-[#9b8064]'}>{stage.name}</strong>{stage.detail && <small className="font-semibold text-[#54220e]">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
                 </li>;
               })}
             </ol>
@@ -302,7 +302,7 @@ export function ReservationDetail() {
               ['confirmed', 'checked_in'].includes(r.status) &&
               balance > 0 && (
                 <button
-                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
+                  className="print:hidden w-full border border-[#642c14] bg-[#642c14] px-4 py-2 text-xs font-semibold text-[#fff8ee] hover:bg-[#54220e]"
                   onClick={() => {
                     setError('');
                     setFinancial('payment');
@@ -315,7 +315,7 @@ export function ReservationDetail() {
               refundable.length > 0 &&
               ['cancelled', 'checked_out', 'completed', 'no_show'].includes(r.status) && (
                 <button
-                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
+                  className="print:hidden w-full border border-[#c8a783] bg-[#ead5b8] px-4 py-2 text-xs font-semibold text-[#54220e] hover:bg-[#d8bfa0]"
                   onClick={() => {
                     setError('');
                     setFinancial('refund');
