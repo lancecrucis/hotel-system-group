@@ -16,18 +16,18 @@ export function Activity() {
     <>
       <PageHeader title="Activity log" />
       <ErrorBox message={query.error} />
-      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
+      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] p-0">
         {query.loading && !query.data ? (
           <Loading />
         ) : query.data?.logs.length ? (
           <div className="w-full overflow-x-auto">
-            <table className="w-full border-collapse text-left text-xs">
+            <table className="w-full border-collapse bg-[#fff8ee] text-left text-xs">
               <thead>
                 <tr>
-                  <th>Time</th>
-                  <th>Team member</th>
-                  <th>Action</th>
-                  <th>Details</th>
+                  <th className="bg-[#ead5b8] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]">Time</th>
+                  <th className="bg-[#ead5b8] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]">Team member</th>
+                  <th className="bg-[#ead5b8] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]">Action</th>
+                  <th className="bg-[#ead5b8] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]">Details</th>
                 </tr>
               </thead>
               <tbody>

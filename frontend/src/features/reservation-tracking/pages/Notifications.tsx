@@ -42,14 +42,14 @@ export function Notifications() {
       {query.loading && !query.data ? (
         <Loading />
       ) : query.data?.notifications.length ? (
-        <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white">
+        <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee]">
           {query.data.notifications.map((n) => (
-            <article key={n.id} className={`flex gap-[13px] border-b border-[#f0f0f0] p-5 last:border-b-0 ${n.is_read ? '' : 'bg-[#fafafa]'}`}>
-              <Bell size={19} />
+            <article key={n.id} className={`flex gap-[13px] border-b border-[#d8bfa0] p-5 last:border-b-0 ${n.is_read ? 'bg-[#fff8ee]' : 'bg-[#f1dfc8]'}`}>
+              <Bell className="mt-0.5 shrink-0 text-[#a64b1c]" size={19} />
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-4">
-                  <strong>{n.title}</strong>
-                  <small>{timestamp(n.created_at)}</small>
+                  <strong className="font-['Gelasio'] text-lg font-normal text-[#441901]">{n.title}</strong>
+                  <small className="text-[#806348]">{timestamp(n.created_at)}</small>
                 </div>
                 <p>{n.message}</p>
                 {n.reservation_id && <Link to={`/reservations/${n.reservation_id}`}>View reservation →</Link>}

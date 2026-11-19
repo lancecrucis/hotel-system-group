@@ -18,14 +18,14 @@ export function Reservations() {
       <PageHeader
         title={user!.role === 'customer' ? 'My reservations' : 'All reservations'}
         action={
-          <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to="/rooms">
+          <Link className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#642c14] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/rooms">
             <Plus size={17} />
             New booking
           </Link>
         }
       />
       <form
-        className="mb-5 grid grid-cols-[1fr_1fr_.65fr_auto] items-end gap-4 rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1 max-[500px]:gap-3"
+        className="mb-5 grid grid-cols-[1fr_1fr_.65fr_auto] items-end gap-4 border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1 max-[500px]:gap-3"
         onSubmit={(e) => {
           e.preventDefault();
           setSearch({ ...filters });
@@ -76,7 +76,7 @@ export function Reservations() {
         </button>
       </form>
       <ErrorBox message={query.error} />
-      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
+      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] p-0">
         {query.loading && !query.data ? (
           <Loading />
         ) : (
