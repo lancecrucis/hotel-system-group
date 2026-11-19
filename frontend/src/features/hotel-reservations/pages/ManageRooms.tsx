@@ -55,7 +55,7 @@ export function ManageRooms() {
       />
       <ErrorBox message={query.error} />
       <Success message={message} />
-      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white">
+      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee]">
         {query.loading ? (
           <Loading />
         ) : (
@@ -63,7 +63,7 @@ export function ManageRooms() {
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr>
-                  {['Room', 'Type', 'Capacity', 'Rate / night', 'Status', 'Action'].map((heading) => <th className="whitespace-nowrap bg-[#fcfcfc] px-5 py-[17px] text-[10px] font-semibold uppercase tracking-[.6px] text-[#888]" key={heading}>{heading}</th>)}
+                  {['Room', 'Type', 'Capacity', 'Rate / night', 'Status', 'Action'].map((heading) => <th className="whitespace-nowrap bg-[#ead5b8] px-5 py-[17px] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]" key={heading}>{heading}</th>)}
                 </tr>
               </thead>
               <tbody>
@@ -85,7 +85,7 @@ export function ManageRooms() {
                     </td>
                     <td>
                       <button
-                        className="inline-flex min-h-[34px] items-center justify-center gap-2 rounded-full border border-[#dedede] bg-white px-3 py-[7px] text-xs font-semibold text-[#1d1d1d]"
+                        className="inline-flex min-h-[34px] items-center justify-center gap-2 border border-[#a87652] bg-[#fff8ee] px-3 py-[7px] font-serif text-xs font-bold text-[#642c14] hover:bg-[#f1dfc8]"
                         onClick={() => {
                           setEditing(r);
                           setError('');

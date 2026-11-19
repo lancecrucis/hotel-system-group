@@ -133,29 +133,29 @@ export function Layout() {
           </div>
           {staff && (
             <nav className="flex flex-wrap justify-center gap-3 border-t border-white/15 px-6 pb-3.5 pt-2 max-[800px]:justify-start max-[800px]:flex-nowrap max-[800px]:gap-1 max-[800px]:overflow-auto max-[800px]:px-4" aria-label="Staff navigation">
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] rounded-md px-3 py-2 text-xs text-[#6e6e6e] whitespace-nowrap ${isActive ? 'bg-[#ededed] text-[#161616]' : ''}`} to="/overview">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/overview">
                 <LayoutDashboard size={16} />
                 Overview
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] rounded-md px-3 py-2 text-xs text-[#6e6e6e] whitespace-nowrap ${isActive ? 'bg-[#ededed] text-[#161616]' : ''}`} to="/walk-in">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/walk-in">
                 <UserPlus size={16} />
                 New walk-in
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] rounded-md px-3 py-2 text-xs text-[#6e6e6e] whitespace-nowrap ${isActive ? 'bg-[#ededed] text-[#161616]' : ''}`} to="/manage/rooms">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/rooms">
                 <BedDouble size={16} />
                 Room inventory
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] rounded-md px-3 py-2 text-xs text-[#6e6e6e] whitespace-nowrap ${isActive ? 'bg-[#ededed] text-[#161616]' : ''}`} to="/manage/restaurant">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/restaurant">
                 <Settings size={16} />
                 Restaurant settings
               </NavLink>
               {user.role === 'admin' && (
-                <NavLink className={({ isActive }) => `flex items-center gap-[7px] rounded-md px-3 py-2 text-xs text-[#6e6e6e] whitespace-nowrap ${isActive ? 'bg-[#ededed] text-[#161616]' : ''}`} to="/manage/users">
+                <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/users">
                   <Users size={16} />
                   Users &amp; roles
                 </NavLink>
               )}
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] rounded-md px-3 py-2 text-xs text-[#6e6e6e] whitespace-nowrap ${isActive ? 'bg-[#ededed] text-[#161616]' : ''}`} to="/activity">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/activity">
                 <History size={16} />
                 Activity log
               </NavLink>

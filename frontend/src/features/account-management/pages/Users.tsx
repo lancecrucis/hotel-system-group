@@ -43,7 +43,7 @@ export function Users() {
                 {query.data?.users.map((u) => (
                   <tr key={u.id}>
                     <td>
-                      {u.first_name} {u.last_name}
+                      <span className="font-medium text-[#54220e]">{u.first_name} {u.last_name}</span>
                       {u.id === user!.id && <small>You</small>}
                     </td>
                     <td>{u.email}</td>
