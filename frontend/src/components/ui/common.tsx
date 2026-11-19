@@ -4,17 +4,17 @@ import { X, AlertCircle, CheckCircle2, Inbox } from 'lucide-react';
 import { label } from '../../utils/format';
 export function Badge({ status }: { status: string }) {
   const tone = ['checked_in', 'seated', 'admin', 'staff'].includes(status)
-    ? 'border-[#262626] bg-[#262626] text-white'
+    ? 'border-[#642c14] bg-[#642c14] text-white'
     : ['pending', 'arrived', 'refunded', 'partially_refunded'].includes(status)
-      ? 'border-dashed border-[#a3a3a3] bg-white text-[#525252]'
+      ? 'border-dashed border-[#b99673] bg-[#fff8ee] text-[#70462c]'
       : ['cancelled', 'no_show', 'maintenance', 'expired'].includes(status)
-        ? 'border-[#e4e4e4] bg-[#ededed] text-[#525252]'
-        : 'border-[#e4e4e4] bg-[#f5f5f5] text-[#303030]';
-  return <span className={`inline-flex whitespace-nowrap rounded-full border px-2.5 py-[5px] text-[10px] font-semibold leading-[1.3] ${tone}`}>{label(status)}</span>;
+        ? 'border-[#d8bfa0] bg-[#ead5b8] text-[#70462c]'
+        : 'border-[#d8bfa0] bg-[#f7e8d2] text-[#70462c]';
+  return <span className={`inline-flex whitespace-nowrap rounded-sm border px-2.5 py-[5px] text-[10px] font-semibold leading-[1.3] ${tone}`}>{label(status)}</span>;
 }
 export function ErrorBox({ message }: { message: string }) {
   return message ? (
-    <div className="mb-5 flex items-start gap-2.5 overflow-wrap-anywhere rounded-[7px] border border-[#161616] bg-[#f5f5f5] px-[15px] py-[13px] text-[13px] text-[#161616]" role="alert">
+    <div className="mb-5 flex items-start gap-2.5 overflow-wrap-anywhere border border-[#b54724] bg-[#fff0e7] px-[15px] py-[13px] text-[13px] text-[#782c18]" role="alert">
       <AlertCircle size={18} />
       <span>{message}</span>
     </div>
@@ -22,7 +22,7 @@ export function ErrorBox({ message }: { message: string }) {
 }
 export function Success({ message }: { message: string }) {
   return message ? (
-    <div className="mb-5 flex items-start gap-2.5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px] text-[#303030]" role="status">
+    <div className="mb-5 flex items-start gap-2.5 border border-[#9b754f] bg-[#f7e8d2] px-[15px] py-[13px] text-[13px] text-[#54220e]" role="status">
       <CheckCircle2 size={18} />
       {message}
     </div>
@@ -30,16 +30,16 @@ export function Success({ message }: { message: string }) {
 }
 export function Empty({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <div className="rounded-[9px] border border-dashed border-[#e8e8e8] bg-white px-6 py-[50px] text-center text-[#6e6e6e]">
+    <div className="border border-dashed border-[#b99673] bg-[#fff8ee] px-6 py-[50px] text-center text-[#70462c]">
       <Inbox size={30} />
-      <h3 className="mb-2 text-[17px] font-semibold leading-[1.3] text-[#656565]">{title}</h3>
+      <h3 className="mb-2 font-['Gelasio'] text-[22px] font-normal leading-[1.3] text-[#54220e]">{title}</h3>
       {children}
     </div>
   );
 }
 export function Loading() {
   return (
-    <p className="text-[#6e6e6e]" role="status">
+    <p className="font-serif text-lg text-[#70462c]" role="status">
       Loading…
     </p>
   );
@@ -54,7 +54,7 @@ export function PageHeader({
   return (
     <header className="mb-[27px] flex items-center justify-between gap-5 max-[800px]:items-start max-[500px]:flex-wrap max-[500px]:gap-3">
       <div>
-        <h1 className="mb-3 text-[32px] font-semibold leading-[1.15] tracking-[-1px] max-[800px]:text-[25px]">{title}</h1>
+        <h1 className="mb-3 font-['Gelasio'] text-[32px] font-normal leading-[1.15] tracking-[-.5px] text-[#441901] max-[800px]:text-[25px]">{title}</h1>
       </div>
       {action}
     </header>
@@ -79,10 +79,10 @@ export function Modal({
     return () => el?.close();
   }, []);
   return (
-    <dialog ref={ref} className={className} onCancel={onClose} aria-labelledby={id}>
+    <dialog ref={ref} className={`border border-[#b99673] bg-[#fff8ee] text-[#54220e] shadow-[0_22px_70px_rgba(55,24,8,.22)] ${className ?? ''}`} onCancel={onClose} aria-labelledby={id}>
       <div className="mb-[22px] flex items-center justify-between gap-[15px]">
-        <h2 className="m-0 text-xl font-semibold" id={id}>{title}</h2>
-        <button className="min-h-9 border-0 bg-transparent p-2 text-[#6e6e6e] hover:text-[#1d1d1d]" onClick={onClose} aria-label="Close dialog">
+        <h2 className="m-0 font-['Gelasio'] text-xl font-normal text-[#441901]" id={id}>{title}</h2>
+        <button className="min-h-9 border-0 bg-transparent p-2 text-[#70462c] hover:text-[#441901]" onClick={onClose} aria-label="Close dialog">
           <X size={20} />
         </button>
       </div>
