@@ -32,7 +32,7 @@ export function Profile() {
   return (
     <>
       <PageHeader title="Profile" />
-      <div className="max-w-[720px] rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[19px]">
+      <div className="max-w-[720px] border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[19px]">
         <ErrorBox message={error} />
         <Success message={message} />
         <form className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1" onSubmit={submit}>
@@ -59,7 +59,7 @@ export function Profile() {
             />
           </label>
           <label>
-            Date of birth <span className="text-[#6e6e6e]">(optional)</span>
+            Date of birth <span className="text-[#806348]">(optional)</span>
             <input type="date" name="date_of_birth" defaultValue={user!.date_of_birth ?? ''} max={day()} />
           </label>
           <label className="col-span-full max-[500px]:col-span-auto">
