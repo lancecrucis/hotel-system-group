@@ -50,7 +50,7 @@ export function Rooms() {
                 <option value={filters.room_type}>{filters.room_type}</option>
               )}
             </select>
-            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#515151]" size={16} aria-hidden="true" />
+            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#70462c]" size={16} aria-hidden="true" />
           </span>
         </label>
         <div className="relative flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
@@ -75,7 +75,7 @@ export function Rooms() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#515151]" size={16} aria-hidden="true" />
+            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#70462c]" size={16} aria-hidden="true" />
           </span>
         </label>
         <button className="min-h-[72px] whitespace-nowrap border border-[#642c14] bg-[#642c14] font-serif text-base font-bold text-[#fff8ee] hover:bg-[#54220e] max-[500px]:min-h-16" disabled={query.loading}>
@@ -136,7 +136,7 @@ export function Rooms() {
                       <small> / night</small>
                     </span>
                     <button
-                      className="min-h-[34px] rounded-full px-3 py-[7px] text-xs"
+                      className="min-h-[36px] border border-[#642c14] bg-[#642c14] px-3 py-[7px] text-xs text-[#fff8ee] hover:bg-[#54220e]"
                       onClick={() => setSelected(room)}
                     >
                       Select room

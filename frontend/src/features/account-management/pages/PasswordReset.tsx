@@ -108,7 +108,7 @@ export function ResetPassword() {
         <ErrorBox message={error || (!token ? 'Reset link is missing or invalid.' : '')} />
         {done ? (
           <>
-            {message && <p className="text-[#6e6e6e]">{message}</p>}
+            {message && <p className="text-[#806348]">{message}</p>}
             <Link className="inline-flex min-h-11 items-center justify-center border border-[#642c14] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/login">Log in</Link>
           </>
         ) : (
@@ -128,7 +128,7 @@ export function ResetPassword() {
                 />
                 <button
                   type="button"
-                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#6e6e6e] hover:text-[#1d1d1d]"
+                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#806348] hover:text-[#441901]"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -203,7 +203,7 @@ export function VerifyEmail() {
       <PageHeader title="Verify email" />
       <div className="border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
-        {busy && <p className="text-[#6e6e6e]">Verifying…</p>}
+        {busy && <p className="text-[#806348]">Verifying…</p>}
         {message && (
           <div className="flex flex-col gap-[18px]">
             <div className="mb-5 border border-[#c8a783] bg-[#f7e8d2] px-[15px] py-[13px] text-[13px]"><span>{message}</span></div>
@@ -220,7 +220,7 @@ export function VerifyEmail() {
         )}
         {(error || (!token && !message)) && (
           <form className="flex flex-col gap-[18px]" onSubmit={resend}>
-            <p className="text-[#6e6e6e]">Enter your email to receive a new verification link.</p>
+            <p className="text-[#806348]">Enter your email to receive a new verification link.</p>
             <label>
               Email address
               <input

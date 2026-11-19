@@ -157,7 +157,7 @@ export function Dining() {
         <ErrorBox message={error} />
         {user ? (
           <>
-            <div className="my-7 border-t border-[#e8e8e8]" />
+            <div className="my-7 border-t border-[#d8bfa0]" />
             <h2 className="mb-[18px] font-['Gelasio'] text-[22px] font-normal text-[#441901]">Contact details</h2>
             <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
               <ContactFields />

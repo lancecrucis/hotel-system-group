@@ -272,7 +272,7 @@ export function ReservationDetail() {
                 </li>;
               })}
             </ol>
-            {stopped && <p className="mt-4 text-xs text-[#6e6e6e]">Reservation {label(r.status).toLowerCase()}.</p>}
+            {stopped && <p className="mt-4 text-xs text-[#806348]">Reservation {label(r.status).toLowerCase()}.</p>}
           </section>
           <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px]">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
@@ -294,7 +294,7 @@ export function ReservationDetail() {
                 <dd>{money(['cancelled', 'no_show'].includes(r.status) ? paid : balance)}</dd>
               </div>
             </dl>
-            <p className="text-xs text-[#6e6e6e]">
+            <p className="text-xs text-[#806348]">
               {r.reservation_type === 'hotel' ? 'Pay at the property.' : 'Meal billed at the restaurant.'}
             </p>
             {staff &&
@@ -325,7 +325,7 @@ export function ReservationDetail() {
                 </button>
               )}
             {(payments.length > 0 || refunds.length > 0) && (
-              <div className="mt-4 space-y-3 border-t border-[#e8e8e8] pt-4">
+              <div className="mt-4 space-y-3 border-t border-[#d8bfa0] pt-4">
                 {payments.map((p) => (
                   <div key={p.id}>
                     <strong>

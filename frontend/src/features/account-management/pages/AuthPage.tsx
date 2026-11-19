@@ -23,7 +23,7 @@ function PasswordStrength({ password }: { password: string }) {
         {[1, 2, 3, 4, 5].map((n) => (
           <span
             key={n}
-              className={`h-1 flex-1 rounded-sm ${n <= passed ? 'bg-[#161616]' : 'bg-[#e0e0e0]'}`}
+              className={`h-1 flex-1 rounded-sm ${n <= passed ? 'bg-[#642c14]' : 'bg-[#d8bfa0]'}`}
           />
         ))}
       </div>
@@ -179,7 +179,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                 />
                 <button
                   type="button"
-                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#6e6e6e] hover:text-[#1d1d1d]"
+                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#806348] hover:text-[#441901]"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >

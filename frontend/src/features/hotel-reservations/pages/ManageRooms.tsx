@@ -197,7 +197,7 @@ export function ManageRooms() {
               Breakfast included
             </label>
             <label className="col-span-full max-[500px]:col-span-auto">
-              Cover image URL <span className="text-[#6e6e6e]">(optional)</span>
+              Cover image URL <span className="text-[#806348]">(optional)</span>
               <input
                 name="image_url"
                 type="url"
@@ -206,7 +206,7 @@ export function ManageRooms() {
               />
             </label>
             <label className="col-span-full max-[500px]:col-span-auto">
-              Gallery image URLs <span className="text-[#6e6e6e]">(one per line, up to 8)</span>
+              Gallery image URLs <span className="text-[#806348]">(one per line, up to 8)</span>
               <textarea
                 name="images"
                 defaultValue={room?.images.map((i) => i.image_url).join('\n') ?? ''}

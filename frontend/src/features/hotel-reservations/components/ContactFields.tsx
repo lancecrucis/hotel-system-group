@@ -46,7 +46,7 @@ export function ContactFields({ value, onChange }: { value?: ContactDetails; onC
         />
       </label>
       <label className="col-span-full">
-        Special requests <span className="text-[#6e6e6e]">(optional)</span>
+        Special requests <span className="text-[#806348]">(optional)</span>
         <textarea name="special_requests" {...(value ? { value: value.special_requests, onChange: (event) => update('special_requests', event.target.value) } : {})} maxLength={2000} rows={3} placeholder="Requests" />
       </label>
     </>
