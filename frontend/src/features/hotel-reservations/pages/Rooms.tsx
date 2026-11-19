@@ -24,7 +24,7 @@ export function Rooms() {
   return (
     <>
       <form
-        className="grid grid-cols-[minmax(190px,1.15fr)_minmax(330px,2fr)_minmax(145px,.8fr)_auto] items-stretch gap-2.5 rounded-[22px] border border-[#e8e8e8] bg-[#f1f1f1] p-3 max-[1200px]:grid-cols-2 max-[800px]:grid-cols-2 max-[500px]:grid-cols-1"
+        className="grid grid-cols-[minmax(190px,1.15fr)_minmax(330px,2fr)_minmax(145px,.8fr)_auto] items-stretch gap-2.5 border border-[#c8a783] bg-[#ead5b8] p-3 max-[1200px]:grid-cols-2 max-[800px]:grid-cols-2 max-[500px]:grid-cols-1"
         onSubmit={(e) => {
           e.preventDefault();
           setDateOpen(false);
@@ -32,7 +32,7 @@ export function Rooms() {
           query.reload();
         }}
       >
-        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] rounded-[14px] border border-[#e5e5e5] bg-white px-[15px] py-[11px] max-[500px]:min-h-16">
+        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
           <BedDouble size={20} aria-hidden="true" />
           <span className="relative flex min-w-0 flex-1 flex-col">
             <span>Room type</span>
@@ -53,7 +53,7 @@ export function Rooms() {
             <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#515151]" size={16} aria-hidden="true" />
           </span>
         </label>
-        <div className="relative flex min-h-[72px] min-w-0 items-center gap-[13px] rounded-[14px] border border-[#e5e5e5] bg-white px-[15px] py-[11px] max-[500px]:min-h-16">
+        <div className="relative flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
           <CalendarDays size={20} aria-hidden="true" />
           <div className="flex min-w-0 flex-1 flex-col">
             <span>Check-in & check-out</span>
@@ -61,7 +61,7 @@ export function Rooms() {
           </div>
           {dateOpen && <div className="absolute left-0 top-[calc(100%+10px)] z-20 w-[min(370px,90vw)] rounded-[18px] border border-[#e8e8e8] bg-white p-3.5 shadow-[0_18px_50px_#0002]"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="mt-3 w-full" onClick={() => setDateOpen(false)}>Done</button></div>}
         </div>
-        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] rounded-[14px] border border-[#e5e5e5] bg-white px-[15px] py-[11px] max-[500px]:min-h-16">
+        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
           <Users size={20} aria-hidden="true" />
           <span className="relative flex min-w-0 flex-1 flex-col">
             <span>Guests</span>
@@ -78,13 +78,13 @@ export function Rooms() {
             <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#515151]" size={16} aria-hidden="true" />
           </span>
         </label>
-        <button className="min-h-[72px] whitespace-nowrap rounded-[14px] max-[500px]:min-h-16" disabled={query.loading}>
+        <button className="min-h-[72px] whitespace-nowrap border border-[#642c14] bg-[#642c14] font-serif text-base font-bold text-[#fff8ee] hover:bg-[#54220e] max-[500px]:min-h-16" disabled={query.loading}>
           Find a room <Search size={18} />
         </button>
       </form>
       <div className="my-9 flex items-center justify-between gap-4">
-        <h1 className="m-0 text-[25px] font-semibold tracking-[-.8px]">Available rooms</h1>
-        <span className="text-[#6e6e6e]">{query.data?.rooms.filter((r) => r.available).length ?? 0} rooms</span>
+        <h1 className="m-0 font-['Gelasio'] text-[30px] font-normal tracking-[-.4px] text-[#441901]">Available rooms</h1>
+        <span className="font-serif text-base text-[#70462c]">{query.data?.rooms.filter((r) => r.available).length ?? 0} rooms</span>
       </div>
       <ErrorBox message={query.error} />
       {query.loading ? (
@@ -94,7 +94,7 @@ export function Rooms() {
           {query.data?.rooms
             .filter((r) => r.available)
             .map((room) => (
-              <article className="overflow-hidden rounded-[22px] border border-[#e8e8e8] bg-white shadow-[0_2px_8px_#00000003] transition hover:border-[#cecece] hover:shadow-[0_6px_24px_#00000008]" key={room.id}>
+              <article className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] transition-colors hover:border-[#9b623e]" key={room.id}>
                 <img
                   className="h-[176px] w-full object-cover"
                   src={room.image_url || roomImage(room)}
@@ -106,9 +106,9 @@ export function Rooms() {
                 />
                 <div className="p-6">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="flex-1 text-lg font-semibold tracking-[-.4px]">{room.room_type}</h3>
+                    <h3 className="flex-1 font-['Gelasio'] text-[22px] font-normal tracking-[-.2px] text-[#441901]">{room.room_type}</h3>
                   </div>
-                  <div className="my-[17px] flex flex-wrap items-center gap-x-[13px] gap-y-[9px] text-[11px] text-[#797979]">
+                  <div className="my-[17px] flex flex-wrap items-center gap-x-[13px] gap-y-[9px] text-[12px] text-[#70462c]">
                     <span className="flex items-center gap-[5px]">
                       <Users size={15} />
                       {room.capacity} guests
@@ -130,9 +130,9 @@ export function Rooms() {
                       </span>
                     )}
                   </div>
-                  <div className="mt-[18px] flex items-center justify-between gap-2.5 border-t border-[#e8e8e8] pt-[17px]">
+                  <div className="mt-[18px] flex items-center justify-between gap-2.5 border-t border-[#d8bfa0] pt-[17px]">
                     <span>
-                      <strong className="text-[23px] font-semibold tracking-[-.7px]">{money(room.price_per_night)}</strong>
+                      <strong className="font-['Gelasio'] text-[24px] font-normal tracking-[-.3px] text-[#54220e]">{money(room.price_per_night)}</strong>
                       <small> / night</small>
                     </span>
                     <button
