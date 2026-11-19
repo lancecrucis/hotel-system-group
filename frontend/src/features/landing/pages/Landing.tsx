@@ -137,13 +137,14 @@ export function Landing() {
   const openHours = settings.data?.settings;
 
   return (
-    <div className="bg-[#f6f2ea] text-[#1b1a17]" id="top">
+    <div className="bg-[#f3e1c7] font-sans text-[#54220e]" id="top">
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
-      <section className="relative flex min-h-screen items-end overflow-hidden bg-[#16211b] text-[#f6f2ea]">
+      <section className="relative flex min-h-[calc(100vh-93px)] items-end overflow-hidden bg-[#54220e] text-[#f3e1c7]">
         <div className="absolute inset-0">
           <img
+            className="h-full w-full object-cover object-center"
             src="/images/landing/hero-1920.webp"
             srcSet="/images/landing/hero-800.webp 800w, /images/landing/hero-1280.webp 1280w, /images/landing/hero-1920.webp 1920w"
             sizes="100vw"
@@ -151,42 +152,42 @@ export function Landing() {
             fetchPriority="high"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#16211b]/90 via-[#16211b]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#351506]/90 via-[#54220e]/25 to-[#351506]/10" />
         <div className="relative mx-auto w-full max-w-[1280px] px-12 pb-[100px] pt-[180px] max-[900px]:px-[22px] max-[900px]:pb-[88px] max-[640px]:pt-[140px]">
           <div className="max-w-[680px]">
-            <span className="mb-5 inline-block text-[10px] font-semibold uppercase tracking-[.26em] text-[#e6d6b8]">Tagaytay Ridge · Est. 1998</span>
-            <h1>
+            <span className="mb-5 inline-block font-serif text-[15px] font-bold uppercase tracking-[.2em] text-[#f3e1c7]">Tagaytay Ridge · Est. 1998</span>
+            <h1 className="mb-5 font-['Gelasio'] text-[clamp(2.75rem,6vw,5.5rem)] font-normal leading-[1.02] tracking-[-.035em] text-[#fff5e6]">
               Quiet luxury above <em>the ridge</em>
             </h1>
-            <p className="max-w-[580px] text-[16px] leading-[1.75] text-[#f6f2ea]/80">
+            <p className="mb-7 max-w-[580px] text-[17px] leading-[1.75] text-[#fff5e6]/85">
               {HOTEL_NAME} is a boutique hotel and restaurant where warm Filipino hospitality meets
               considered, contemporary comfort. Rooms that open to the garden, and a table that is
               always yours.
             </p>
             <div className="flex flex-wrap gap-3.5 max-[640px]:[&>a]:w-full">
-              <Link className="bg-[#b08d57] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
+              <Link className="inline-flex items-center gap-2 bg-[#b8763c] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#a76530]" to="/rooms">
                 Find a Room <ArrowRight size={15} />
               </Link>
-              <Link className="border border-[#f6f2ea]/60 px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#f6f2ea] no-underline" to="/dining">
+              <Link className="border border-[#f3e1c7]/70 px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/dining">
                 Book a Table
               </Link>
             </div>
             <dl className="mt-14 flex max-w-[560px] flex-wrap gap-x-[34px] gap-y-4 border-t border-white/20 pt-[26px]">
               <div>
-                <dt>{rooms.data?.rooms.length ? `${rooms.data.rooms.length}` : '6'}</dt>
-                <dd>Rooms &amp; suites</dd>
+                <dt className="font-['Gelasio'] text-[26px] text-[#fff5e6]">{rooms.data?.rooms.length ? `${rooms.data.rooms.length}` : '6'}</dt>
+                <dd className="mt-1 text-[12px] text-[#fff5e6]/75">Rooms &amp; suites</dd>
               </div>
               <div>
-                <dt>3 PM</dt>
-                <dd>Check-in</dd>
+                <dt className="font-['Gelasio'] text-[26px] text-[#fff5e6]">3 PM</dt>
+                <dd className="mt-1 text-[12px] text-[#fff5e6]/75">Check-in</dd>
               </div>
               <div>
-                <dt>
+                <dt className="font-['Gelasio'] text-[26px] text-[#fff5e6]">
                   {openHours
                     ? `${openHours.opening_time.slice(0, 5)}–${openHours.closing_time.slice(0, 5)}`
                     : '08:00–22:00'}
                 </dt>
-                <dd>Restaurant hours</dd>
+                <dd className="mt-1 text-[12px] text-[#fff5e6]/75">Restaurant hours</dd>
               </div>
             </dl>
           </div>
@@ -198,12 +199,12 @@ export function Landing() {
       </section>
 
       {/* ---------------- rooms ---------------- */}
-      <section className="bg-[#f6f2ea] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
+      <section className="bg-[#f3e1c7] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
-              <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#b08d57]">Accommodation</span>
-              <h2 className="font-serif text-[42px] font-normal leading-[1.1] tracking-[-.02em] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
+              <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#a64b1c]">Accommodation</span>
+              <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#441901] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
             </div>
             <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#625b51] no-underline" to="/rooms">
               View all rooms
@@ -217,8 +218,8 @@ export function Landing() {
                 key={card.type}
               >
                 <figure className="relative aspect-[4/3] overflow-hidden bg-[#eee5d8]">
-                  <img src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
-                  <figcaption className="absolute bottom-0 left-0 bg-[#16211b]/90 px-[15px] py-2 text-[10px] uppercase tracking-[.18em] text-white">{card.type}</figcaption>
+                  <img className="h-full w-full object-cover" src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
+                  <figcaption className="absolute bottom-0 left-0 bg-[#54220e]/90 px-[15px] py-2 font-serif text-[13px] font-bold uppercase tracking-[.12em] text-white">{card.type}</figcaption>
                 </figure>
                 <div className="flex flex-1 flex-col p-[26px] pb-7">
                   <h3 className="font-serif text-[23px] font-normal">{card.type}</h3>
@@ -262,12 +263,12 @@ export function Landing() {
       </section>
 
       {/* ---------------- restaurant ---------------- */}
-      <section className="relative overflow-hidden bg-[#16211b] px-0 py-[110px] text-[#f6f2ea] max-[900px]:py-[76px]" id="restaurant">
+      <section className="relative overflow-hidden bg-[#54220e] px-0 py-[110px] text-[#f3e1c7] max-[900px]:py-[76px]" id="restaurant">
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#e6d6b8]">The Restaurant</span>
-            <h2 className="font-serif text-[46px] font-normal leading-[1.1] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
-            <p className="max-w-[470px] text-[15px] leading-[1.8] text-[#f6f2ea]/75">
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#e8bd91]">The Restaurant</span>
+            <h2 className="font-['Gelasio'] text-[46px] font-normal leading-[1.1] text-[#fff5e6] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
+            <p className="max-w-[470px] text-[16px] leading-[1.8] text-[#fff5e6]/80">
               Our kitchen cooks with what the season gives us — highland vegetables, herbs from the
               terrace, and fish brought in each morning. Breakfast, lunch, and dinner are served in a
               light-filled room that opens onto the garden.
@@ -290,12 +291,13 @@ export function Landing() {
                 <span>Smart casual</span>
               </li>
             </ul>
-            <Link className="inline-flex items-center gap-2 bg-[#d8c3a0] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#16211b] no-underline" to="/dining">
+            <Link className="inline-flex items-center gap-2 bg-[#b8763c] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#a76530]" to="/dining">
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
           <figure className="relative order-2 aspect-[5/6] overflow-hidden max-[900px]:aspect-[4/3]">
             <img
+              className="h-full w-full object-cover"
               src="/images/landing/dining-1280.webp"
               alt="The LA Illustrada restaurant, set with white linen beside garden windows"
               loading="lazy"
@@ -306,11 +308,11 @@ export function Landing() {
       </section>
 
       {/* ---------------- contact ---------------- */}
-      <section className="bg-[#eee5d8] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
+      <section className="bg-[#ead5b8] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-[#b08d57]">Contact Us</span>
-            <h2 className="font-serif text-[42px] font-normal leading-[1.1] tracking-[-.02em] max-[640px]:text-[34px]">We would love to hear from you</h2>
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#a64b1c]">Contact Us</span>
+            <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#441901] max-[640px]:text-[34px]">We would love to hear from you</h2>
             <dl className="mt-[34px] grid">
               <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Address</dt>
@@ -335,8 +337,8 @@ export function Landing() {
             </dl>
           </div>
 
-          <div className="border border-[#ded6c9] bg-white px-10 py-11 max-[900px]:px-[26px]">
-            <h3>Plan your visit</h3>
+          <div className="border border-[#b99673] bg-[#f7e8d2] px-10 py-11 max-[900px]:px-[26px]">
+            <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#441901]">Plan your visit</h3>
             <p>
               Booking takes about two minutes. Sign in with your account, choose your dates, and
               you will have a confirmation reference right away.
@@ -382,21 +384,21 @@ export function Landing() {
       </section>
 
       {/* ---------------- footer ---------------- */}
-      <footer className="bg-[#101912] px-0 pt-[76px] text-[#f6f2ea]/70">
+      <footer className="bg-[#351506] px-0 pt-[76px] text-[#f3e1c7]/80">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-14 pb-[60px] max-[900px]:grid-cols-1 max-[900px]:gap-[38px] max-[900px]:pb-11">
             <div>
-              <span className="flex flex-col text-[#f6f2ea]">
+              <span className="flex flex-col text-[#f3e1c7]">
                 <span className="font-serif text-[21px] tracking-[.08em]">LA Illustrada</span>
-                <span className="text-[9px] uppercase tracking-[.28em] text-[#d8c3a0]">Hotel &amp; Restaurant</span>
+                <span className="text-[9px] uppercase tracking-[.28em] text-[#e8bd91]">Hotel &amp; Restaurant</span>
               </span>
               <p className="max-w-[330px] text-[13px] leading-[1.75] text-white/60">
                 A boutique hotel and restaurant on the Tagaytay ridge, welcoming guests since 1998.
               </p>
             </div>
             <div>
-              <h4>Explore</h4>
-              <ul>
+              <h4 className="mb-4 font-serif text-xl font-bold text-[#f3e1c7]">Explore</h4>
+              <ul className="m-0 list-none space-y-2 p-0 text-[14px] text-[#f3e1c7]/80">
                 <li>
                   <Link to="/rooms">Rooms &amp; suites</Link>
                 </li>
@@ -409,8 +411,8 @@ export function Landing() {
               </ul>
             </div>
             <div>
-              <h4>Guest access</h4>
-              <ul>
+              <h4 className="mb-4 font-serif text-xl font-bold text-[#f3e1c7]">Guest access</h4>
+              <ul className="m-0 list-none space-y-2 p-0 text-[14px] text-[#f3e1c7]/80">
                 <li>
                   <Link to="/login">Login</Link>
                 </li>
