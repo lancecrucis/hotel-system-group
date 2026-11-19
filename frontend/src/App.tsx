@@ -93,9 +93,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <div className="min-h-screen bg-[#fafafa] font-sans text-sm leading-[1.55] text-[#1d1d1d] antialiased">
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </div>
     </BrowserRouter>
   );
 }

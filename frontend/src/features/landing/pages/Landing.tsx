@@ -213,9 +213,8 @@ export function Landing() {
           <div className="grid grid-cols-3 gap-[30px] max-[1080px]:grid-cols-2 max-[640px]:grid-cols-1">
             {cards.map((card, index) => (
               <article
-                className="flex flex-col border border-[#ded6c9] bg-white transition hover:-translate-y-1.5 hover:border-[#b08d57]/50 hover:shadow-[0_22px_44px_rgba(27,26,23,.12)]"
+                className={`flex flex-col border border-[#ded6c9] bg-white transition hover:-translate-y-1.5 hover:border-[#b08d57]/50 hover:shadow-[0_22px_44px_rgba(27,26,23,.12)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
                 key={card.type}
-                style={{ transitionDelay: `${index * 90}ms` }}
               >
                 <figure className="relative aspect-[4/3] overflow-hidden bg-[#eee5d8]">
                   <img src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
