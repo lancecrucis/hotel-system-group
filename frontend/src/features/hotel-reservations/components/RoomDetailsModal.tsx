@@ -77,7 +77,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
 
   const total = Number(room.price_per_night) * nightCount;
 
-  return <Modal title={created ? 'Reservation submitted' : step === 1 ? room.room_type : 'Complete your booking'} className="max-w-[1100px] w-[calc(100%-34px)] border border-[#c8a783] bg-[#f3e1c7] p-7 text-[#54220e] max-[760px]:p-[17px]" onClose={() => { if (!busy) onClose(); }}>
+  return <Modal title={created ? 'Reservation submitted' : step === 1 ? room.room_type : 'Complete your booking'} className="max-w-[900px] w-[calc(100%-2rem)] border border-[#c8a783] bg-[#f3e1c7] p-7 text-[#54220e] max-[760px]:p-[17px]" onClose={() => { if (!busy) onClose(); }}>
     <div className={`${step > 1 ? 'block' : 'grid grid-cols-[minmax(0,1.35fr)_minmax(320px,.9fr)] gap-7 max-[760px]:grid-cols-1'}`}>
       {step === 1 && <div>
         <div className="relative overflow-hidden border border-[#d8bfa0] bg-[#ead5b8]">

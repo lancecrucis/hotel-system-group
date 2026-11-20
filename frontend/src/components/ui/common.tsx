@@ -79,7 +79,7 @@ export function Modal({
     return () => el?.close();
   }, []);
   return (
-    <dialog ref={ref} className={`border border-[#b99673] bg-[#fff8ee] text-[#54220e] shadow-[0_22px_70px_rgba(55,24,8,.22)] ${className ?? ''}`} onCancel={onClose} aria-labelledby={id}>
+    <dialog ref={ref} className={`m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-[600px] overflow-y-auto border border-[#b99673] bg-[#fff8ee] p-6 text-[#54220e] shadow-[0_22px_70px_rgba(55,24,8,.22)] backdrop:bg-[rgba(35,18,10,.58)] ${className ?? ''}`} onCancel={onClose} aria-labelledby={id}>
       <div className="mb-[22px] flex items-center justify-between gap-[15px]">
         <h2 className="m-0 font-['Gelasio'] text-xl font-normal text-[#441901]" id={id}>{title}</h2>
         <button className="min-h-9 border-0 bg-transparent p-2 text-[#70462c] hover:text-[#441901]" onClick={onClose} aria-label="Close dialog">
