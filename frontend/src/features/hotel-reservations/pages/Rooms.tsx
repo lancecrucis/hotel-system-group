@@ -8,12 +8,77 @@ import { StayCalendar } from '../components/StayCalendar';
 import { day, dateLabel, money } from '../../../utils/format';
 
 function roomImage(room: Room) {
+  const roomSpecificImages: Record<string, string> = {
+    '101': '/images/rooms/deluxe-king.webp',
+    '102': '/images/rooms/deluxe-twin.webp',
+    '103': '/images/rooms/deluxe-king-view.png',
+    '201': '/images/rooms/executive-suite-view.png',
+    '202': '/images/rooms/deluxe-twin-view.png',
+    '301': '/images/rooms/family-suite-view.png',
+    '302': '/images/rooms/family-suite.webp',
+    '401': '/images/rooms/executive-suite.webp',
+  };
+  if (roomSpecificImages[room.room_number]) return roomSpecificImages[room.room_number];
   const type = room.room_type.toLowerCase();
   if (type.includes('executive')) return '/images/rooms/executive-suite.webp';
   if (type.includes('family')) return '/images/rooms/family-suite.webp';
   if (type.includes('twin') || room.bed_count > 1) return '/images/rooms/deluxe-twin.webp';
   return '/images/rooms/deluxe-king.webp';
 }
+
+function RoomCard({ room, onSelect }: { room: Room; onSelect: (room: Room) => void }) {
+  return (
+    <article className="group min-w-0" key={room.id}>
+      <div className="relative overflow-hidden rounded-2xl bg-[#eadfce]">
+        <img
+          className="aspect-[1.3/1] w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]"
+          src={room.image_url || roomImage(room)}
+          alt={`${room.room_type}, room ${room.room_number}`}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = roomImage(room);
+          }}
+        />
+        <span
+          className="absolute right-3 top-3 inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#fffaf2]/95 px-3 text-xs font-medium text-[#3d291f] shadow-sm backdrop-blur-sm"
+          aria-label={room.rating_count ? `${room.rating.toFixed(1)} out of 5 stars from ${room.rating_count} reviews` : 'No ratings yet'}
+        >
+          <Star size={13} className={room.rating_count ? 'fill-[#a65f25] text-[#a65f25]' : 'text-[#806f63]'} aria-hidden="true" />
+          {room.rating_count ? <>{room.rating.toFixed(1)} <span className="text-[#806f63]">({room.rating_count})</span></> : 'New'}
+        </span>
+      </div>
+      <div className="pt-3 font-sans text-[13px] leading-snug text-[#70462c]">
+        <h3 className="m-0 truncate font-sans text-[15px] font-semibold tracking-[-.01em] text-[#3d291f]">{room.room_type}</h3>
+        <p className="mb-0 mt-1 truncate text-[13px] text-[#806f63]">{room.capacity} guests · {room.bed_count} {room.bed_type}{room.has_wifi ? ' · Wi-Fi' : ''}</p>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <p className="m-0 text-[#3d291f]"><strong className="font-sans text-[15px] font-semibold">{money(room.price_per_night)}</strong><span className="ml-1 text-xs text-[#705f50]">per night</span></p>
+          <button className="min-h-9 shrink-0 rounded-full border border-[#70432b] bg-transparent px-4 font-sans text-xs font-semibold text-[#54220e] transition-colors hover:bg-[#70432b] hover:text-[#fff8ee] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28]" onClick={() => onSelect(room)}>
+            View room
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function RoomSection({ title, subtitle, rooms, onSelect }: { title: string; subtitle: string; rooms: Room[]; onSelect: (room: Room) => void }) {
+  if (!rooms.length) return null;
+  return (
+    <section className="mt-9" aria-label={title}>
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="m-0 !font-sans text-xl !font-semibold tracking-[-.025em] text-[#54220e]">{title}</h2>
+          <p className="mb-0 mt-1 text-sm text-[#806348]">{subtitle}</p>
+        </div>
+        <span className="pb-1 text-xs text-[#70462c]">{rooms.length} {rooms.length === 1 ? 'room' : 'rooms'}</span>
+      </div>
+      <div className="grid grid-cols-3 gap-x-5 gap-y-8 max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1">
+        {rooms.map((room) => <RoomCard key={room.id} room={room} onSelect={onSelect} />)}
+      </div>
+    </section>
+  );
+}
+
 export function Rooms() {
   const initial = { room_type: '', check_in: day(1), check_out: day(2), guests: '2' };
   const [filters, setFilters] = useState(initial),
@@ -21,6 +86,29 @@ export function Rooms() {
     [selected, setSelected] = useState<Room | null>(null),
     [dateOpen, setDateOpen] = useState(false);
   const query = useQuery<{ rooms: Room[]; room_types: string[] }>(`/hotel/rooms?${new URLSearchParams(search)}`);
+  const availableRooms = query.data?.rooms.filter((room) => room.available) ?? [];
+  const roomSections = [
+    {
+      title: 'Popular rooms',
+      subtitle: 'Browse every available room and suite',
+      rooms: availableRooms,
+    },
+    {
+      title: 'Great for two',
+      subtitle: 'Comfortable stays for couples and solo travelers',
+      rooms: availableRooms.filter((room) => room.capacity === 2),
+    },
+    {
+      title: 'Room to share',
+      subtitle: 'Extra beds and space for family or friends',
+      rooms: availableRooms.filter((room) => room.capacity >= 3),
+    },
+    {
+      title: 'Suites with extra space',
+      subtitle: 'Roomier layouts for a longer, slower stay',
+      rooms: availableRooms.filter((room) => room.room_type.toLowerCase().includes('suite')),
+    },
+  ];
   return (
     <div className="min-h-[calc(100vh-160px)] bg-[#f9f3e7]">
       <form
@@ -86,53 +174,20 @@ export function Rooms() {
       </form>
       <div className="my-6 flex items-end justify-between gap-4">
         <div>
-          <h1 className="m-0 !font-sans text-2xl !font-semibold tracking-[-.03em] text-[#54220e]">Popular rooms</h1>
-          <p className="mb-0 mt-1 text-sm text-[#806348]">Comfortable stays, selected for you</p>
+          <h1 className="m-0 !font-sans text-2xl !font-semibold tracking-[-.03em] text-[#54220e]">Find your stay</h1>
+          <p className="mb-0 mt-1 text-sm text-[#806348]">Choose a room that suits your trip</p>
         </div>
-        <span className="pb-1 text-sm text-[#70462c]">{query.data?.rooms.filter((r) => r.available).length ?? 0} rooms</span>
+        <span className="pb-1 text-sm text-[#70462c]">{availableRooms.length} {availableRooms.length === 1 ? 'room' : 'rooms'}</span>
       </div>
       <ErrorBox message={query.error} />
       {query.loading ? (
         <Loading />
       ) : (
-        <div className="grid grid-cols-3 gap-x-5 gap-y-8 max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1">
-          {query.data?.rooms
-            .filter((r) => r.available)
-            .map((room) => (
-              <article className="group min-w-0" key={room.id}>
-                <div className="relative overflow-hidden rounded-2xl bg-[#eadfce]">
-                  <img
-                    className="aspect-[1.3/1] w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]"
-                    src={room.image_url || roomImage(room)}
-                    alt={`${room.room_type}, room ${room.room_number}`}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = roomImage(room);
-                    }}
-                  />
-                  <span
-                    className="absolute right-3 top-3 inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#fffaf2]/95 px-3 text-xs font-medium text-[#3d291f] shadow-sm backdrop-blur-sm"
-                    aria-label={room.rating_count ? `${room.rating.toFixed(1)} out of 5 stars from ${room.rating_count} reviews` : 'No ratings yet'}
-                  >
-                    <Star size={13} className={room.rating_count ? 'fill-[#a65f25] text-[#a65f25]' : 'text-[#806f63]'} aria-hidden="true" />
-                    {room.rating_count ? <>{room.rating.toFixed(1)} <span className="text-[#806f63]">({room.rating_count})</span></> : 'New'}
-                  </span>
-                </div>
-                <div className="pt-3 font-sans text-[13px] leading-snug text-[#70462c]">
-                  <h3 className="m-0 truncate font-sans text-[15px] font-semibold tracking-[-.01em] text-[#3d291f]">{room.room_type}</h3>
-                  <p className="mb-0 mt-1 truncate text-[13px] text-[#806f63]">{room.capacity} guests · {room.bed_count} {room.bed_type}{room.has_wifi ? ' · Wi-Fi' : ''}</p>
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    <p className="m-0 text-[#3d291f]"><strong className="font-sans text-[15px] font-semibold">{money(room.price_per_night)}</strong><span className="ml-1 text-xs text-[#705f50]">per night</span></p>
-                    <button className="min-h-9 shrink-0 rounded-full border border-[#70432b] bg-transparent px-4 font-sans text-xs font-semibold text-[#54220e] transition-colors hover:bg-[#70432b] hover:text-[#fff8ee] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28]" onClick={() => setSelected(room)}>
-                      View room
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
+        <div>
+          {roomSections.map((section) => <RoomSection key={section.title} {...section} onSelect={setSelected} />)}
         </div>
       )}
-      {!query.loading && !query.error && query.data?.rooms.filter((r) => r.available).length === 0 && (
+      {!query.loading && !query.error && availableRooms.length === 0 && (
         <Empty title="No rooms available" />
       )}
       {selected && <RoomDetailsModal key={selected.id} room={selected} initialStay={{ checkIn: search.check_in, checkOut: search.check_out }} initialGuests={Number(search.guests)} onClose={() => setSelected(null)} />}
