@@ -96,15 +96,15 @@ export function AuthPage({ register = false }: { register?: boolean }) {
   }
 
   return (
-    <div className={`relative z-[1] ${register ? 'w-[min(100%,432px)]' : 'w-[min(100%,330px)]'}`}>
+    <div className={`relative z-[1] ${register ? 'w-[min(100%,432px)]' : 'w-[min(100%,430px)]'}`}>
       <>
         <div className={`${register ? 'mb-3' : 'mb-2'} text-center`}>
 
-          <img className="mx-auto block w-[58px]" 
+          <img className={`mx-auto block ${register ? 'w-[58px]' : 'w-[64px]'}`} 
           src="/images/login%20elements/logo%20girl%20image.png" 
           alt="" />
 
-          <img className="mx-auto block w-[min(100%,336px)]" 
+          <img className={`mx-auto block ${register ? 'w-[min(100%,336px)]' : 'w-[min(100%,336px)]'}`} 
           src="/images/login%20elements/logo%20title%20page.png" 
           alt="La Illustrada Hotel" />
 
@@ -119,7 +119,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
         <ErrorBox message={error} />
         {success && <Success message={success} />}
         {!success && (
-          <form onSubmit={submit} className="flex flex-col gap-1.5">
+          <form onSubmit={submit} className={`flex flex-col ${register ? 'gap-1.5' : 'gap-4'}`}>
             {register && (
               <div className={`grid ${register ? 'grid-cols-2 gap-x-2 gap-y-1.5' : 'grid-cols-2 gap-[18px] max-[500px]:grid-cols-1'}`}>
                 <label className="flex flex-col gap-[7px] font-serif text-sm font-normal text-[#54220e]">
@@ -149,9 +149,9 @@ export function AuthPage({ register = false }: { register?: boolean }) {
               </div>
             )}
             {register && <label className="flex flex-col gap-[7px] font-serif text-sm text-[#54220e]">Date of birth<input className="!min-h-[44px] !rounded-[10px] !border !border-[#b99673] !bg-transparent !px-4 !py-2 !font-sans !text-sm" type="date" name="date_of_birth" /></label>}
-            <label className={`flex flex-col ${register ? 'gap-[5px]' : 'gap-2'} font-serif text-sm font-normal text-[#54220e]`}>
+            <label className={`flex flex-col ${register ? 'gap-[5px]' : 'gap-2'} font-serif ${register ? 'text-sm' : 'text-base'} font-normal text-[#54220e]`}>
               Email address
-              <div className={`flex ${register ? 'h-11 rounded-[10px] border-[#b99673]' : 'h-[34px] border-[#b99673]'} min-w-0 items-center overflow-hidden border bg-transparent text-[#a52f0f]`}><Mail className="ml-[11px] shrink-0" size={register ? 18 : 15} /><input
+              <div className={`flex ${register ? 'h-11' : 'h-12'} min-w-0 items-center overflow-hidden rounded-[10px] border border-[#b99673] bg-transparent text-[#a52f0f]`}><Mail className="ml-3 shrink-0" size={18} /><input
                 className="min-w-0 flex-1 !w-auto !min-h-0 !border-0 !bg-transparent !p-[10px_14px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
                 type="email"
                 name="email"
@@ -162,10 +162,10 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                 autoComplete="email"
               /></div>
             </label>
-            <label className={`flex flex-col ${register ? 'gap-[5px]' : 'gap-2'} font-serif text-sm font-normal text-[#54220e]`}>
+            <label className={`flex flex-col ${register ? 'gap-[5px]' : 'gap-2'} font-serif ${register ? 'text-sm' : 'text-base'} font-normal text-[#54220e]`}>
               Password
-              <div className={`relative ${register ? 'h-11 rounded-[10px]' : 'h-[34px]'} w-full overflow-hidden border border-[#b99673] bg-transparent`}>
-                {!register && <LockKeyhole className="absolute left-[11px] top-1/2 -translate-y-1/2 text-[#a52f0f]" size={15} aria-hidden="true" />}
+              <div className={`relative ${register ? 'h-11' : 'h-12'} w-full overflow-hidden rounded-[10px] border border-[#b99673] bg-transparent`}>
+                {!register && <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a52f0f]" size={18} aria-hidden="true" />}
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -176,7 +176,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                   onChange={(e) => updatePassword(e.target.value)}
                   autoComplete={register ? 'new-password' : 'current-password'}
                   placeholder={register ? undefined : 'Password'}
-                  className={`!min-h-0 !w-full !border-0 !bg-transparent !p-[6px_32px_6px_12px] !font-sans !font-normal !text-[#54220e] focus:!outline-none ${register ? '' : '!pl-[36px]'} [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]`}
+                  className={`!min-h-0 !w-full !border-0 !bg-transparent !p-[10px_42px_10px_14px] !font-sans !font-normal !text-[#54220e] focus:!outline-none ${register ? '' : '!pl-[44px]'} [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]`}
                 />
                 <button
                   type="button"
@@ -219,20 +219,20 @@ export function AuthPage({ register = false }: { register?: boolean }) {
               </>
             )}
             {!register && (
-              <div className="flex flex-wrap items-center justify-between gap-3 font-sans text-xs font-normal text-[#54220e]">
-                <label className="!m-0 !flex !flex-row !items-center !gap-1.5 !whitespace-nowrap !font-sans !text-xs !font-normal">
-                  <input className="!m-0 !h-4 !min-h-0 !w-4 shrink-0 accent-[#a52f0f]" type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me
+              <div className="flex flex-wrap items-center justify-between gap-3 font-sans text-sm font-normal text-[#54220e]">
+                <label className="!m-0 !flex !flex-row !items-center !gap-2 !whitespace-nowrap !font-sans !text-sm !font-normal">
+                  <input className="!m-0 !h-5 !min-h-0 !w-5 shrink-0 accent-[#a52f0f]" type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me
                 </label>
-                <Link className="text-[11px] text-[#b7471a] underline underline-offset-2" to="/forgot-password">Forgot password</Link>
+                <Link className="text-xs text-[#b7471a] underline underline-offset-2" to="/forgot-password">Forgot password</Link>
               </div>
             )}
-            <button className={`${register ? 'min-h-11 rounded-[9px] text-xl' : 'min-h-9 rounded-full text-lg'} w-full border-0 bg-[#642c14] px-4 py-1.5 font-['Crimson_Text'] font-bold text-[#fff8ed] hover:bg-[#54220e]`} type="submit" disabled={busy}>
+            <button className="min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e]" type="submit" disabled={busy}>
               {busy ? (register ? 'Creating account…' : 'Logging in…') : register ? 'Create account' : 'Login'}
             </button>
           </form>
         )}
         {!register && !success && (
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 font-sans text-xs text-[#54220e]">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 font-sans text-sm text-[#54220e]">
             <span className="mr-1 font-semibold">Demo accounts:</span>
             {(['guest', 'staff', 'admin'] as const).map((role) => (
               <button
