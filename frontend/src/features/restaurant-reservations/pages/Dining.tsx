@@ -27,10 +27,7 @@ export function Dining() {
   const query = useQuery<{ slots: Slot[]; settings: Settings }>(
     `/restaurant/availability?${new URLSearchParams({ date: date || day(), guests: guests || '2' })}`,
   );
-  const slot =
-    query.data?.slots.find((item) => item.start_time === time) ??
-    query.data?.slots.find((item) => item.available) ??
-    query.data?.slots[0];
+  const slot = query.data?.slots.find((item) => item.start_time === time);
   const maximumSeats = Math.max(0, ...(query.data?.slots[0]?.tables.map((table) => table.capacity) ?? []));
   const maxGuests = Math.min(query.data?.settings.max_guest_per_booking ?? 10, maximumSeats || 10);
   const guestCount = Number(guests) || 0;
@@ -96,6 +93,7 @@ export function Dining() {
               disabled={busy}
               onChange={(e) => {
                 setDate(e.target.value);
+                setTime('');
                 setError('');
               }}
             />
@@ -143,8 +141,13 @@ export function Dining() {
             })}
           </div>
         </fieldset>
+        {!query.loading && !query.error && query.data && query.data.slots.length > 0 && !slot && (
+          <p className="mt-3 text-sm text-[#70462c]">Choose a dining time to continue.</p>
+        )}
         {query.loading ? <Loading /> : <ErrorBox message={query.error} />}
-        {!query.loading && !query.error && !slot && <ErrorBox message="No dining times available." />}
+        {!query.loading && !query.error && query.data?.slots.length === 0 && (
+          <ErrorBox message="No dining times available for this date." />
+        )}
         {!query.loading && slot && !slot.available && (
           <ErrorBox
             message={
@@ -163,9 +166,9 @@ export function Dining() {
               <ContactFields />
             </div>
             <div className="mt-6 flex items-center justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
-              <span className="text-xs text-[#70462c]">Confirm within 15 minutes.</span>
+              <span className="text-xs text-[#70462c]">Your reservation is confirmed when you book.</span>
               <button className="border border-[#642c14] bg-[#642c14] font-serif text-base font-bold text-[#fff8ee] hover:bg-[#54220e]" disabled={busy || query.loading || !slot?.available || !date || !guests}>
-                {busy ? 'Holding your time…' : 'Continue to confirmation'}
+                {busy ? 'Booking your table…' : 'Reserve table'}
               </button>
             </div>
           </>
