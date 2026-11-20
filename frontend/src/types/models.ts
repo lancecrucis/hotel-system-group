@@ -21,6 +21,8 @@ export interface Room {
   has_wifi: boolean;
   breakfast_included: boolean;
   special_amenities: string;
+  rating: number;
+  rating_count: number;
   available: boolean;
   images: { image_url: string }[];
 }

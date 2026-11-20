@@ -118,6 +118,29 @@ try {
       [number, type, price, capacity, bed, count, description, amenities, breakfast],
     );
   }
+  const sampleRatings = [
+    ['101', 'Mia R.', 5, 'Comfortable room and a lovely stay.'],
+    ['101', 'Daniel C.', 4, 'Clean, quiet, and great value.'],
+    ['101', 'Lara S.', 5, 'Warm service and a very comfortable bed.'],
+    ['102', 'Paolo M.', 5, 'The twin beds were perfect for our trip.'],
+    ['102', 'Nina T.', 4, 'Neat room with everything we needed.'],
+    ['103', 'Bea L.', 5, 'Peaceful room and helpful staff.'],
+    ['201', 'Marco D.', 5, 'Spacious room with a beautiful balcony.'],
+    ['201', 'Iris G.', 4, 'Lovely stay; breakfast was a nice bonus.'],
+    ['202', 'Sam P.', 5, 'Plenty of room and a relaxing view.'],
+    ['301', 'Jules A.', 5, 'The family had lots of space to unwind.'],
+    ['302', 'Celine V.', 4, 'Bright, spacious, and comfortable.'],
+    ['401', 'Theo B.', 5, 'A special stay with excellent amenities.'],
+    ['401', 'Ana F.', 5, 'Beautiful suite and attentive service.'],
+  ] as const;
+  for (const [roomNumber, reviewer, rating, review] of sampleRatings) {
+    await c.query(
+      `INSERT INTO room_ratings(room_id,reviewer_name,rating,review_text)
+       SELECT id,$2,$3,$4 FROM rooms WHERE room_number=$1
+       ON CONFLICT(room_id,reviewer_name,review_text) DO NOTHING`,
+      [roomNumber, reviewer, rating, review],
+    );
+  }
   await c.query(
     "INSERT INTO restaurant_settings(id,max_capacity,opening_time,closing_time,max_guest_per_booking) VALUES(1,40,'08:00','22:00',10) ON CONFLICT(id) DO NOTHING",
   );

@@ -47,7 +47,10 @@ hotelRouter.get(
     if (filter.check_in && !(await validateStay(pool, filter.check_in, filter.check_out!)))
       throw new HttpError(400, 'Choose a future stay between 1 and 30 nights.');
     const result = await pool.query(
-      `SELECT rm.*,COALESCE((SELECT json_agg(i ORDER BY i.display_order) FROM room_images i WHERE i.room_id=rm.id),'[]') AS images
+      `SELECT rm.*,
+        COALESCE((SELECT json_agg(i ORDER BY i.display_order) FROM room_images i WHERE i.room_id=rm.id),'[]') AS images,
+        COALESCE((SELECT round(avg(rr.rating)::numeric,1) FROM room_ratings rr WHERE rr.room_id=rm.id),0)::float AS rating,
+        (SELECT count(*)::int FROM room_ratings rr WHERE rr.room_id=rm.id) AS rating_count
     FROM rooms rm WHERE ($1::boolean OR status='available') AND capacity>=$2
     AND ($3::text='' OR room_type=$3) ORDER BY price_per_night,room_number`,
       [req.user?.role === 'staff' || req.user?.role === 'admin', filter.guests, filter.room_type],
