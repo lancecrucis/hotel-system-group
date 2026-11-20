@@ -28,7 +28,7 @@ export function Users() {
       <PageHeader title="Users & roles" />
       <ErrorBox message={query.error || error} />
       <Success message={message} />
-      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white">
+      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee]">
         {query.loading && !query.data ? (
           <Loading />
         ) : (
@@ -36,14 +36,14 @@ export function Users() {
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr>
-                  {['Name', 'Email', 'Phone', 'Role', 'Assign role'].map((heading) => <th className="whitespace-nowrap bg-[#fcfcfc] px-5 py-[17px] text-[10px] font-semibold uppercase tracking-[.6px] text-[#888]" key={heading}>{heading}</th>)}
+                  {['Name', 'Email', 'Phone', 'Role', 'Assign role'].map((heading) => <th className="whitespace-nowrap bg-[#ead5b8] px-5 py-[17px] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]" key={heading}>{heading}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {query.data?.users.map((u) => (
                   <tr key={u.id}>
                     <td>
-                      {u.first_name} {u.last_name}
+                      <span className="font-medium text-[#54220e]">{u.first_name} {u.last_name}</span>
                       {u.id === user!.id && <small>You</small>}
                     </td>
                     <td>{u.email}</td>

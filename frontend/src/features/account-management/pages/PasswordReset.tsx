@@ -35,11 +35,11 @@ export function ForgotPassword() {
   return (
     <div className="max-w-[720px]">
       <PageHeader title="Forgot password" />
-      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
+      <div className="border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
-        {message && <p className="text-[#6e6e6e]">{message}</p>}
+        {message && <p className="text-[#70462c]">{message}</p>}
         {resetLink && (
-          <div className="mb-5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px]">
+          <div className="mb-5 border border-[#c8a783] bg-[#f7e8d2] px-[15px] py-[13px] text-[13px]">
             <span>
               Dev link: <a href={resetLink}>Reset your password</a>
             </span>
@@ -104,12 +104,12 @@ export function ResetPassword() {
   return (
     <div className="max-w-[720px]">
       <PageHeader title="Reset password" />
-      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
+      <div className="border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error || (!token ? 'Reset link is missing or invalid.' : '')} />
         {done ? (
           <>
-            {message && <p className="text-[#6e6e6e]">{message}</p>}
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline" to="/login">Log in</Link>
+            {message && <p className="text-[#806348]">{message}</p>}
+            <Link className="inline-flex min-h-11 items-center justify-center border border-[#642c14] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/login">Log in</Link>
           </>
         ) : (
           <form className="flex flex-col gap-[18px]" onSubmit={submit}>
@@ -128,7 +128,7 @@ export function ResetPassword() {
                 />
                 <button
                   type="button"
-                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#6e6e6e] hover:text-[#1d1d1d]"
+                  className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#806348] hover:text-[#441901]"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -201,18 +201,18 @@ export function VerifyEmail() {
   return (
     <div className="max-w-[720px]">
       <PageHeader title="Verify email" />
-      <div className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[22px]">
+      <div className="border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[22px]">
         <ErrorBox message={error} />
-        {busy && <p className="text-[#6e6e6e]">Verifying…</p>}
+        {busy && <p className="text-[#806348]">Verifying…</p>}
         {message && (
           <div className="flex flex-col gap-[18px]">
-            <div className="mb-5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px]"><span>{message}</span></div>
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline" to="/login">Log in</Link>
+            <div className="mb-5 border border-[#c8a783] bg-[#f7e8d2] px-[15px] py-[13px] text-[13px]"><span>{message}</span></div>
+            <Link className="inline-flex min-h-11 items-center justify-center border border-[#642c14] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/login">Log in</Link>
           </div>
         )}
-        {resendMessage && <p className="text-[#6e6e6e]">{resendMessage}</p>}
+        {resendMessage && <p className="text-[#70462c]">{resendMessage}</p>}
         {resendLink && (
-          <div className="mb-5 rounded-[7px] border border-[#d4d4d4] bg-white px-[15px] py-[13px] text-[13px]">
+          <div className="mb-5 border border-[#c8a783] bg-[#f7e8d2] px-[15px] py-[13px] text-[13px]">
             <span>
               Dev link: <a href={resendLink}>Verify now</a>
             </span>
@@ -220,7 +220,7 @@ export function VerifyEmail() {
         )}
         {(error || (!token && !message)) && (
           <form className="flex flex-col gap-[18px]" onSubmit={resend}>
-            <p className="text-[#6e6e6e]">Enter your email to receive a new verification link.</p>
+            <p className="text-[#806348]">Enter your email to receive a new verification link.</p>
             <label>
               Email address
               <input

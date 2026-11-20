@@ -113,14 +113,14 @@ export function ReservationDetail() {
   }
   return (
     <>
-      <Link className="mb-4 inline-flex items-center gap-1.5 text-xs text-[#6e6e6e]" to="/reservations">
+      <Link className="mb-4 inline-flex items-center gap-1.5 font-serif text-sm text-[#8f421d]" to="/reservations">
         <ArrowLeft size={16} />
         All reservations
       </Link>
       <PageHeader
         title={r.reservation_reference}
         action={
-          <button className="print:hidden rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold text-[#1d1d1d]" onClick={() => window.print()}>
+          <button className="print:hidden border border-[#a87652] bg-[#fff8ee] px-4 py-2 font-serif text-xs font-bold text-[#642c14] hover:bg-[#f1dfc8]" onClick={() => window.print()}>
             <Printer size={17} />
             Print details
           </button>
@@ -129,7 +129,7 @@ export function ReservationDetail() {
       <ErrorBox message={query.error || error} />
       <Success message={success} />
       {r.status === 'pending' && (
-        <div className="mb-5 flex items-start gap-2.5 rounded-[7px] border border-dashed border-[#b8b8b8] bg-[#f5f5f5] px-[15px] py-[13px] text-[13px] text-[#424242]">
+        <div className="mb-5 flex items-start gap-2.5 border border-dashed border-[#a87652] bg-[#f7e8d2] px-[15px] py-[13px] text-[13px] text-[#54220e]">
           <Clock size={20} />
           <div>
             <strong>Confirm by {timestamp(r.hold_expires_at!)}</strong>
@@ -138,12 +138,12 @@ export function ReservationDetail() {
       )}
       <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(290px,.75fr)] items-start gap-[18px] max-[1200px]:grid-cols-1">
         <div className="flex flex-col gap-3">
-          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px]">
             <div className="flex items-center justify-between gap-4">
               <h2>Reservation details</h2>
               <Badge status={r.status} />
             </div>
-            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#e8e8e8] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#6e6e6e] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs max-[500px]:[&>div]:grid-cols-[1fr_1.3fr]">
+            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#d8bfa0] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#806348] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs max-[500px]:[&>div]:grid-cols-[1fr_1.3fr]">
               {r.hotel ? (
                 <>
                   <div>
@@ -241,12 +241,12 @@ export function ReservationDetail() {
               )}
             </dl>
           </section>
-          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px]">
             <h2>Status timeline</h2>
             <ol className="relative ml-1 list-none space-y-5 border-l-2 border-[#ddd] pl-7">
               {history.map((h) => (
                 <li key={h.id}>
-                  <span className="absolute -left-[15px] grid h-7 w-7 place-items-center rounded-full border-2 border-[#222] bg-[#222] text-white">
+              <span className="absolute -left-[15px] grid h-7 w-7 place-items-center rounded-full border-2 border-[#642c14] bg-[#642c14] text-white">
                     <Check size={12} />
                   </span>
                   <div className="flex flex-wrap items-center justify-between gap-1">
@@ -261,22 +261,22 @@ export function ReservationDetail() {
           </section>
         </div>
         <div className="flex flex-col gap-3">
-          <section className={`rounded-[20px] border border-[#e8e8e8] bg-white p-5 ${stopped ? 'opacity-80' : ''}`} aria-label="Reservation progress">
+          <section className={`border border-[#c8a783] bg-[#fff8ee] p-5 ${stopped ? 'opacity-80' : ''}`} aria-label="Reservation progress">
             <div className="flex items-start justify-between gap-4"><div><h2 className="m-0 text-xl font-semibold">Reservation progress</h2></div><Badge status={r.status} /></div>
             <ol className="mt-[17px] list-none space-y-3 p-0">
               {stages.map((stage, index) => {
                 const current = !stopped && !stage.done && !stages.slice(index + 1).some((later) => later.done);
                 return <li key={stage.key} className="flex items-start gap-3" aria-current={current ? 'step' : undefined}>
-                  <span className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-[11px] font-bold ${stage.done || current ? 'border-[#222] bg-[#222] text-white' : 'border-[#bbb] bg-white text-[#777]'}`}>{stage.done ? <Check size={15} /> : index + 1}</span>
-                  <div className="flex flex-col"><strong className={stage.done || current ? 'text-[#1d1d1d]' : 'text-[#888]'}>{stage.name}</strong>{stage.detail && <small className="font-semibold text-[#1d1d1d]">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
+                  <span className={`relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-[11px] font-bold ${stage.done || current ? 'border-[#642c14] bg-[#642c14] text-white' : 'border-[#c8a783] bg-[#fff8ee] text-[#806348]'}`}>{stage.done ? <Check size={15} /> : index + 1}</span>
+                  <div className="flex flex-col"><strong className={stage.done || current ? 'text-[#54220e]' : 'text-[#9b8064]'}>{stage.name}</strong>{stage.detail && <small className="font-semibold text-[#54220e]">{stage.detail}</small>}{stage.event && <small>{timestamp(stage.event.changed_at)}</small>}{current && !stage.event && <small>Up next</small>}</div>
                 </li>;
               })}
             </ol>
-            {stopped && <p className="mt-4 text-xs text-[#6e6e6e]">Reservation {label(r.status).toLowerCase()}.</p>}
+            {stopped && <p className="mt-4 text-xs text-[#806348]">Reservation {label(r.status).toLowerCase()}.</p>}
           </section>
-          <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px]">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px]">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
-            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#e8e8e8] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#6e6e6e] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs">
+            <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#d8bfa0] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#806348] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs">
               <div>
                 <dt>Total</dt>
                 <dd>{money(r.total_amount)}</dd>
@@ -294,7 +294,7 @@ export function ReservationDetail() {
                 <dd>{money(['cancelled', 'no_show'].includes(r.status) ? paid : balance)}</dd>
               </div>
             </dl>
-            <p className="text-xs text-[#6e6e6e]">
+            <p className="text-xs text-[#806348]">
               {r.reservation_type === 'hotel' ? 'Pay at the property.' : 'Meal billed at the restaurant.'}
             </p>
             {staff &&
@@ -302,7 +302,7 @@ export function ReservationDetail() {
               ['confirmed', 'checked_in'].includes(r.status) &&
               balance > 0 && (
                 <button
-                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
+                  className="print:hidden w-full border border-[#642c14] bg-[#642c14] px-4 py-2 text-xs font-semibold text-[#fff8ee] hover:bg-[#54220e]"
                   onClick={() => {
                     setError('');
                     setFinancial('payment');
@@ -315,7 +315,7 @@ export function ReservationDetail() {
               refundable.length > 0 &&
               ['cancelled', 'checked_out', 'completed', 'no_show'].includes(r.status) && (
                 <button
-                  className="print:hidden w-full rounded-full border border-[#dedede] bg-white px-4 py-2 text-xs font-semibold"
+                  className="print:hidden w-full border border-[#c8a783] bg-[#ead5b8] px-4 py-2 text-xs font-semibold text-[#54220e] hover:bg-[#d8bfa0]"
                   onClick={() => {
                     setError('');
                     setFinancial('refund');
@@ -325,7 +325,7 @@ export function ReservationDetail() {
                 </button>
               )}
             {(payments.length > 0 || refunds.length > 0) && (
-              <div className="mt-4 space-y-3 border-t border-[#e8e8e8] pt-4">
+              <div className="mt-4 space-y-3 border-t border-[#d8bfa0] pt-4">
                 {payments.map((p) => (
                   <div key={p.id}>
                     <strong>
@@ -348,7 +348,7 @@ export function ReservationDetail() {
             )}
           </section>
           {allowed_actions.length > 0 && (
-            <section className="rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] no-print">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px] no-print">
               <h2>Next actions</h2>
               <div className="flex flex-col gap-[18px]">
                 {allowed_actions.map((s) => (
