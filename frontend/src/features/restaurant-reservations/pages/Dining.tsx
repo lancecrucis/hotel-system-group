@@ -77,14 +77,14 @@ export function Dining() {
 
   return (
     <>
-      <div className="mb-6 h-[190px] overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-[#f0f0f0] max-[500px]:h-[140px]">
+      <div className="mb-6 h-[190px] overflow-hidden border border-[#c8a783] bg-[#ead5b8] max-[500px]:h-[140px]">
         <img className="block h-full w-full object-cover object-[center_53%]" src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
       </div>
       <div className="mx-auto mb-5 flex max-w-[820px] items-baseline justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
-        <h1 className="m-0 text-[32px] font-semibold leading-[1.15] tracking-[-1px]">Reserve a table</h1>
-        <span className="text-xs text-[#6e6e6e]">1-hour visit · 30 minutes between bookings</span>
+        <h1 className="m-0 font-['Gelasio'] text-[32px] font-normal leading-[1.15] tracking-[-.5px] text-[#441901]">Reserve a table</h1>
+        <span className="font-serif text-sm text-[#70462c]">1-hour visit · 30 minutes between bookings</span>
       </div>
-      <form className="mx-auto max-w-[820px] rounded-[20px] border border-[#e8e8e8] bg-white p-[26px] max-[500px]:p-[19px]" onSubmit={book}>
+      <form className="mx-auto max-w-[820px] border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[19px]" onSubmit={book}>
         <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
           <label>
             Dining date
@@ -117,13 +117,13 @@ export function Dining() {
           </label>
         </div>
         <fieldset className="mt-[26px] min-w-0 border-0 p-0">
-          <legend className="mb-2.5 p-0 text-[13px] font-semibold">Dining time</legend>
+          <legend className="mb-2.5 p-0 font-serif text-base font-semibold text-[#54220e]">Dining time</legend>
           <div className="grid grid-cols-4 gap-2.5 max-[500px]:grid-cols-2">
             {query.data?.slots.map((item) => {
               const status = slotStatus(item);
               const disabled = status.tone === 'fit' || status.tone === 'full';
               return (
-                <label className={`relative flex min-h-[92px] cursor-pointer flex-col items-start gap-0.5 rounded-[14px] border px-3.5 py-[13px] transition ${status.tone === 'fit' || status.tone === 'full' ? 'cursor-not-allowed bg-[#f4f4f4] text-[#969696]' : 'bg-white hover:border-[#777]'} ${time === item.start_time ? 'border-[#161616] shadow-[0_0_0_2px_#161616_inset]' : 'border-[#dedede]'}`} key={item.start_time}>
+                <label className={`relative flex min-h-[92px] cursor-pointer flex-col items-start gap-0.5 border px-3.5 py-[13px] transition-colors ${status.tone === 'fit' || status.tone === 'full' ? 'cursor-not-allowed border-[#dfcdb7] bg-[#f1e3d0] text-[#947c67]' : 'border-[#d3b694] bg-[#fffdf8] hover:border-[#9b623e]'} ${time === item.start_time ? 'border-[#642c14] shadow-[0_0_0_2px_#642c14_inset]' : ''}`} key={item.start_time}>
                   <input
                     type="radio"
                     name="dining-time"
@@ -135,9 +135,9 @@ export function Dining() {
                       setError('');
                     }}
                   />
-                  <span className="text-[17px] font-semibold tracking-[-.3px]">{item.start_time.slice(0, 5)}</span>
+                  <span className="font-['Gelasio'] text-[19px] font-normal tracking-[-.2px] text-[#441901]">{item.start_time.slice(0, 5)}</span>
                   <span className="text-[11px]">until {item.end_time.slice(0, 5)}</span>
-                  <span className="mt-auto text-[11px] text-[#606060]">{status.label}</span>
+                  <span className="mt-auto text-[11px] text-[#70462c]">{status.label}</span>
                 </label>
               );
             })}
@@ -157,21 +157,21 @@ export function Dining() {
         <ErrorBox message={error} />
         {user ? (
           <>
-            <div className="my-7 border-t border-[#e8e8e8]" />
-            <h2 className="mb-[18px] text-[17px] font-semibold">Contact details</h2>
+            <div className="my-7 border-t border-[#d8bfa0]" />
+            <h2 className="mb-[18px] font-['Gelasio'] text-[22px] font-normal text-[#441901]">Contact details</h2>
             <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
               <ContactFields />
             </div>
             <div className="mt-6 flex items-center justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
-              <span className="text-xs text-[#6e6e6e]">Confirm within 15 minutes.</span>
-              <button disabled={busy || query.loading || !slot?.available || !date || !guests}>
+              <span className="text-xs text-[#70462c]">Confirm within 15 minutes.</span>
+              <button className="border border-[#642c14] bg-[#642c14] font-serif text-base font-bold text-[#fff8ee] hover:bg-[#54220e]" disabled={busy || query.loading || !slot?.available || !date || !guests}>
                 {busy ? 'Holding your time…' : 'Continue to confirmation'}
               </button>
             </div>
           </>
         ) : (
           <div className="mt-6 flex items-center justify-between gap-4">
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to="/login" state={{ from: '/dining' }}>
+            <Link className="inline-flex min-h-11 items-center justify-center border border-[#642c14] bg-[#642c14] px-[21px] py-[11px] font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/login" state={{ from: '/dining' }}>
               Sign in to reserve
             </Link>
           </div>

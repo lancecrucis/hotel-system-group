@@ -40,7 +40,7 @@ export function Overview() {
       <PageHeader
         title="Today"
         action={
-          <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#161616] bg-[#161616] px-[21px] py-[11px] font-semibold text-white no-underline hover:bg-[#363636]" to="/walk-in">
+          <Link className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#642c14] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/walk-in">
             <Plus size={17} />
             New walk-in
           </Link>
@@ -49,12 +49,12 @@ export function Overview() {
       <ErrorBox message={stats.error || bookings.error} />
       <div className="grid grid-cols-3 gap-4 max-[800px]:grid-cols-2 max-[500px]:gap-2.5">
         {cards.map((c) => (
-          <div className="flex items-center justify-between gap-3 rounded-[14px] border border-[#e8e8e8] bg-white p-5 max-[500px]:p-[15px]">
+          <div className="flex items-center justify-between gap-3 border border-[#c8a783] bg-[#fff8ee] p-5 max-[500px]:p-[15px]">
             <div>
-              <span className="text-xs text-[#6e6e6e]">{c.name}</span>
-              <strong className="block text-[30px] font-semibold tracking-[-.7px] max-[500px]:text-[25px]">{c.value ?? '—'}</strong>
+              <span className="font-serif text-sm text-[#70462c]">{c.name}</span>
+              <strong className="block font-['Gelasio'] text-[30px] font-normal tracking-[-.4px] text-[#441901] max-[500px]:text-[25px]">{c.value ?? '—'}</strong>
             </div>
-            <c.icon size={21} />
+            <c.icon className="text-[#a64b1c]" size={21} />
           </div>
         ))}
       </div>
@@ -62,13 +62,13 @@ export function Overview() {
         <h2>Today’s service</h2>
         <Link to="/reservations">View all reservations →</Link>
       </div>
-      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
+      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] p-0">
         {bookings.loading && !bookings.data ? <Loading /> : <ReservationTable reservations={today} />}
       </div>
       <div className="my-9 flex items-center justify-between gap-4">
         <h2>Recent bookings</h2>
       </div>
-      <div className="overflow-hidden rounded-[20px] border border-[#e8e8e8] bg-white p-0">
+      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] p-0">
         <ReservationTable reservations={bookings.data?.reservations.slice(0, 6) ?? []} />
       </div>
     </>

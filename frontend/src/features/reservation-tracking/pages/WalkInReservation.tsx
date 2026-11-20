@@ -98,13 +98,13 @@ export function WalkInReservation() {
     <div className="mx-auto max-w-[1120px]">
       <header className="mb-[27px] flex items-end justify-between gap-6 max-[650px]:items-stretch max-[650px]:flex-col">
         <div>
-          <h1>New walk-in reservation</h1>
-          <p>Enter the guest’s details and confirm their reservation at the front desk.</p>
+          <h1 className="font-['Gelasio'] text-[32px] font-normal text-[#441901]">New walk-in reservation</h1>
+          <p className="text-[#70462c]">Enter the guest’s details and confirm their reservation at the front desk.</p>
         </div>
-        <div className="flex gap-1 rounded-full border border-[#e8e8e8] bg-[#f0f0f0] p-1" role="group" aria-label="Reservation type">
+        <div className="flex gap-1 border border-[#c8a783] bg-[#ead5b8] p-1" role="group" aria-label="Reservation type">
           <button
             type="button"
-            className={`min-h-10 rounded-full border-0 bg-transparent px-4 py-2 text-[#6e6e6e] ${type === 'hotel' ? 'bg-white text-[#1d1d1d] shadow-[0_1px_4px_#00000012]' : ''}`}
+            className={`min-h-10 border-0 bg-transparent px-4 py-2 text-[#70462c] ${type === 'hotel' ? 'bg-[#642c14] text-white' : ''}`}
             aria-pressed={type === 'hotel'}
             onClick={() => switchType('hotel')}
           >
@@ -112,7 +112,7 @@ export function WalkInReservation() {
           </button>
           <button
             type="button"
-            className={`min-h-10 rounded-full border-0 bg-transparent px-4 py-2 text-[#6e6e6e] ${type === 'restaurant' ? 'bg-white text-[#1d1d1d] shadow-[0_1px_4px_#00000012]' : ''}`}
+            className={`min-h-10 border-0 bg-transparent px-4 py-2 text-[#70462c] ${type === 'restaurant' ? 'bg-[#642c14] text-white' : ''}`}
             aria-pressed={type === 'restaurant'}
             onClick={() => switchType('restaurant')}
           >
@@ -123,7 +123,7 @@ export function WalkInReservation() {
 
       <form className="grid grid-cols-[minmax(0,1fr)_330px] items-start gap-[22px] max-[900px]:grid-cols-1" onSubmit={create}>
         <div className="flex flex-col gap-4">
-          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-6">
             <div className="mb-5 flex items-start gap-[13px]">
               <span>1</span>
               <div>
@@ -155,7 +155,7 @@ export function WalkInReservation() {
             </div>
           </section>
 
-          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-6">
             <div className="mb-5 flex items-start gap-[13px]">
               <span>2</span>
               <div>
@@ -185,15 +185,15 @@ export function WalkInReservation() {
                 {!rooms.loading && !rooms.error && (
                   <div className="flex flex-col gap-2" role="radiogroup" aria-label="Available rooms">
                     {availableRooms.map((room) => (
-                      <label className={`grid min-h-[68px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-[13px] rounded-xl border p-[10px_13px] ${roomId === room.id ? 'border-[#1d1d1d] shadow-[inset_0_0_0_1px_#1d1d1d]' : 'border-[#e8e8e8]'} max-[650px]:grid-cols-[auto_minmax(0,1fr)_auto]`} key={room.id}>
+                      <label className={`grid min-h-[68px] cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-[13px] border p-[10px_13px] ${roomId === room.id ? 'border-[#642c14] bg-[#f1dfc8] shadow-[inset_0_0_0_1px_#642c14]' : 'border-[#d8bfa0] bg-[#fffdf8]'} max-[650px]:grid-cols-[auto_minmax(0,1fr)_auto]`} key={room.id}>
                         <input type="radio" name="selected-room" value={room.id} checked={roomId === room.id} onChange={() => setRoomId(room.id)} />
-                        <span className="grid min-w-11 place-items-center rounded-[9px] bg-[#f0f0f0] py-3 text-xs font-bold">{room.room_number}</span>
+                        <span className="grid min-w-11 place-items-center bg-[#ead5b8] py-3 text-xs font-bold text-[#54220e]">{room.room_number}</span>
                         <span><strong>{room.room_type}</strong><small>{room.bed_count} {room.bed_type} · up to {room.capacity}</small></span>
                         <strong>{money(room.price_per_night)}<small>/night</small></strong>
                         {roomId === room.id && <Check size={18} />}
                       </label>
                     ))}
-                    {!availableRooms.length && <p className="text-[#6e6e6e]">No rooms are available for these dates and guest count.</p>}
+                    {!availableRooms.length && <p className="text-[#70462c]">No rooms are available for these dates and guest count.</p>}
                   </div>
                 )}
               </>
@@ -215,21 +215,21 @@ export function WalkInReservation() {
                 {!dining.loading && !dining.error && (
                   <div className="grid grid-cols-4 gap-2 max-[650px]:grid-cols-2" role="radiogroup" aria-label="Available dining times">
                     {availableSlots.map((slot) => (
-                      <label className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-xl border px-2 py-3 text-center ${time === slot.start_time ? 'border-[#1d1d1d] bg-[#1d1d1d] text-white' : 'border-[#e8e8e8] text-[#6e6e6e]'}`} key={slot.start_time}>
+                      <label className={`flex cursor-pointer flex-col items-center gap-0.5 border px-2 py-3 text-center ${time === slot.start_time ? 'border-[#642c14] bg-[#642c14] text-white' : 'border-[#d8bfa0] bg-[#fffdf8] text-[#70462c]'}`} key={slot.start_time}>
                         <input type="radio" name="selected-time" value={slot.start_time} checked={time === slot.start_time} onChange={() => setTime(slot.start_time)} />
                         <Clock3 size={16} />
                         <strong>{slot.start_time.slice(0, 5)}</strong>
                         <small>until {slot.end_time.slice(0, 5)}</small>
                       </label>
                     ))}
-                    {!availableSlots.length && <p className="text-[#6e6e6e]">No dining times are available for this date and party size.</p>}
+                    {!availableSlots.length && <p className="text-[#70462c]">No dining times are available for this date and party size.</p>}
                   </div>
                 )}
               </>
             )}
           </section>
 
-          <section className="rounded-[16px] border border-[#e8e8e8] bg-white p-6">
+          <section className="border border-[#c8a783] bg-[#fff8ee] p-6">
             <div className="mb-5 flex items-start gap-[13px]">
               <span>3</span>
               <div>
@@ -244,9 +244,9 @@ export function WalkInReservation() {
           </section>
         </div>
 
-        <aside className="sticky top-[168px] rounded-[16px] border border-[#e8e8e8] bg-white p-6 max-[900px]:static">
+        <aside className="sticky top-[168px] border border-[#c8a783] bg-[#fff8ee] p-6 max-[900px]:static">
           <h2>Reservation summary</h2>
-          <div className="flex items-center gap-2.5 rounded-xl bg-[#f2f2f2] p-[13px]">
+          <div className="flex items-center gap-2.5 bg-[#ead5b8] p-[13px] text-[#54220e]">
             {type === 'hotel' ? <BedDouble size={20} /> : <UtensilsCrossed size={20} />}
             <strong>{type === 'hotel' ? 'Hotel stay' : 'Restaurant table'}</strong>
           </div>
@@ -267,12 +267,12 @@ export function WalkInReservation() {
               </>
             )}
           </dl>
-          <div className="mb-4 flex items-center gap-2 rounded-[10px] border border-dashed border-[#a7a7a7] p-[11px] text-[11px]"><Check size={16} /><span>This walk-in will be confirmed immediately.</span></div>
+          <div className="mb-4 flex items-center gap-2 border border-dashed border-[#a87652] bg-[#f7e8d2] p-[11px] text-[11px] text-[#54220e]"><Check size={16} /><span>This walk-in will be confirmed immediately.</span></div>
           <ErrorBox message={error} />
           <button className="w-full" disabled={busy || (type === 'hotel' ? !selectedRoom : !selectedTime)}>
             {busy ? 'Creating reservation…' : 'Create confirmed reservation'}
           </button>
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[10px] text-[#6e6e6e]"><Users size={14} /> Your staff account will be recorded as the creator.</p>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[10px] text-[#70462c]"><Users size={14} /> Your staff account will be recorded as the creator.</p>
         </aside>
       </form>
     </div>
