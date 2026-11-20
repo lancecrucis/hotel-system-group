@@ -65,6 +65,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
       const submittedEmail = String(fields.email ?? email);
       const submittedPassword = String(fields.password ?? password);
       const submittedConfirm = String(fields.confirm_password ?? confirm);
+      const submittedPhone = register ? '+63 ' + String(fields.phone_number ?? '').replace(/^\+63\s*/, '').trim() : undefined;
       if (register && submittedPassword !== submittedConfirm) {
         setError('Passwords do not match.');
         setBusy(false);
@@ -75,7 +76,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
         send('POST', {
           ...fields,
           email: submittedEmail,
-          ...(register ? { password: submittedPassword, confirm_password: submittedConfirm } : { password: submittedPassword, remember_me: remember }),
+          ...(register ? { password: submittedPassword, confirm_password: submittedConfirm, phone_number: submittedPhone } : { password: submittedPassword, remember_me: remember }),
         }),
       );
       if (register && result.message) {
@@ -126,27 +127,27 @@ export function AuthPage({ register = false }: { register?: boolean }) {
               <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
                 <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
                   First name
-                  <input className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !font-sans !font-normal !text-[#54220e]" name="first_name" required maxLength={80} autoComplete="given-name" />
+                  <input className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !px-4 !py-3 !font-sans !font-normal !text-[#54220e]" name="first_name" required maxLength={80} autoComplete="given-name" />
                 </label>
                 <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
                   Last name
-                  <input className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !font-sans !font-normal !text-[#54220e]" name="last_name" required maxLength={80} autoComplete="family-name" />
+                  <input className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !px-4 !py-3 !font-sans !font-normal !text-[#54220e]" name="last_name" required maxLength={80} autoComplete="family-name" />
                 </label>
                 <label className="col-span-full gap-[7px] font-serif text-[21px] font-normal text-[#54220e] max-[500px]:col-span-auto">
                   Phone number
-                  <input
-                    className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !font-sans !font-normal !text-[#54220e]"
+                  <div className="flex h-[52px] min-w-0 items-center overflow-hidden border border-[#a87652] bg-[#f5e4cd] text-[#54220e]"><span className="ml-[15px] shrink-0 select-none font-sans text-base text-[#7d746b]">+63</span><input
+                    className="min-w-0 flex-1 !w-auto !min-h-0 !border-0 !bg-transparent !p-[10px_14px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
                     name="phone_number"
                     type="tel"
                     required
-                    defaultValue="+63 "
-                    placeholder="+63 917 123 4567"
-                    pattern="\+63[0-9 ]{9,14}"
-                    title="Use a Philippine number beginning with +63"
-                    minLength={12}
-                    maxLength={18}
+                    defaultValue="917 123 4567"
+                    placeholder="917 123 4567"
+                    pattern="[0-9 ]{9,14}"
+                    title="Digits and spaces only; +63 is already prefixed"
+                    minLength={9}
+                    maxLength={15}
                     autoComplete="tel"
-                  />
+                  /></div>
                 </label>
               </div>
             )}
@@ -192,17 +193,28 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                 <PasswordStrength password={password} />
                 <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
                   Confirm password
-                  <input
-                    className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !font-sans !font-normal !text-[#54220e]"
-                    type="password"
-                    name="confirm_password"
-                    required
-                    minLength={8}
-                    maxLength={128}
-                    value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                    autoComplete="new-password"
-                  />
+                  <div className="relative h-[52px] w-full overflow-hidden border border-[#a87652] bg-[#f5e4cd]">
+                    <LockKeyhole className="absolute left-[15px] top-[13px] text-[#a52f0f]" size={24} />
+                    <input
+                      className="!min-h-0 !w-full !border-0 !bg-transparent !p-[10px_48px_10px_54px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
+                      type={showPassword ? 'text' : 'password'}
+                      name="confirm_password"
+                      required
+                      minLength={8}
+                      maxLength={128}
+                      value={confirm}
+                      onChange={(e) => setConfirm(e.target.value)}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-1 top-1/2 min-h-9 -translate-y-1/2 border-0 bg-transparent p-2 text-[#806348] hover:text-[#441901]"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </label>
               </>
             )}
