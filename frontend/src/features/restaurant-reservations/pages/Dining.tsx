@@ -76,7 +76,7 @@ export function Dining() {
   }
 
   return (
-    <>
+    <div className="min-h-[calc(100vh-160px)] bg-[#f9f3e7]">
       <div className="mb-6 h-[190px] overflow-hidden border border-[#c8a783] bg-[#ead5b8] max-[500px]:h-[140px]">
         <img className="block h-full w-full object-cover object-[center_53%]" src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
       </div>
@@ -177,6 +177,6 @@ export function Dining() {
           </div>
         )}
       </form>
-    </>
+    </div>
   );
 }

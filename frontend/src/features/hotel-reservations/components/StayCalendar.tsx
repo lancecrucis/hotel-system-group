@@ -25,10 +25,13 @@ export function StayCalendar({ value, onChange }: { value: Stay; onChange: (valu
   }
   function choose(date: string) {
     if (step === 'checkIn') {
-      onChange({ checkIn: date, checkOut: value.checkOut > date && nights(date, value.checkOut) <= 30 ? value.checkOut : addDays(date, 1) });
+      const checkOut = value.checkOut > date && nights(date, value.checkOut) <= 30 ? value.checkOut : addDays(date, 1);
+      onChange({ checkIn: date, checkOut });
+      setMonth(date.slice(0, 7));
       setStep('checkOut');
     } else {
       onChange({ ...value, checkOut: date });
+      setMonth(date.slice(0, 7));
       setStep('checkIn');
     }
   }
@@ -58,8 +61,12 @@ export function StayCalendar({ value, onChange }: { value: Stay; onChange: (valu
           const disabled = date < today || (step === 'checkOut' && (date <= value.checkIn || date > addDays(value.checkIn, 30)));
           const isStart = date === value.checkIn;
           const isEnd = date === value.checkOut;
-          return <button type="button" key={date} disabled={disabled} className={`min-h-[34px] border-0 p-0 text-xs ${isStart || isEnd ? 'bg-[#642c14] text-[#fff8ee]' : date > value.checkIn && date < value.checkOut ? 'bg-[#ead5b8] text-[#54220e]' : 'bg-transparent text-[#54220e] hover:bg-[#f3e1c7]'} disabled:cursor-default disabled:text-[#b99b7b]`} aria-label={`${dateLabel(date)}${isStart ? ', check-in' : isEnd ? ', check-out' : ''}`} aria-pressed={isStart || isEnd} onClick={() => choose(date)}>{index + 1}</button>;
+          return <button type="button" key={date} disabled={disabled} className={`min-h-[34px] border-0 p-0 text-xs transition-colors ${disabled ? 'cursor-not-allowed bg-[#eee8df] text-[#9b9185] line-through opacity-70' : isStart || isEnd ? 'bg-[#642c14] font-semibold text-[#fff8ee]' : date > value.checkIn && date < value.checkOut ? 'bg-[#ead5b8] text-[#54220e]' : 'bg-transparent text-[#54220e] hover:bg-[#f3e1c7]'}`} aria-label={`${dateLabel(date)}${disabled ? ', unavailable' : isStart ? ', check-in' : isEnd ? ', check-out' : ', available'}`} aria-disabled={disabled} aria-pressed={isStart || isEnd} onClick={() => choose(date)}>{index + 1}</button>;
         })}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[#e3d6c7] pt-2 text-[10px] text-[#705f50]" aria-label="Date availability legend">
+        <span className="inline-flex items-center gap-1.5"><i className="h-3 w-3 border border-[#b99673] bg-transparent" aria-hidden="true" />Available</span>
+        <span className="inline-flex items-center gap-1.5"><i className="h-3 w-3 bg-[#eee8df]" aria-hidden="true" />Unavailable dates are crossed out</span>
       </div>
       <p className="mt-2.5 text-[11px] text-[#806348]">{step === 'checkIn' ? 'Select an arrival date.' : 'Select a departure date, up to 30 nights later.'}</p>
     </section>
