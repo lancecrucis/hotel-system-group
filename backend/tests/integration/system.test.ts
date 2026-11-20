@@ -128,6 +128,8 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   assert.deepEqual(simultaneous.map((r) => r.status).sort(), [201, 409]);
   const booking = simultaneous.find((r) => r.status === 201)!.body.reservation;
   reservationIds.push(booking.id);
+  assert.equal(booking.status, 'confirmed');
+  assert.equal(booking.hold_expires_at, null);
   assert.equal((await request(`/reservations/${booking.id}`, 'GET', undefined, other.cookie)).status, 404);
   assert.equal(
     (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'checked_in' }, owner.cookie))
@@ -138,11 +140,6 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, owner.cookie))
       .status,
     409,
-  );
-  assert.equal(
-    (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, staff.cookie))
-      .status,
-    200,
   );
   assert.equal(
     (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'confirmed' }, staff.cookie))
@@ -204,7 +201,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     200,
   );
   const detail = (await request(`/reservations/${booking.id}`, 'GET', undefined, owner.cookie)).body;
-  assert.equal(detail.history.length, 4);
+  assert.equal(detail.history.length, 3);
   assert.equal(detail.reservation.status, 'checked_out');
   const refund = {
     payment_id: detail.payments[0].id,
@@ -232,26 +229,18 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   );
   assert.equal(adjacent.status, 201);
   reservationIds.push(adjacent.body.reservation.id);
-  await pool.query("UPDATE reservations SET hold_expires_at=now()-interval '1 second' WHERE id=$1", [
-    adjacent.body.reservation.id,
-  ]);
-  const expired = await request(
-    `/reservations/${adjacent.body.reservation.id}`,
-    'GET',
-    undefined,
-    owner.cookie,
-  );
-  assert.equal(expired.body.reservation.status, 'expired');
+  assert.equal(adjacent.body.reservation.status, 'confirmed');
+  assert.equal(adjacent.body.reservation.hold_expires_at, null);
   assert.equal(
     (
       await request(
         `/reservations/${adjacent.body.reservation.id}/status`,
         'PATCH',
-        { status: 'confirmed' },
-        owner.cookie,
+        { status: 'cancelled', reason: 'Test cleanup' },
+        staff.cookie,
       )
     ).status,
-    409,
+    200,
   );
   assert.equal(
     (

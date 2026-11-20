@@ -192,7 +192,7 @@ Use these only on your own machine with the demo data.
 
 1. **Log in as the customer.**
 2. Click **Book a room**, pick your dates, choose a room, continue.
-3. Click **Confirm booking** — you have **15 minutes** to do this.
+3. Click **Confirm booking** — available rooms are confirmed immediately.
 4. Check it under **My reservations**.
 5. **Log out** and log in as staff.
 6. Open your booking under **All reservations**.
@@ -209,8 +209,8 @@ Use these only on your own machine with the demo data.
 
 **Bookings**
 
-- An unconfirmed booking only holds the room for **15 minutes**, then it expires.
-- Confirming does not require any payment.
+- Available online room bookings are confirmed immediately; staff do not need to approve them.
+- Confirming a room booking does not require any payment.
 - Hotel stays are **1 to 30 nights**.
 - Check-in is from **3 PM**, check-out by **11 AM**.
 - A room that still has a guest checked in cannot be booked again.

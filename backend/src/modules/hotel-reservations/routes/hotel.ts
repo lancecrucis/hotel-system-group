@@ -40,6 +40,7 @@ hotelRouter.get(
         check_out: date.optional(),
         guests: z.coerce.number().int().min(1).max(6).default(1),
         room_type: z.string().max(80).default(''),
+        include_unavailable: z.coerce.boolean().default(false),
       })
       .parse(req.query);
     if (!!filter.check_in !== !!filter.check_out)
@@ -51,16 +52,22 @@ hotelRouter.get(
         COALESCE((SELECT json_agg(i ORDER BY i.display_order) FROM room_images i WHERE i.room_id=rm.id),'[]') AS images,
         COALESCE((SELECT round(avg(rr.rating)::numeric,1) FROM room_ratings rr WHERE rr.room_id=rm.id),0)::float AS rating,
         (SELECT count(*)::int FROM room_ratings rr WHERE rr.room_id=rm.id) AS rating_count
-    FROM rooms rm WHERE ($1::boolean OR status='available') AND capacity>=$2
-    AND ($3::text='' OR room_type=$3) ORDER BY price_per_night,room_number`,
-      [req.user?.role === 'staff' || req.user?.role === 'admin', filter.guests, filter.room_type],
+    FROM rooms rm WHERE ($1::boolean OR $2::boolean OR status='available') AND capacity>=$3
+    AND ($4::text='' OR room_type=$4) ORDER BY price_per_night,room_number`,
+      [req.user?.role === 'staff' || req.user?.role === 'admin', filter.include_unavailable, filter.guests, filter.room_type],
     );
     const rooms = [];
     for (const room of result.rows) {
       const available =
         room.status === 'available' &&
         (!filter.check_in || (await roomAvailable(pool, room.id, filter.check_in, filter.check_out!)));
-      if (available || (req.user?.role !== 'customer' && req.user)) rooms.push({ ...room, available });
+      if (available || filter.include_unavailable || (req.user?.role !== 'customer' && req.user)) {
+        rooms.push({
+          ...room,
+          available,
+          availability_reason: available ? null : room.status === 'available' ? 'fully_booked' : 'unavailable',
+        });
+      }
     }
     const roomTypes = await pool.query(
       "SELECT DISTINCT room_type FROM rooms WHERE status='available' ORDER BY room_type",
@@ -174,13 +181,13 @@ hotelRouter.post(
           staffWalkIn ? null : req.user!.id,
           req.user!.id,
           staffWalkIn ? 'walk_in' : 'online',
-          staffWalkIn ? 'confirmed' : 'pending',
+          'confirmed',
           (Math.round(Number(room.price_per_night) * 100) * nights) / 100,
           data.contact_name,
           data.contact_email,
           data.contact_phone,
           reference,
-          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
+          null,
         ],
       );
       const r = inserted.rows[0];
@@ -199,10 +206,10 @@ hotelRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        staffWalkIn ? 'confirmed' : 'pending',
+        'confirmed',
         staffWalkIn
           ? 'Walk-in room reservation created and confirmed by staff.'
-          : 'Room held for 15 minutes. Confirm to complete your booking.',
+          : 'Room reservation confirmed automatically.',
         req.user!.id,
       );
       if (staffWalkIn)
