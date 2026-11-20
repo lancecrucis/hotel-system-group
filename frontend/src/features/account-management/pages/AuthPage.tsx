@@ -96,46 +96,43 @@ export function AuthPage({ register = false }: { register?: boolean }) {
   }
 
   return (
-    <div className="relative z-[1] w-[min(100%,495px)]">
+    <div className={`relative z-[1] ${register ? 'w-[min(100%,432px)]' : 'w-[min(100%,330px)]'}`}>
       <>
-        <div className="mb-[40px] text-center">
+        <div className={`${register ? 'mb-3' : 'mb-2'} text-center`}>
 
-          <img className="mx-auto block w-[84px]" 
+          <img className="mx-auto block w-[58px]" 
           src="/images/login%20elements/logo%20girl%20image.png" 
           alt="" />
 
-          <img className="mx-auto block w-[min(100%,400px)]" 
+          <img className="mx-auto block w-[min(100%,336px)]" 
           src="/images/login%20elements/logo%20title%20page.png" 
           alt="La Illustrada Hotel" />
 
-          <div className=" flex items-center justify-center gap-[13px] font-serif text-[27px]">
-            <i className="block h-px w-[75px] bg-[#805c43]" />HOTEL
-            <i className="block h-px w-[75px] bg-[#805c43]" />
-          </div>
-
-          <h1 className="mb-1 mt-[5px] font-['Gelasio'] text-[46px] font-normal leading-tight text-[#441901] max-[600px]:text-[38px]">{register ? 'Create Account' : 'Welcome Back'}</h1>
-
-          <p className="mb-3 font-sans text-[20px] text-[#7d746b]">{register ? 'Create an account to begin your stay and dining experience' : 'Sign in to continue your stay and dining experience'}</p>
+          {register ? <h1 className="mt-1 font-['Gelasio'] text-[19px] font-normal uppercase tracking-[.04em] text-[#54220e]">Create your account</h1> : <>
+            <div className="mt-1 flex items-center justify-center gap-2 font-serif text-lg text-[#54220e]"><i className="h-px w-12 bg-[#b99673]" />HOTEL<i className="h-px w-12 bg-[#b99673]" /></div>
+            <h1 className="mt-1 font-['Gelasio'] text-[30px] font-normal leading-tight text-[#441901]">Welcome Back</h1>
+            <p className="mt-2 font-sans text-xs text-[#7d746b]">Sign in to continue your stay and dining experience</p>
+          </>}
         </div>
       </>
       <div>
         <ErrorBox message={error} />
         {success && <Success message={success} />}
         {!success && (
-          <form onSubmit={submit} className="flex flex-col gap-[18px]">
+          <form onSubmit={submit} className="flex flex-col gap-1.5">
             {register && (
-              <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
-                <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
+              <div className={`grid ${register ? 'grid-cols-2 gap-x-2 gap-y-1.5' : 'grid-cols-2 gap-[18px] max-[500px]:grid-cols-1'}`}>
+                <label className="flex flex-col gap-[7px] font-serif text-sm font-normal text-[#54220e]">
                   First name
-                  <input className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !px-4 !py-3 !font-sans !font-normal !text-[#54220e]" name="first_name" required maxLength={80} autoComplete="given-name" />
+                  <input className={`${register ? '!min-h-[36px] !rounded-[9px] !border-[#b99673] !bg-transparent' : '!min-h-[52px] !rounded-none !border-[#a87652] !bg-[#f5e4cd]'} !border !px-3 !py-1 !font-sans !font-normal !text-[#54220e]`} name="first_name" required maxLength={80} autoComplete="given-name" placeholder={register ? 'First Name' : undefined} />
                 </label>
-                <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
+                <label className="flex flex-col gap-[7px] font-serif text-sm font-normal text-[#54220e]">
                   Last name
-                  <input className="!min-h-[52px] !rounded-none !border !border-[#a87652] !bg-[#f5e4cd] !px-4 !py-3 !font-sans !font-normal !text-[#54220e]" name="last_name" required maxLength={80} autoComplete="family-name" />
+                  <input className={`${register ? '!min-h-[36px] !rounded-[9px] !border-[#b99673] !bg-transparent' : '!min-h-[52px] !rounded-none !border-[#a87652] !bg-[#f5e4cd]'} !border !px-3 !py-1 !font-sans !font-normal !text-[#54220e]`} name="last_name" required maxLength={80} autoComplete="family-name" placeholder={register ? 'Last Name' : undefined} />
                 </label>
-                <label className="col-span-full gap-[7px] font-serif text-[21px] font-normal text-[#54220e] max-[500px]:col-span-auto">
+                <label className="col-span-full flex flex-col gap-[7px] font-serif text-sm font-normal text-[#54220e] max-[500px]:col-span-auto">
                   Phone number
-                  <div className="flex h-[52px] min-w-0 items-center overflow-hidden border border-[#a87652] bg-[#f5e4cd] text-[#54220e]"><span className="ml-[15px] shrink-0 select-none font-sans text-base text-[#7d746b]">+63</span><input
+                  <div className={`flex h-11 min-w-0 items-center overflow-hidden border ${register ? 'rounded-[10px] border-[#b99673] bg-transparent' : 'border-[#a87652] bg-[#f5e4cd]'} text-[#54220e]`}><span className="ml-[15px] shrink-0 select-none font-sans text-base text-[#7d746b]">+63</span><input
                     className="min-w-0 flex-1 !w-auto !min-h-0 !border-0 !bg-transparent !p-[10px_14px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
                     name="phone_number"
                     type="tel"
@@ -151,22 +148,24 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                 </label>
               </div>
             )}
-            <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
+            {register && <label className="flex flex-col gap-[7px] font-serif text-sm text-[#54220e]">Date of birth<input className="!min-h-[44px] !rounded-[10px] !border !border-[#b99673] !bg-transparent !px-4 !py-2 !font-sans !text-sm" type="date" name="date_of_birth" /></label>}
+            <label className={`flex flex-col ${register ? 'gap-[5px]' : 'gap-2'} font-serif text-sm font-normal text-[#54220e]`}>
               Email address
-              <div className="flex h-[52px] min-w-0 items-center overflow-hidden border border-[#a87652] bg-[#f5e4cd] text-[#a52f0f]"><Mail className="ml-[15px] shrink-0" size={23} /><input
+              <div className={`flex ${register ? 'h-11 rounded-[10px] border-[#b99673]' : 'h-[34px] border-[#b99673]'} min-w-0 items-center overflow-hidden border bg-transparent text-[#a52f0f]`}><Mail className="ml-[11px] shrink-0" size={register ? 18 : 15} /><input
                 className="min-w-0 flex-1 !w-auto !min-h-0 !border-0 !bg-transparent !p-[10px_14px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
                 type="email"
                 name="email"
                 required
+                placeholder="Email address"
                 value={email}
                 onChange={(e) => updateEmail(e.target.value)}
                 autoComplete="email"
               /></div>
             </label>
-            <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
+            <label className={`flex flex-col ${register ? 'gap-[5px]' : 'gap-2'} font-serif text-sm font-normal text-[#54220e]`}>
               Password
-              <div className="relative h-[52px] w-full overflow-hidden border border-[#a87652] bg-[#f5e4cd]">
-                <LockKeyhole className="absolute left-[15px] top-[13px] text-[#a52f0f]" size={24} />
+              <div className={`relative ${register ? 'h-11 rounded-[10px]' : 'h-[34px]'} w-full overflow-hidden border border-[#b99673] bg-transparent`}>
+                {!register && <LockKeyhole className="absolute left-[11px] top-1/2 -translate-y-1/2 text-[#a52f0f]" size={15} aria-hidden="true" />}
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
@@ -176,7 +175,8 @@ export function AuthPage({ register = false }: { register?: boolean }) {
                   value={password}
                   onChange={(e) => updatePassword(e.target.value)}
                   autoComplete={register ? 'new-password' : 'current-password'}
-                  className="!min-h-0 !w-full !border-0 !bg-transparent !p-[10px_48px_10px_54px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
+                  placeholder={register ? undefined : 'Password'}
+                  className={`!min-h-0 !w-full !border-0 !bg-transparent !p-[6px_32px_6px_12px] !font-sans !font-normal !text-[#54220e] focus:!outline-none ${register ? '' : '!pl-[36px]'} [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]`}
                 />
                 <button
                   type="button"
@@ -191,12 +191,12 @@ export function AuthPage({ register = false }: { register?: boolean }) {
             {register && (
               <>
                 <PasswordStrength password={password} />
-                <label className="gap-[7px] font-serif text-[21px] font-normal text-[#54220e]">
+                <label className="flex flex-col gap-[7px] font-serif text-sm font-normal text-[#54220e]">
                   Confirm password
-                  <div className="relative h-[52px] w-full overflow-hidden border border-[#a87652] bg-[#f5e4cd]">
-                    <LockKeyhole className="absolute left-[15px] top-[13px] text-[#a52f0f]" size={24} />
+                  <div className={`relative h-11 w-full overflow-hidden border ${register ? 'rounded-[10px] border-[#b99673] bg-transparent' : 'border-[#a87652] bg-[#f5e4cd]'}`}>
+                    {!register && <LockKeyhole className="absolute left-[15px] top-[13px] text-[#a52f0f]" size={24} />}
                     <input
-                      className="!min-h-0 !w-full !border-0 !bg-transparent !p-[10px_48px_10px_54px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
+                      className="!min-h-0 !w-full !border-0 !bg-transparent !p-[10px_42px_10px_14px] !font-sans !font-normal !text-[#54220e] focus:!outline-none [&:-webkit-autofill]:!bg-[#f5e4cd] [&:-webkit-autofill]:!text-[#441901] [&:-webkit-autofill]:[box-shadow:0_0_0_1000px_#f5e4cd_inset]"
                       type={showPassword ? 'text' : 'password'}
                       name="confirm_password"
                       required
@@ -219,26 +219,26 @@ export function AuthPage({ register = false }: { register?: boolean }) {
               </>
             )}
             {!register && (
-              <div className="flex flex-wrap items-center justify-between gap-4 font-serif text-[18px] font-normal text-[#54220e]">
-                <label className="!m-0 !flex !flex-row !items-center !gap-[9px] !whitespace-nowrap !font-serif !text-[18px] !font-normal">
-                  <input className="!m-0 !h-[22px] !min-h-0 !w-[22px] accent-[#a52f0f]" type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me
+              <div className="flex flex-wrap items-center justify-between gap-3 font-sans text-xs font-normal text-[#54220e]">
+                <label className="!m-0 !flex !flex-row !items-center !gap-1.5 !whitespace-nowrap !font-sans !text-xs !font-normal">
+                  <input className="!m-0 !h-4 !min-h-0 !w-4 shrink-0 accent-[#a52f0f]" type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me
                 </label>
-                <Link className="text-[#b7471a] underline underline-offset-2" to="/forgot-password">Forgot password?</Link>
+                <Link className="text-[11px] text-[#b7471a] underline underline-offset-2" to="/forgot-password">Forgot password</Link>
               </div>
             )}
-            <button className="min-h-[57px] w-full rounded-none border-0 bg-[#642c14] font-['Crimson_Text'] text-[32px] font-bold text-[#fff8ed] hover:bg-[#54220e]" type="submit" disabled={busy}>
+            <button className={`${register ? 'min-h-11 rounded-[9px] text-xl' : 'min-h-9 rounded-full text-lg'} w-full border-0 bg-[#642c14] px-4 py-1.5 font-['Crimson_Text'] font-bold text-[#fff8ed] hover:bg-[#54220e]`} type="submit" disabled={busy}>
               {busy ? (register ? 'Creating account…' : 'Logging in…') : register ? 'Create account' : 'Login'}
             </button>
           </form>
         )}
         {!register && !success && (
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 font-sans text-sm text-[#54220e]">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 font-sans text-xs text-[#54220e]">
             <span className="mr-1 font-semibold">Demo accounts:</span>
             {(['guest', 'staff', 'admin'] as const).map((role) => (
               <button
                 key={role}
                 type="button"
-                className="min-h-9 rounded-none border border-[#a87652] bg-transparent px-3 py-1.5 font-sans text-sm font-medium text-[#642c14] hover:bg-[#ead3b5]"
+                className="min-h-7 rounded-none border border-[#a87652] bg-transparent px-2.5 py-1 font-sans text-xs font-medium text-[#642c14] hover:bg-[#ead3b5]"
                 onClick={() => {
                   setEmail(`${role}@example.com`);
                   setPassword('Prototype123!');
@@ -250,7 +250,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
             ))}
           </div>
         )}
-        <p className="mt-[47px] text-center font-serif text-[18px] text-[#54220e]">
+        <p className="mt-3 text-center font-serif text-sm text-[#54220e]">
           {success ? (
             <Link to="/login">Go to login</Link>
           ) : (

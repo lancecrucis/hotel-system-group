@@ -44,27 +44,26 @@ export function Layout() {
       <div className="min-h-screen bg-[#f3e1c7] text-[#54220e]">
        <header className="
             sticky top-0 z-20
-            h-[93px]
-            bg-[url('/images/login%20elements/navbar%20bg.png')]
-            bg-[length:auto_100%] bg-center bg-no-repeat
+            h-[clamp(4.5rem,8vw,5.8125rem)]
+            bg-[url('/images/login%20elements/new%20new%20navbar%20bg.png')]
+            bg-cover bg-center bg-no-repeat
             text-[#f8ead5]
-            max-[600px]:h-[76px]
         ">
-          <div className="mx-auto flex h-full w-full items-center gap-[clamp(1rem,3.25vw,3.375rem)] px-[clamp(1rem,5vw,14.5rem)] max-[600px]:justify-between max-[600px]:gap-3 max-[600px]:px-4">
+          <div className="mx-auto flex h-full w-full items-center justify-between gap-4 px-[clamp(.75rem,5vw,14.5rem)] max-[800px]:gap-3 max-[800px]:px-4">
             <Link className="flex w-[clamp(8rem,14vw,14.6875rem)] min-w-0 shrink items-center justify-center no-underline max-[600px]:justify-start" to="/" aria-label="La Illustrada Hotel home">
               <img className="block w-[clamp(7.5rem,10.2vw,10.625rem)] max-[600px]:w-[clamp(7.25rem,34vw,9rem)]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="La Illustrada Hotel" />
             </Link>
-            <nav className="flex min-w-0 flex-1 items-center justify-center gap-[clamp(1rem,3.25vw,3.4375rem)] max-[800px]:gap-[clamp(.65rem,2.5vw,1.125rem)] max-[600px]:hidden" aria-label="Hotel navigation">
+            <nav className="flex min-w-0 flex-1 items-center justify-center gap-[clamp(.75rem,3.25vw,3.4375rem)] max-[800px]:hidden" aria-label="Hotel navigation">
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6] underline underline-offset-4" to="/">Home</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#rooms">Rooms</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#restaurant">Restaurant</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#contact">Contact Us</Link>
             </nav>
-            <Link className="min-w-0 shrink-0 bg-[#c1844c] px-[clamp(.75rem,1.1vw,1.125rem)] py-[clamp(.5rem,.65vw,.625rem)] text-center font-serif text-[clamp(.8125rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline" to="/rooms">Book Now</Link>
+            <Link className="shrink-0 whitespace-nowrap bg-[#c1844c] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline" to="/rooms">Book Now</Link>
           </div>
         </header>
-        <main className="relative flex min-h-[calc(100vh-93px)] w-full justify-center overflow-hidden px-[clamp(1rem,4vw,4rem)] pb-10 pt-[clamp(2.5rem,5.2vw,5.4375rem)] max-[600px]:min-h-[calc(100vh-76px)] max-[600px]:px-4 max-[600px]:pt-10">
-          <img className="pointer-events-none absolute right-0 top-0 h-full w-[min(40vw,33.75rem)] object-cover object-left opacity-50 max-[600px]:w-[min(32vw,12rem)]" src="/images/login%20elements/subtle%20art%20right.png" alt="" aria-hidden="true" />
+        <main className={`relative flex ${isAuthPage ? 'min-h-[calc(100svh-clamp(4.5rem,8vw,5.8125rem))] items-center py-3' : 'min-h-[calc(100vh-93px)] pt-[clamp(2.5rem,5.2vw,5.4375rem)] max-[600px]:min-h-[calc(100vh-76px)] max-[600px]:pt-10'} w-full justify-center overflow-x-hidden overflow-y-auto px-[clamp(1rem,4vw,4rem)] pb-4 max-[600px]:px-4`}>
+          <img className="pointer-events-none absolute right-0 top-0 h-full w-[min(40vw,33.75rem)] object-cover object-left opacity-30 max-[600px]:w-[min(32vw,12rem)]" src="/images/login%20elements/subtle%20art%20right.png" alt="" aria-hidden="true" />
           <ErrorBox message={error} />
           <Outlet />
         </main>
