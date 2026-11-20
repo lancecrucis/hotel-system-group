@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BedDouble, Users, CalendarDays, Search, ChevronDown, Star } from 'lucide-react';
+import { useAuth } from '../../../app/providers/AuthContext';
 import { useQuery } from '../../../hooks/useQuery';
-import type { Room } from '../../../types/models';
+import type { Reservation, Room } from '../../../types/models';
 import { ErrorBox, Empty, Loading } from '../../../components/ui/common';
 import { RoomDetailsModal } from '../components/RoomDetailsModal';
 import { StayCalendar } from '../components/StayCalendar';
-import { day, dateLabel, money } from '../../../utils/format';
+import { day, dateLabel, label, money } from '../../../utils/format';
 
 function roomImage(room: Room) {
   const roomSpecificImages: Record<string, string> = {
@@ -17,6 +19,10 @@ function roomImage(room: Room) {
     '301': '/images/rooms/family-suite-view.png',
     '302': '/images/rooms/family-suite.webp',
     '401': '/images/rooms/executive-suite.webp',
+    '104': '/images/rooms/garden-queen-104.png',
+    '203': '/images/rooms/balcony-king-203.png',
+    '204': '/images/rooms/deluxe-twin-204.png',
+    '303': '/images/rooms/junior-suite-303.png',
   };
   if (roomSpecificImages[room.room_number]) return roomSpecificImages[room.room_number];
   const type = room.room_type.toLowerCase();
@@ -80,33 +86,40 @@ function RoomSection({ title, subtitle, rooms, onSelect }: { title: string; subt
 }
 
 export function Rooms() {
+  const { user } = useAuth();
   const initial = { room_type: '', check_in: day(1), check_out: day(2), guests: '2' };
   const [filters, setFilters] = useState(initial),
     [search, setSearch] = useState(initial),
     [selected, setSelected] = useState<Room | null>(null),
     [dateOpen, setDateOpen] = useState(false);
   const query = useQuery<{ rooms: Room[]; room_types: string[] }>(`/hotel/rooms?${new URLSearchParams(search)}`);
+  const bookings = useQuery<{ reservations: Reservation[] }>('/reservations?type=hotel', 30000);
+  const today = day();
+  const currentBooking = user?.role === 'customer'
+    ? bookings.data?.reservations.find((reservation) =>
+        reservation.hotel &&
+        ['pending', 'confirmed', 'checked_in'].includes(reservation.status) &&
+        reservation.hotel.check_out >= today,
+      )
+    : undefined;
   const availableRooms = query.data?.rooms.filter((room) => room.available) ?? [];
+  const suites = availableRooms.filter((room) => room.room_type.toLowerCase().includes('suite'));
+  const nonSuites = availableRooms.filter((room) => !room.room_type.toLowerCase().includes('suite'));
   const roomSections = [
-    {
-      title: 'Popular rooms',
-      subtitle: 'Browse every available room and suite',
-      rooms: availableRooms,
-    },
     {
       title: 'Great for two',
       subtitle: 'Comfortable stays for couples and solo travelers',
-      rooms: availableRooms.filter((room) => room.capacity === 2),
+      rooms: nonSuites.filter((room) => room.capacity === 2),
     },
     {
       title: 'Room to share',
       subtitle: 'Extra beds and space for family or friends',
-      rooms: availableRooms.filter((room) => room.capacity >= 3),
+      rooms: nonSuites.filter((room) => room.capacity >= 3),
     },
     {
       title: 'Suites with extra space',
       subtitle: 'Roomier layouts for a longer, slower stay',
-      rooms: availableRooms.filter((room) => room.room_type.toLowerCase().includes('suite')),
+      rooms: suites,
     },
   ];
   return (
@@ -125,7 +138,7 @@ export function Rooms() {
           <span className="relative flex min-w-0 flex-1 flex-col gap-1">
             <span className="font-sans text-[10px] font-medium leading-tight text-[#806348]">Room type</span>
             <select
-              className="!min-h-6 !border-0 !bg-transparent !p-0 !pr-5 font-sans text-[13px] font-medium !text-[#54220e] focus:!outline-none"
+              className="!min-h-6 !border-0 !bg-transparent !p-0 !pr-5 font-sans text-[13px] font-medium !text-[#54220e] !shadow-none appearance-none focus:!border-0 focus:!outline-none focus:!ring-0 focus:!shadow-none"
               value={filters.room_type}
               onChange={(e) => setFilters({ ...filters, room_type: e.target.value })}
             >
@@ -155,7 +168,7 @@ export function Rooms() {
           <span className="relative flex min-w-0 flex-1 flex-col gap-1">
             <span className="font-sans text-[10px] font-medium leading-tight text-[#806348]">Guests</span>
             <select
-              className="!min-h-6 !border-0 !bg-transparent !p-0 !pr-5 font-sans text-[13px] font-medium !text-[#54220e] focus:!outline-none"
+              className="!min-h-6 !border-0 !bg-transparent !p-0 !pr-5 font-sans text-[13px] font-medium !text-[#54220e] !shadow-none appearance-none focus:!border-0 focus:!outline-none focus:!ring-0 focus:!shadow-none"
               value={filters.guests}
               onChange={(e) => setFilters({ ...filters, guests: e.target.value })}
             >
@@ -174,11 +187,19 @@ export function Rooms() {
       </form>
       <div className="my-6 flex items-end justify-between gap-4">
         <div>
-          <h1 className="m-0 !font-sans text-2xl !font-semibold tracking-[-.03em] text-[#54220e]">Find your stay</h1>
-          <p className="mb-0 mt-1 text-sm text-[#806348]">Choose a room that suits your trip</p>
+          <h1 className="m-0 !font-sans text-2xl !font-semibold tracking-[-.03em] text-[#54220e]">{currentBooking ? 'Your current booking' : 'Find your stay'}</h1>
+          {!currentBooking && <p className="mb-0 mt-1 text-sm text-[#806348]">Choose a room that suits your trip</p>}
         </div>
         <span className="pb-1 text-sm text-[#70462c]">{availableRooms.length} {availableRooms.length === 1 ? 'room' : 'rooms'}</span>
       </div>
+      {currentBooking && <section className="-mt-2 mb-7 rounded-xl border border-[#d8bfa0] bg-[#fffaf2] p-4 text-sm text-[#70462c] sm:flex sm:items-center sm:justify-between sm:gap-5" aria-label="Current hotel booking">
+        <div className="min-w-0">
+          <h2 className="m-0 !font-sans text-base !font-semibold text-[#54220e]">{currentBooking.hotel!.room_type} · Room {currentBooking.hotel!.room_number}</h2>
+          <p className="mb-0 mt-1">{dateLabel(currentBooking.hotel!.check_in)} – {dateLabel(currentBooking.hotel!.check_out)} · {currentBooking.hotel!.guest_count} {currentBooking.hotel!.guest_count === 1 ? 'guest' : 'guests'}</p>
+          <p className="mb-0 mt-1">Reservation <Link className="font-semibold text-[#54220e] underline" to={`/reservations/${currentBooking.id}`}>{currentBooking.reservation_reference}</Link></p>
+        </div>
+        <span className="mt-3 inline-flex shrink-0 rounded-full bg-[#eadfce] px-3 py-1 text-xs font-semibold text-[#54220e] sm:mt-0">{label(currentBooking.status)}</span>
+      </section>}
       <ErrorBox message={query.error} />
       {query.loading ? (
         <Loading />

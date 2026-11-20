@@ -57,6 +57,17 @@ try {
       false,
     ],
     [
+      '104',
+      'Garden Queen',
+      3600,
+      2,
+      'Queen',
+      1,
+      'A bright queen room overlooking the courtyard garden.',
+      'Garden view, reading chair',
+      false,
+    ],
+    [
       '201',
       'Deluxe King',
       4500,
@@ -65,6 +76,17 @@ try {
       1,
       'Extra space with a seating area and natural light.',
       'Balcony, coffee maker',
+      true,
+    ],
+    [
+      '203',
+      'Balcony King',
+      5200,
+      2,
+      'King',
+      1,
+      'A corner room with a private balcony and morning light.',
+      'Private balcony, coffee maker',
       true,
     ],
     [
@@ -79,6 +101,17 @@ try {
       true,
     ],
     [
+      '204',
+      'Deluxe Twin',
+      4800,
+      3,
+      'Double',
+      2,
+      'Two comfortable beds with room to settle in together.',
+      'Lounge chair, coffee maker',
+      true,
+    ],
+    [
       '301',
       'Family Suite',
       6500,
@@ -87,6 +120,17 @@ try {
       2,
       'A separate lounge and space for the whole family.',
       'Living area, kitchenette',
+      true,
+    ],
+    [
+      '303',
+      'Junior Suite',
+      7200,
+      3,
+      'Queen',
+      1,
+      'A separate sitting nook makes longer stays feel easy.',
+      'Living area, soaking tub',
       true,
     ],
     [
@@ -118,6 +162,10 @@ try {
       [number, type, price, capacity, bed, count, description, amenities, breakfast],
     );
   }
+  await c.query(
+    `UPDATE rooms SET status='inactive' WHERE room_type = ANY($1::text[])`,
+    [['Garden Queen', 'Deluxe Twin', 'Balcony King', 'Junior Suite']],
+  );
   const sampleRatings = [
     ['101', 'Mia R.', 5, 'Comfortable room and a lovely stay.'],
     ['101', 'Daniel C.', 4, 'Clean, quiet, and great value.'],
@@ -125,11 +173,19 @@ try {
     ['102', 'Paolo M.', 5, 'The twin beds were perfect for our trip.'],
     ['102', 'Nina T.', 4, 'Neat room with everything we needed.'],
     ['103', 'Bea L.', 5, 'Peaceful room and helpful staff.'],
+    ['104', 'Ella M.', 5, 'Lovely garden view and a restful night.'],
+    ['104', 'Noah P.', 4, 'Bright room with a comfortable reading corner.'],
     ['201', 'Marco D.', 5, 'Spacious room with a beautiful balcony.'],
     ['201', 'Iris G.', 4, 'Lovely stay; breakfast was a nice bonus.'],
+    ['203', 'Rina C.', 5, 'The balcony and morning light were wonderful.'],
+    ['203', 'Adam J.', 4, 'A quiet corner room with a very comfortable bed.'],
     ['202', 'Sam P.', 5, 'Plenty of room and a relaxing view.'],
+    ['204', 'Luca B.', 5, 'Great room for our small family.'],
+    ['204', 'Maya T.', 4, 'Comfortable twin beds and thoughtful amenities.'],
     ['301', 'Jules A.', 5, 'The family had lots of space to unwind.'],
     ['302', 'Celine V.', 4, 'Bright, spacious, and comfortable.'],
+    ['303', 'Tess R.', 5, 'The sitting area made the suite feel special.'],
+    ['303', 'Owen K.', 4, 'Spacious, quiet, and perfect for a longer stay.'],
     ['401', 'Theo B.', 5, 'A special stay with excellent amenities.'],
     ['401', 'Ana F.', 5, 'Beautiful suite and attentive service.'],
   ] as const;
