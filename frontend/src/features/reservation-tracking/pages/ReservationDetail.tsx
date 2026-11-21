@@ -8,6 +8,7 @@ import { api, send } from '../../../services/client';
 import type { Detail, DiningTable, HotelSettings, Invoice, Room } from '../../../types/models';
 import { PageHeader, Badge, ErrorBox, Success, Loading, Modal } from '../../../components/ui/common';
 import { money, dateLabel, timestamp, label } from '../../../utils/format';
+import { ChatWidget } from '../../landing/components/ChatWidget';
 const actionLabels: Record<string, string> = {
   confirmed: 'Confirm booking',
   checked_in: 'Check in',
@@ -671,6 +672,7 @@ export function ReservationDetail() {
           </form>
         </Modal>
       )}
+      {!staff && <ChatWidget />}
     </>
   );
 }

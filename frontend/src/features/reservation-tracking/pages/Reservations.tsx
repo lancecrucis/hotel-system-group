@@ -8,6 +8,7 @@ import { ErrorBox, Loading } from '../../../components/ui/common';
 import { ReservationTable } from '../components/ReservationTable';
 import { MyReservationCards } from '../components/MyReservationCards';
 import { label } from '../../../utils/format';
+import { ChatWidget } from '../../landing/components/ChatWidget';
 export function Reservations() {
   const { user } = useAuth(),
     initial = { search: '', type: 'all', status: 'all' },
@@ -15,6 +16,7 @@ export function Reservations() {
     [search, setSearch] = useState(initial),
     query = useQuery<{ reservations: Reservation[] }>(`/reservations?${new URLSearchParams(search)}`, 30000);
   return (
+    <>
     <div className="space-y-6">
       <header className="flex items-end justify-between gap-6 max-[650px]:items-start max-[650px]:flex-col">
         <div>
@@ -100,5 +102,7 @@ export function Reservations() {
         )}
       </div>
     </div>
+    {user!.role === 'customer' && <ChatWidget />}
+    </>
   );
 }
