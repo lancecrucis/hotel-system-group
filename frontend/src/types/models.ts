@@ -21,7 +21,10 @@ export interface Room {
   has_wifi: boolean;
   breakfast_included: boolean;
   special_amenities: string;
+  rating: number;
+  rating_count: number;
   available: boolean;
+  availability_reason?: 'unavailable' | 'fully_booked' | null;
   images: { image_url: string }[];
 }
 export interface Reservation {
@@ -44,6 +47,7 @@ export interface Reservation {
   hotel: {
     room_number: string;
     room_type: string;
+    image_url: string;
     check_in: string;
     check_out: string;
     guest_count: number;

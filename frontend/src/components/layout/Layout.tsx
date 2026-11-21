@@ -12,7 +12,6 @@ import {
   UserRound,
   ArrowUpRight,
   UserPlus,
-  Home,
 } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthContext';
 import { useQuery } from '../../hooks/useQuery';

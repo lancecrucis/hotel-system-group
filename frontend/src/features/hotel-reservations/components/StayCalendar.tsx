@@ -10,27 +10,81 @@ function addDays(value: string, amount: number) {
   return date.toISOString().slice(0, 10);
 }
 
+function monthOffset(value: string, amount: number) {
+  const date = new Date(`${value}-01T12:00:00Z`);
+  date.setUTCMonth(date.getUTCMonth() + amount);
+  return date.toISOString().slice(0, 7);
+}
+
+function MonthGrid({ month, today, value, step, onChoose }: {
+  month: string;
+  today: string;
+  value: Stay;
+  step: 'checkIn' | 'checkOut';
+  onChoose: (date: string) => void;
+}) {
+  const first = new Date(`${month}-01T12:00:00Z`);
+  const offset = first.getUTCDay();
+  const count = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
+  const title = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(first);
+
+  return (
+    <div className="min-w-0" aria-label={title}>
+      <h3 className="mb-3 text-center font-sans text-sm font-semibold text-[#54220e]">{title}</h3>
+      <div className="grid grid-cols-7 text-center">
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((name) => (
+          <span className="grid h-9 place-items-center text-[11px] font-medium text-[#806348]" key={name}>{name}</span>
+        ))}
+        {Array.from({ length: offset }, (_, index) => <span key={`blank-${month}-${index}`} />)}
+        {Array.from({ length: count }, (_, index) => {
+          const date = `${month}-${String(index + 1).padStart(2, '0')}`;
+          const outOfRange = date < today || (step === 'checkOut' && (date <= value.checkIn || date > addDays(value.checkIn, 30)));
+          const isStart = date === value.checkIn;
+          const isEnd = date === value.checkOut;
+          const inRange = Boolean(value.checkOut) && date >= value.checkIn && date <= value.checkOut;
+          const marker = isStart
+            ? 'bg-[#32744b] text-white hover:bg-[#28613e]'
+            : isEnd
+              ? 'bg-[#aa4136] text-white hover:bg-[#93362d]'
+              : 'text-[#54220e] hover:bg-[#f3e1c7]';
+          return (
+            <span
+              className={`grid h-10 place-items-center ${inRange && isStart ? 'rounded-l-full' : ''} ${inRange && isEnd ? 'rounded-r-full' : ''}`}
+              style={inRange ? { backgroundColor: '#f3e7d7', borderTop: '1px solid #e5d3bd', borderBottom: '1px solid #e5d3bd' } : undefined}
+              key={date}
+            >
+              <button
+                type="button"
+                disabled={outOfRange}
+                className={`grid aspect-square w-full max-w-9 place-items-center rounded-full border-0 p-0 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] ${outOfRange && !isStart ? 'cursor-not-allowed text-[#b7aa9c] line-through' : marker}`}
+                aria-label={`${dateLabel(date)}${isStart ? ', check-in, start of selected stay' : outOfRange ? ', unavailable' : isEnd ? ', check-out, end of selected stay' : inRange ? ', within selected stay' : ', available'}`}
+                aria-disabled={outOfRange}
+                aria-pressed={isStart || isEnd}
+                onClick={() => onChoose(date)}
+              >
+                {index + 1}
+              </button>
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function StayCalendar({ value, onChange }: { value: Stay; onChange: (value: Stay) => void }) {
   const [step, setStep] = useState<'checkIn' | 'checkOut'>('checkIn');
   const [month, setMonth] = useState(value.checkIn.slice(0, 7));
   const today = day();
-  const first = new Date(`${month}-01T12:00:00Z`);
-  const offset = first.getUTCDay();
-  const daysInMonth = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
-  const title = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(first);
 
-  function changeMonth(amount: number) {
-    const next = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + amount, 1));
-    setMonth(next.toISOString().slice(0, 7));
-  }
   function choose(date: string) {
     if (step === 'checkIn') {
-      onChange({ checkIn: date, checkOut: value.checkOut > date && nights(date, value.checkOut) <= 30 ? value.checkOut : addDays(date, 1) });
+      onChange({ checkIn: date, checkOut: '' });
       setStep('checkOut');
-    } else {
-      onChange({ ...value, checkOut: date });
-      setStep('checkIn');
+      return;
     }
+    onChange({ ...value, checkOut: date });
+    setStep('checkIn');
   }
 
   return (

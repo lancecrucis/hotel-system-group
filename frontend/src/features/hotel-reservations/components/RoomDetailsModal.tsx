@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { BedDouble, Check, ChevronLeft, ChevronRight, Coffee, Users, WalletCards, Wifi } from 'lucide-react';
+import { ArrowRight, BedDouble, Check, ChevronLeft, ChevronRight, Coffee, Users, WalletCards, Wifi } from 'lucide-react';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { ErrorBox, Modal } from '../../../components/ui/common';
 import { useQuery } from '../../../hooks/useQuery';
@@ -44,9 +44,14 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
     special_requests: '',
   });
   const gallery = photos(room);
-  const nightCount = nights(stay.checkIn, stay.checkOut);
-  const availability = useQuery<{ rooms: Room[] }>(`/hotel/rooms?${new URLSearchParams({ check_in: stay.checkIn, check_out: stay.checkOut, guests: String(guests) })}`);
-  const available = Boolean(availability.data?.rooms.some((item) => item.id === room.id && item.available));
+  const hasCompleteStay = Boolean(stay.checkIn && stay.checkOut && stay.checkOut > stay.checkIn);
+  const checkOutLabel = stay.checkOut ? dateLabel(stay.checkOut) : 'Select check-out date';
+  const nightCount = hasCompleteStay ? nights(stay.checkIn, stay.checkOut) : 0;
+  const availabilityPath = hasCompleteStay
+    ? `/hotel/rooms?${new URLSearchParams({ check_in: stay.checkIn, check_out: stay.checkOut, guests: String(guests) })}`
+    : `/hotel/rooms?guests=${guests}`;
+  const availability = useQuery<{ rooms: Room[] }>(availabilityPath);
+  const available = hasCompleteStay && Boolean(availability.data?.rooms.some((item) => item.id === room.id && item.available));
 
   async function book(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -99,8 +104,14 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
             {room.has_wifi && <span className="inline-flex items-center gap-1.5 border border-[#d8bfa0] px-2.5 py-[7px] text-xs"><Wifi size={17} /> Wi-Fi</span>}
             {room.breakfast_included && <span className="inline-flex items-center gap-1.5 border border-[#d8bfa0] px-2.5 py-[7px] text-xs"><Coffee size={17} /> Breakfast included</span>}
           </div>
-          {room.description && <p>{room.description}</p>}
-          {room.special_amenities && <p>{room.special_amenities}</p>}
+          <div className="mb-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f3e7d7] px-3 py-2 text-xs text-[#70462c]"><Users size={15} /> Up to {room.capacity}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f3e7d7] px-3 py-2 text-xs text-[#70462c]"><BedDouble size={15} /> {room.bed_count} {room.bed_type}</span>
+            {room.has_wifi && <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f3e7d7] px-3 py-2 text-xs text-[#70462c]"><Wifi size={15} /> Wi-Fi</span>}
+            {room.breakfast_included && <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f3e7d7] px-3 py-2 text-xs text-[#70462c]"><Coffee size={15} /> Breakfast</span>}
+          </div>
+          {room.description && <p className="mb-2 text-sm leading-relaxed text-[#705742]">{room.description}</p>}
+          {room.special_amenities && <p className="mb-0 text-sm leading-relaxed text-[#705742]">{room.special_amenities}</p>}
         </div>
       </div>}
       <div className={`self-start border border-[#d8bfa0] bg-[#fff8ee] p-5 ${step > 1 ? 'mx-auto w-full max-w-[1020px] border-0 bg-transparent p-0' : ''}`}>
@@ -112,13 +123,13 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
             <div><h3>Booking details</h3><p>Check your dates and guests.</p></div>
           <div className="mb-4"><strong className="font-['Gelasio'] text-[23px] font-normal tracking-[-.6px]">{money(room.price_per_night)}</strong><span className="text-[#806348]"> / night</span></div>
             <StayCalendar value={stay} onChange={setStay} />
-            <label className="mt-3">Guests
-              <select value={guests} onChange={(event) => setGuests(Number(event.target.value))}>
+            <label className="mt-4 flex flex-col gap-1.5 text-xs font-semibold text-[#70462c]">Guests
+              <select className="min-h-11 rounded-xl border border-[#d8bfa0] bg-[#fffaf2] px-3 text-sm font-medium text-[#54220e] focus:border-[#8b4d28] focus:outline-none focus:ring-2 focus:ring-[#d8bfa0]/50" value={guests} onChange={(event) => setGuests(Number(event.target.value))}>
                 {Array.from({ length: Math.min(6, room.capacity) }, (_, index) => index + 1).map((count) => <option key={count} value={count}>{count} {count === 1 ? 'guest' : 'guests'}</option>)}
               </select>
             </label>
-            <div className="mt-2.5 flex min-h-[30px] items-center gap-1.5 text-xs font-semibold" role="status">
-              {availability.loading ? 'Checking availability…' : availability.error ? 'Could not check availability' : available ? <><Check size={16} /> Available for these dates</> : 'Unavailable for these dates'}
+            <div className={`mt-2 flex min-h-[30px] items-center gap-1.5 text-xs font-semibold ${available ? 'text-[#32744b]' : !hasCompleteStay ? 'text-[#806348]' : 'text-[#aa4136]'}`} role="status">
+              {!hasCompleteStay ? 'Choose a check-out date to check availability' : availability.loading ? 'Checking availability…' : availability.error ? 'Could not check availability' : available ? <><Check size={16} /> Available for these dates</> : 'Unavailable for these dates'}
             </div>
             <ErrorBox message={availability.error} />
             <div className="flex justify-between gap-2.5 border-t border-[#d8bfa0] pt-[13px]"><span>{money(room.price_per_night)} × {nightCount} {nightCount === 1 ? 'night' : 'nights'}</span><strong>{money(Number(room.price_per_night) * nightCount)}</strong></div>
@@ -151,7 +162,7 @@ export function RoomDetailsModal({ room, initialStay, initialGuests, onClose }: 
             <div className="mb-5 text-center"><h3>Confirm your booking</h3><p>One last check before we hold your room.</p></div>
             <div className="border-t border-[#d8bfa0]">
               <div><span>Room</span><strong>{room.room_type}</strong></div>
-              <div><span>Stay</span><strong>{dateLabel(stay.checkIn)} – {dateLabel(stay.checkOut)}</strong></div>
+              <div><span>Stay</span><strong>{dateLabel(stay.checkIn)} – {checkOutLabel}</strong></div>
               <div><span>Guests</span><strong>{guests} {guests === 1 ? 'guest' : 'guests'}</strong></div>
               <div><span>Contact</span><strong>{contact.contact_name}<small>{contact.contact_email}<br />{contact.contact_phone}</small></strong></div>
               <div><span>Payment</span><strong>At the property</strong></div>

@@ -27,7 +27,7 @@ function PasswordStrength({ password }: { password: string }) {
           />
         ))}
       </div>
-      <small>{tests.filter((t) => !t.pass).map((t) => t.label).join(' · ') || 'Strong password'}</small>
+      <small className={passed === tests.length ? 'text-green-700' : 'text-red-700'}>{tests.filter((t) => !t.pass).map((t) => t.label).join(' · ') || 'Strong password'}</small>
     </div>
   );
 }

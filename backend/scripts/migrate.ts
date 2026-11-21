@@ -10,7 +10,9 @@ try {
   const folder = new URL('../../database/migrations/', import.meta.url);
   for (const name of (await readdir(folder)).filter((n) => n.endsWith('.sql')).sort()) {
     const sql = await readFile(new URL(name, folder), 'utf8');
-    const checksum = createHash('sha256').update(sql).digest('hex');
+    // Git may check SQL files out with CRLF on Windows. Hash normalized text so
+    // the same migration has the same checksum on every operating system.
+    const checksum = createHash('sha256').update(sql.replace(/\r\n/g, '\n')).digest('hex');
     const prior = await client.query('SELECT checksum FROM schema_migrations WHERE name=$1', [name]);
     if (prior.rowCount) {
       if (prior.rows[0].checksum !== checksum)
