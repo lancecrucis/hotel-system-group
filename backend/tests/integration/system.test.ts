@@ -19,7 +19,8 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     suffix = randomUUID().slice(0, 8),
     userIds: string[] = [],
     reservationIds: string[] = [],
-    roomIds: string[] = [];
+    roomIds: string[] = [],
+    tableIds: string[] = [];
   const request = async (path: string, method = 'GET', data?: unknown, cookie = '') => {
     const response = await fetch(base + path, {
       method,
@@ -47,6 +48,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
       await pool.query('DELETE FROM reservations WHERE id=ANY($1::uuid[])', [reservationIds]);
     }
     await pool.query('DELETE FROM admin_activity_logs WHERE user_id=ANY($1::uuid[])', [userIds]);
+    if (tableIds.length) await pool.query('DELETE FROM dining_tables WHERE id=ANY($1::uuid[])', [tableIds]);
     await pool.query('DELETE FROM rooms WHERE id=ANY($1::uuid[])', [roomIds]);
     await pool.query('DELETE FROM users WHERE id=ANY($1::uuid[])', [userIds]);
     await pool.end();
@@ -147,7 +149,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
     409,
   );
   assert.equal(
-    (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'checked_in' }, staff.cookie))
+    (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'checked_in', reason: 'Early check-in approved by front desk.' }, staff.cookie))
       .status,
     200,
   );
@@ -167,7 +169,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
       await request(
         `/reservations/${booking.id}/payments`,
         'POST',
-        { amount: 101, payment_method: 'cash', transaction_reference: `OVER-${suffix}` },
+        { amount: Number(booking.total_amount) + 1, payment_method: 'cash', transaction_reference: `OVER-${suffix}` },
         staff.cookie,
       )
     ).status,
@@ -178,7 +180,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
       await request(
         `/reservations/${booking.id}/payments`,
         'POST',
-        { amount: 100, payment_method: 'cash', transaction_reference: `PAY-${suffix}` },
+        { amount: Number(booking.total_amount), payment_method: 'cash', transaction_reference: `PAY-${suffix}` },
         staff.cookie,
       )
     ).status,
@@ -198,6 +200,16 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   assert.equal(
     (await request(`/reservations/${booking.id}/status`, 'PATCH', { status: 'checked_out' }, staff.cookie))
       .status,
+    200,
+  );
+  const dirtyRooms = await request('/hotel/rooms?include_unavailable=true&guests=1', 'GET', undefined, staff.cookie);
+  assert.equal(dirtyRooms.body.rooms.find((r: { id: string }) => r.id === room.body.room.id).housekeeping_status, 'dirty');
+  const invoice = await request(`/reservations/${booking.id}/invoice`, 'GET', undefined, owner.cookie);
+  assert.equal(invoice.status, 200);
+  assert.equal(invoice.body.invoice.status, 'paid');
+  assert.equal(Number(invoice.body.invoice.total_amount), Number(booking.total_amount));
+  assert.equal(
+    (await request(`/hotel/rooms/${room.body.room.id}/housekeeping`, 'PATCH', { housekeeping_status: 'inspected', housekeeping_notes: 'Turnover complete.' }, staff.cookie)).status,
     200,
   );
   const detail = (await request(`/reservations/${booking.id}`, 'GET', undefined, owner.cookie)).body;
@@ -231,6 +243,19 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   reservationIds.push(adjacent.body.reservation.id);
   assert.equal(adjacent.body.reservation.status, 'confirmed');
   assert.equal(adjacent.body.reservation.hold_expires_at, null);
+  assert.equal(
+    (
+      await request(`/reservations/${adjacent.body.reservation.id}/edit`, 'PATCH', {
+        contact_name: 'Edited Guest',
+        contact_email: contact.contact_email,
+        contact_phone: contact.contact_phone,
+        special_requests: 'Updated front desk note',
+        guest_count: 2,
+        room_id: room.body.room.id,
+      }, staff.cookie)
+    ).status,
+    200,
+  );
   assert.equal(
     (
       await request(
@@ -269,6 +294,13 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   assert.equal(walkInDetail.status, 200);
   assert.equal(walkInDetail.body.history[0].new_status, 'confirmed');
   const settings = (await request('/restaurant/settings')).body.settings;
+  const tables = await request('/restaurant/tables', 'GET', undefined, staff.cookie);
+  assert.equal(tables.status, 200);
+  assert.ok(tables.body.tables.some((table: { active: boolean }) => table.active));
+  const addedTable = await request('/restaurant/tables', 'POST', { name: `TEST-${suffix}`, shape: 'square', capacity: 2, active: true }, staff.cookie);
+  assert.equal(addedTable.status, 201);
+  tableIds.push(addedTable.body.table.id);
+  assert.equal((await request(`/restaurant/tables/${addedTable.body.table.id}`, 'PATCH', { name: `TEST-${suffix}`, shape: 'square', capacity: 2, active: false }, staff.cookie)).status, 200);
   const party = 2;
   const availability = await request(`/restaurant/availability?date=${today.distant}&guests=2`);
   const tableId = availability.body.slots[0].tables.find(

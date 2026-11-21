@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { pool } from '../../../config/database.js';
 import { requireUser, requireStaff, requireAdmin } from '../../../middleware/auth.js';
 import { transaction } from '../../../shared/utils/transaction.js';
-import { route, uuid, text, money, HttpError } from '../../../shared/utils/http.js';
+import { route, uuid, text, date, time, money, HttpError } from '../../../shared/utils/http.js';
 import {
   reservationSelect,
   expireHolds,
@@ -13,6 +13,9 @@ import {
   audit,
 } from '../repositories/reservations.js';
 import { allowedActions } from '../services/status.js';
+import { roomAvailable, validateStay } from '../../hotel-reservations/repositories/rooms.js';
+import { calculateHotelTotals } from '../../hotel-reservations/services/billing.js';
+import { peakOccupancy, minutes, clock, tableFree, type DiningTable, type TableBooking } from '../../restaurant-reservations/repositories/capacity.js';
 
 export const trackingRouter = Router();
 trackingRouter.use(['/reservations', '/notifications', '/dashboard', '/activity', '/users'], requireUser);
@@ -67,6 +70,17 @@ trackingRouter.get(
     });
   }),
 );
+trackingRouter.get(
+  '/reservations/:id/invoice',
+  route(async (req, res) => {
+    const id = uuid.parse(req.params.id);
+    const reservation = (await pool.query('SELECT id,user_id,reservation_type FROM reservations WHERE id=$1', [id])).rows[0];
+    if (!reservation || (req.user!.role === 'customer' && reservation.user_id !== req.user!.id))
+      throw new HttpError(404, 'Invoice not found.');
+    const invoice = (await pool.query('SELECT * FROM invoices WHERE reservation_id=$1', [id])).rows[0] ?? null;
+    res.json({ invoice });
+  }),
+);
 trackingRouter.patch(
   '/reservations/:id/status',
   route(async (req, res) => {
@@ -94,14 +108,48 @@ trackingRouter.patch(
         await c.query("SELECT CURRENT_DATE::text AS day,to_char(LOCALTIME,'HH24:MI:SS') AS time")
       ).rows[0];
       const visit = schedule.rows[0];
+      const policy =
+        r.reservation_type === 'hotel'
+          ? (await c.query('SELECT * FROM hotel_settings WHERE id=1 FOR UPDATE')).rows[0]
+          : (await c.query('SELECT * FROM restaurant_settings WHERE id=1 FOR UPDATE')).rows[0];
       if (['checked_in', 'arrived', 'seated', 'no_show'].includes(data.status) && visit.day > current.day)
         throw new HttpError(400, 'Arrival and no-show actions are available on the reservation date.');
       if (
+        data.status === 'checked_in' &&
+        r.reservation_type === 'hotel' &&
+        visit.day === current.day &&
+        current.time < String(policy.check_in_time)
+      ) {
+        if (req.user!.role === 'customer' || !data.reason.trim())
+          throw new HttpError(400, 'Hotel check-in starts at 3:00 PM. Staff must record an early check-in approval note.');
+      }
+      if (
         data.status === 'no_show' &&
         visit.day === current.day &&
-        (r.reservation_type === 'hotel' ? '15:00:00' : visit.time) > current.time
+        minutes(current.time) <
+          minutes(r.reservation_type === 'hotel' ? policy.check_in_time : visit.time) +
+            Number(policy.no_show_grace_minutes)
       )
-        throw new HttpError(400, 'The scheduled arrival time has not passed yet.');
+        throw new HttpError(400, `The no-show grace period has not passed yet (${policy.no_show_grace_minutes} minutes).`);
+      if (data.status === 'cancelled' && req.user!.role === 'customer' && r.status !== 'pending') {
+        const cutoff =
+          r.reservation_type === 'hotel'
+            ? (
+                await c.query(
+                  `SELECT (h.check_in + s.check_in_time - (s.cancellation_notice_hours * interval '1 hour')) <= timezone('Asia/Taipei', now()) AS closed
+                   FROM hotel_reservations h CROSS JOIN hotel_settings s WHERE h.reservation_id=$1`,
+                  [id],
+                )
+              ).rows[0]
+            : (
+                await c.query(
+                  `SELECT (d.reservation_date + d.start_time - (s.cancellation_notice_hours * interval '1 hour')) <= timezone('Asia/Taipei', now()) AS closed
+                   FROM restaurant_reservations d CROSS JOIN restaurant_settings s WHERE d.reservation_id=$1`,
+                  [id],
+                )
+              ).rows[0];
+        if (cutoff?.closed) throw new HttpError(409, 'The cancellation deadline has passed. Please contact the front desk.');
+      }
       if (req.user!.role === 'customer' && visit.day < current.day)
         throw new HttpError(400, 'Please contact reception to change a past reservation.');
       if (data.status === 'checked_out') {
@@ -113,9 +161,11 @@ trackingRouter.patch(
           throw new HttpError(409, 'Record the outstanding payment before checking out.');
       }
       if (data.status === 'checked_in') {
-        const roomId = (await c.query('SELECT room_id FROM hotel_reservations WHERE reservation_id=$1', [id]))
-          .rows[0].room_id;
+        const roomId = (await c.query('SELECT room_id FROM hotel_reservations WHERE reservation_id=$1', [id])).rows[0].room_id;
         await c.query('SELECT id FROM rooms WHERE id=$1 FOR UPDATE', [roomId]);
+        const roomState = (await c.query('SELECT status,housekeeping_status FROM rooms WHERE id=$1', [roomId])).rows[0];
+        if (!['clean', 'inspected'].includes(roomState.housekeeping_status))
+          throw new HttpError(409, 'The room must be cleaned and inspected before check-in.');
         const occupied = await c.query(
           "SELECT 1 FROM hotel_reservations h JOIN reservations r ON r.id=h.reservation_id WHERE h.room_id=$1 AND r.status='checked_in' AND r.id<>$2",
           [roomId, id],
@@ -142,6 +192,25 @@ trackingRouter.patch(
           `UPDATE ${r.reservation_type === 'hotel' ? 'hotel_reservations' : 'restaurant_reservations'} SET ${field[data.status]}=now() WHERE reservation_id=$1`,
           [id],
         );
+      if (data.status === 'checked_out' && r.reservation_type === 'hotel') {
+        const roomId = (await c.query('SELECT room_id FROM hotel_reservations WHERE reservation_id=$1', [id])).rows[0].room_id;
+        await c.query(
+          "UPDATE rooms SET housekeeping_status='dirty',housekeeping_notes='Checkout requires room turnover.',housekeeping_updated_at=now() WHERE id=$1",
+          [roomId],
+        );
+        const invoice = (await c.query('SELECT id FROM invoices WHERE reservation_id=$1 FOR UPDATE', [id])).rows[0];
+        if (invoice) {
+          await c.query(
+            "UPDATE invoices SET subtotal_amount=$1,tax_amount=$2,service_fee_amount=$3,total_amount=$4,status='paid',paid_at=now() WHERE id=$5",
+            [r.subtotal_amount, r.tax_amount, r.service_fee_amount, r.total_amount, invoice.id],
+          );
+        } else {
+          await c.query(
+            "INSERT INTO invoices(reservation_id,invoice_number,subtotal_amount,tax_amount,service_fee_amount,total_amount,status,paid_at) VALUES($1,$2,$3,$4,$5,$6,'paid',now())",
+            [id, `INV-${randomBytes(6).toString('hex').toUpperCase()}`, r.subtotal_amount, r.tax_amount, r.service_fee_amount, r.total_amount],
+          );
+        }
+      }
       const reason = data.reason || `Reservation ${data.status.replaceAll('_', ' ')}.`;
       await recordStatus(c, r, data.status, reason, req.user!.id);
       if (req.user!.role !== 'customer')
@@ -153,6 +222,197 @@ trackingRouter.patch(
           id,
           `${r.reservation_reference}: ${r.status} → ${data.status}. ${data.reason}`,
         );
+    });
+    res.json({ ok: true });
+  }),
+);
+trackingRouter.patch(
+  '/reservations/:id/schedule',
+  requireStaff,
+  route(async (req, res) => {
+    const id = uuid.parse(req.params.id);
+    await expireHolds();
+    await transaction(async (c) => {
+      const r = await lockedReservation(c, id, req.user);
+      if (!['pending', 'confirmed'].includes(r.status))
+        throw new HttpError(409, 'Only pending or confirmed reservations can be rescheduled.');
+      if (r.status === 'pending' && (!r.hold_expires_at || new Date(r.hold_expires_at).getTime() <= Date.now()))
+        throw new HttpError(409, 'The hold expired. Please confirm the reservation again before rescheduling.');
+
+      if (r.reservation_type === 'hotel') {
+        const data = z.object({ check_in: date, check_out: date }).parse(req.body);
+        const current = (
+          await c.query(
+            'SELECT room_id,check_in::text AS check_in,check_out::text AS check_out,price_per_night FROM hotel_reservations WHERE reservation_id=$1 FOR UPDATE',
+            [id],
+          )
+        ).rows[0];
+        const stayNights = await validateStay(c, data.check_in, data.check_out);
+        if (!stayNights) throw new HttpError(400, 'Choose a future stay between 1 and 30 nights.');
+        await c.query('SELECT id FROM rooms WHERE id=$1 FOR UPDATE', [current.room_id]);
+        if (!(await roomAvailable(c, current.room_id, data.check_in, data.check_out, id)))
+          throw new HttpError(409, 'That room is not available for the new dates. Choose another date range.');
+        const billing = (await c.query('SELECT tax_rate,service_fee_rate FROM hotel_settings WHERE id=1 FOR UPDATE')).rows[0];
+        const totals = calculateHotelTotals(Number(current.price_per_night) * stayNights, Number(billing.tax_rate), Number(billing.service_fee_rate));
+        await c.query('UPDATE hotel_reservations SET check_in=$1,check_out=$2 WHERE reservation_id=$3', [data.check_in, data.check_out, id]);
+        await c.query('UPDATE reservations SET subtotal_amount=$1,tax_amount=$2,service_fee_amount=$3,total_amount=$4,updated_at=now() WHERE id=$5', [totals.subtotal, totals.tax, totals.serviceFee, totals.total, id]);
+        await audit(c, req.user!.id, 'reschedule', 'reservation', id, `${r.reservation_reference}: hotel stay moved from ${current.check_in}–${current.check_out} to ${data.check_in}–${data.check_out}.`);
+        if (r.user_id)
+          await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
+            r.user_id,
+            id,
+            'Reservation rescheduled',
+            `Your hotel reservation ${r.reservation_reference} was moved to ${data.check_in}–${data.check_out}.`,
+          ]);
+      } else {
+        const data = z.object({ reservation_date: date, start_time: time }).parse(req.body);
+        const currentReservation = (
+          await c.query(
+            'SELECT reservation_date::text AS reservation_date,start_time::text AS start_time,guest_count,table_id FROM restaurant_reservations WHERE reservation_id=$1 FOR UPDATE',
+            [id],
+          )
+        ).rows[0];
+        const settings = (await c.query('SELECT * FROM restaurant_settings WHERE id=1 FOR UPDATE')).rows[0];
+        const now = (await c.query("SELECT CURRENT_DATE::text AS today,to_char(LOCALTIME,'HH24:MI') AS time")).rows[0];
+        const start = minutes(data.start_time);
+        const end = clock(start + 60);
+        if (
+          data.reservation_date < now.today ||
+          (data.reservation_date === now.today && data.start_time <= now.time)
+        )
+          throw new HttpError(400, 'Choose a future dining time.');
+        if (
+          start < minutes(settings.opening_time) ||
+          start + 60 > minutes(settings.closing_time) ||
+          (start - minutes(settings.opening_time)) % 30 !== 0
+        )
+          throw new HttpError(400, 'Choose a time on a 30-minute interval during opening hours.');
+
+        const tables = (
+          await c.query<DiningTable>(
+            'SELECT * FROM dining_tables WHERE active=true AND capacity >= $1 ORDER BY capacity,name FOR UPDATE',
+            [currentReservation.guest_count],
+          )
+        ).rows;
+        const bookings = (
+          await c.query<TableBooking>(
+            `SELECT d.table_id,d.start_time,d.end_time,to_char(d.completed_at,'HH24:MI') AS completed_time
+             FROM restaurant_reservations d JOIN reservations r ON r.id=d.reservation_id
+             WHERE d.reservation_date=$1 AND r.id<>$2 AND
+             (r.status IN ('confirmed','arrived','seated','completed') OR
+              (r.status='pending' AND r.hold_expires_at>now()))`,
+            [data.reservation_date, id],
+          )
+        ).rows;
+        const table =
+          tables.find((candidate) => candidate.id === currentReservation.table_id && tableFree(bookings, candidate.id, start)) ??
+          tables.find((candidate) => tableFree(bookings, candidate.id, start));
+        if (!table) throw new HttpError(409, 'No table is available at the new time. Choose another time.');
+        const occupied = await peakOccupancy(c, data.reservation_date, data.start_time, end, id);
+        if (occupied + currentReservation.guest_count > settings.max_capacity)
+          throw new HttpError(409, 'That time is at the restaurant capacity limit. Choose another time.');
+        await c.query('UPDATE restaurant_reservations SET reservation_date=$1,start_time=$2,end_time=$3,table_id=$4 WHERE reservation_id=$5', [data.reservation_date, data.start_time, end, table.id, id]);
+        await c.query('UPDATE reservations SET updated_at=now() WHERE id=$1', [id]);
+        await audit(c, req.user!.id, 'reschedule', 'reservation', id, `${r.reservation_reference}: dining visit moved from ${currentReservation.reservation_date} ${currentReservation.start_time.slice(0, 5)} to ${data.reservation_date} ${data.start_time}.`);
+        if (r.user_id)
+          await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
+            r.user_id,
+            id,
+            'Reservation rescheduled',
+            `Your dining reservation ${r.reservation_reference} was moved to ${data.reservation_date} at ${data.start_time}.`,
+          ]);
+      }
+    });
+    res.json({ ok: true });
+  }),
+);
+trackingRouter.patch(
+  '/reservations/:id/edit',
+  requireStaff,
+  route(async (req, res) => {
+    const id = uuid.parse(req.params.id);
+    const data = z
+      .object({
+        contact_name: text(160).min(2),
+        contact_email: z.email().max(254),
+        contact_phone: text(18).regex(/^\+63[0-9 ]{9,14}$/, 'Use a Philippine number beginning with +63'),
+        special_requests: text(2000),
+        guest_count: z.number().int().min(1).max(500).optional(),
+        room_id: uuid.optional(),
+        table_id: uuid.nullable().optional(),
+      })
+      .parse(req.body);
+    await transaction(async (c) => {
+      const r = await lockedReservation(c, id, req.user);
+      if (['cancelled', 'expired', 'no_show', 'checked_out', 'completed'].includes(r.status))
+        throw new HttpError(409, 'This reservation is closed and cannot be edited.');
+      if (r.reservation_type === 'hotel') {
+        const current = (
+          await c.query(
+            'SELECT h.*,h.check_in::text AS arrival_date FROM hotel_reservations h JOIN reservations r ON r.id=h.reservation_id WHERE h.reservation_id=$1 FOR UPDATE',
+            [id],
+          )
+        ).rows[0];
+        const guestCount = data.guest_count ?? current.guest_count;
+        const roomId = data.room_id ?? current.room_id;
+        if (r.status === 'checked_in' && (roomId !== current.room_id || guestCount !== current.guest_count))
+          throw new HttpError(409, 'Room assignment and guest count cannot change after check-in.');
+        const room = (await c.query('SELECT * FROM rooms WHERE id=$1 FOR UPDATE', [roomId])).rows[0];
+        if (!room || room.status !== 'available' || !['clean', 'inspected'].includes(room.housekeeping_status) || room.capacity < guestCount)
+          throw new HttpError(409, 'The selected room is not ready or cannot fit this party.');
+        if (r.status !== 'checked_in' && !(await roomAvailable(c, roomId, current.check_in, current.check_out, id)))
+          throw new HttpError(409, 'The selected room is not available for these dates.');
+        const billing = (await c.query('SELECT tax_rate,service_fee_rate FROM hotel_settings WHERE id=1 FOR UPDATE')).rows[0];
+        const nights = await validateStay(c, current.check_in, current.check_out);
+        const totals = r.status === 'checked_in'
+          ? { subtotal: Number(r.subtotal_amount), tax: Number(r.tax_amount), serviceFee: Number(r.service_fee_amount), total: Number(r.total_amount) }
+          : calculateHotelTotals(Number(room.price_per_night) * Number(nights ?? 1), Number(billing.tax_rate), Number(billing.service_fee_rate));
+        await c.query(
+          'UPDATE reservations SET contact_name=$1,contact_email=$2,contact_phone=$3,subtotal_amount=$4,tax_amount=$5,service_fee_amount=$6,total_amount=$7,updated_at=now() WHERE id=$8',
+          [data.contact_name, data.contact_email, data.contact_phone, totals.subtotal, totals.tax, totals.serviceFee, totals.total, id],
+        );
+        await c.query(
+          'UPDATE hotel_reservations SET room_id=$1,guest_count=$2,price_per_night=$3,special_requests=$4 WHERE reservation_id=$5',
+          [roomId, guestCount, room.price_per_night, data.special_requests, id],
+        );
+      } else {
+        const current = (
+          await c.query('SELECT * FROM restaurant_reservations WHERE reservation_id=$1 FOR UPDATE', [id])
+        ).rows[0];
+        const settings = (await c.query('SELECT * FROM restaurant_settings WHERE id=1 FOR UPDATE')).rows[0];
+        const guestCount = data.guest_count ?? current.guest_count;
+        if (guestCount > settings.max_guest_per_booking) throw new HttpError(400, 'Party size exceeds the restaurant limit.');
+        const requestedTableId = data.table_id ?? current.table_id;
+        const tables = (
+          await c.query<DiningTable>(
+            'SELECT * FROM dining_tables WHERE active=true AND ($1::uuid IS NULL OR id=$1) AND capacity >= $2 ORDER BY capacity,name FOR UPDATE',
+            [requestedTableId ?? null, guestCount],
+          )
+        ).rows;
+        const bookings = (
+          await c.query<TableBooking>(
+            `SELECT d.table_id,d.start_time,d.end_time,to_char(d.completed_at,'HH24:MI') AS completed_time
+             FROM restaurant_reservations d JOIN reservations r ON r.id=d.reservation_id
+             WHERE d.reservation_date=$1 AND r.id<>$2 AND
+             (r.status IN ('confirmed','arrived','seated','completed') OR
+              (r.status='pending' AND r.hold_expires_at>now()))`,
+            [current.reservation_date, id],
+          )
+        ).rows;
+        const start = minutes(current.start_time);
+        const table = tables.find((candidate) => tableFree(bookings, candidate.id, start));
+        if (!table) throw new HttpError(409, 'No suitable table is available for the updated party size.');
+        await c.query('UPDATE reservations SET contact_name=$1,contact_email=$2,contact_phone=$3,updated_at=now() WHERE id=$4', [data.contact_name, data.contact_email, data.contact_phone, id]);
+        await c.query('UPDATE restaurant_reservations SET guest_count=$1,table_id=$2,special_requests=$3 WHERE reservation_id=$4', [guestCount, table.id, data.special_requests, id]);
+      }
+      await audit(c, req.user!.id, 'edit_reservation', 'reservation', id, `${r.reservation_reference}: reservation details updated.`);
+      if (r.user_id)
+        await c.query('INSERT INTO notifications(user_id,reservation_id,title,message) VALUES($1,$2,$3,$4)', [
+          r.user_id,
+          id,
+          'Reservation details updated',
+          `The front desk updated reservation ${r.reservation_reference}.`,
+        ]);
     });
     res.json({ ok: true });
   }),

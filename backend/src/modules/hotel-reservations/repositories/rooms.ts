@@ -4,13 +4,15 @@ export async function roomAvailable(
   roomId: string,
   start: string,
   end: string,
+  excludeReservationId?: string,
 ) {
   const result = await client.query(
     `SELECT 1 FROM hotel_reservations h JOIN reservations r ON r.id=h.reservation_id
     WHERE h.room_id=$1 AND h.check_in<$3::date
     AND (h.check_out>$2::date OR (r.status='checked_in' AND $2::date<=CURRENT_DATE))
-    AND (r.status IN ('confirmed','checked_in') OR (r.status='pending' AND r.hold_expires_at>now())) LIMIT 1`,
-    [roomId, start, end],
+    AND (r.status IN ('confirmed','checked_in') OR (r.status='pending' AND r.hold_expires_at>now())
+    ) AND ($4::uuid IS NULL OR r.id<>$4) LIMIT 1`,
+    [roomId, start, end, excludeReservationId ?? null],
   );
   return !result.rowCount;
 }

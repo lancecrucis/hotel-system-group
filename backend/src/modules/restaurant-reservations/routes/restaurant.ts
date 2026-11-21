@@ -4,31 +4,82 @@ import { z } from 'zod';
 import { pool } from '../../../config/database.js';
 import { requireUser, requireStaff } from '../../../middleware/auth.js';
 import { transaction } from '../../../shared/utils/transaction.js';
-import { route, date, time, HttpError } from '../../../shared/utils/http.js';
+import { route, uuid, text, date, time, HttpError } from '../../../shared/utils/http.js';
 import { contactSchema } from '../../hotel-reservations/routes/hotel.js';
 import { expireHolds, recordStatus, audit } from '../../reservation-tracking/repositories/reservations.js';
-import { peakOccupancy, minutes, clock } from '../repositories/capacity.js';
+import { peakOccupancy, minutes, clock, tableFree, type DiningTable, type TableBooking } from '../repositories/capacity.js';
 
 export const restaurantRouter = Router();
 const search = z.object({ date, guests: z.coerce.number().int().min(1).max(500), time: time.optional() });
 const visitMinutes = 60;
-const bufferMinutes = 30;
-type DiningTable = { id: string; name: string; shape: string; capacity: number };
-type TableBooking = {
-  table_id: string | null;
-  start_time: string;
-  end_time: string;
-  completed_time: string | null;
-};
-const tableFree = (bookings: TableBooking[], tableId: string, start: number) =>
-  !bookings.some(
-    (booking) =>
-      booking.table_id === tableId &&
-      minutes(booking.start_time) < start + visitMinutes + bufferMinutes &&
-      (booking.completed_time
-        ? minutes(booking.completed_time) + bufferMinutes
-        : minutes(booking.end_time) + bufferMinutes) > start,
-  );
+const tableSchema = z.object({
+  name: text(40).min(1),
+  shape: z.enum(['round', 'square', 'rectangle']),
+  capacity: z.number().int().min(1).max(10),
+  active: z.boolean().default(true),
+});
+restaurantRouter.get(
+  '/tables',
+  requireUser,
+  requireStaff,
+  route(async (_req, res) => {
+    res.json({ tables: (await pool.query('SELECT * FROM dining_tables ORDER BY active DESC,name')).rows });
+  }),
+);
+restaurantRouter.post(
+  '/tables',
+  requireUser,
+  requireStaff,
+  route(async (req, res) => {
+    const data = tableSchema.parse(req.body);
+    const table = await transaction(async (c) => {
+      const result = await c.query(
+        'INSERT INTO dining_tables(name,shape,capacity,active) VALUES($1,$2,$3,$4) RETURNING *',
+        [data.name, data.shape, data.capacity, data.active],
+      );
+      await audit(c, req.user!.id, 'create', 'dining_table', result.rows[0].id, `Table ${data.name}.`);
+      return result.rows[0];
+    });
+    res.status(201).json({ table });
+  }),
+);
+restaurantRouter.patch(
+  '/tables/:id',
+  requireUser,
+  requireStaff,
+  route(async (req, res) => {
+    const id = uuid.parse(req.params.id);
+    const data = tableSchema.parse(req.body);
+    const table = await transaction(async (c) => {
+      const current = (await c.query('SELECT * FROM dining_tables WHERE id=$1 FOR UPDATE', [id])).rows[0];
+      if (!current) throw new HttpError(404, 'Dining table not found.');
+      if (!data.active || data.capacity < current.capacity) {
+        const conflict = await c.query(
+          `SELECT 1 FROM restaurant_reservations d JOIN reservations r ON r.id=d.reservation_id
+           WHERE d.table_id=$1 AND d.reservation_date>=CURRENT_DATE
+           AND r.status IN ('pending','confirmed','arrived','seated')
+           AND (r.status<>'pending' OR r.hold_expires_at>now())
+           AND (d.guest_count>$2 OR $3=false) LIMIT 1`,
+          [id, data.capacity, data.active],
+        );
+        if (conflict.rowCount) throw new HttpError(409, 'Active reservations prevent reducing this table or taking it offline.');
+        const remainingCapacity = (
+          await c.query<{ capacity: number }>('SELECT COALESCE(max(capacity),0)::integer AS capacity FROM dining_tables WHERE active=true AND id<>$1', [id])
+        ).rows[0].capacity;
+        const settings = (await c.query<{ max_guest_per_booking: number }>('SELECT max_guest_per_booking FROM restaurant_settings WHERE id=1')).rows[0];
+        if (remainingCapacity < settings.max_guest_per_booking)
+          throw new HttpError(409, 'Keep at least one active table that can fit the restaurant party-size limit.');
+      }
+      const result = await c.query(
+        'UPDATE dining_tables SET name=$1,shape=$2,capacity=$3,active=$4,updated_at=now() WHERE id=$5 RETURNING *',
+        [data.name, data.shape, data.capacity, data.active, id],
+      );
+      await audit(c, req.user!.id, 'update', 'dining_table', id, `Table ${data.name}.`);
+      return result.rows[0];
+    });
+    res.json({ table });
+  }),
+);
 restaurantRouter.get(
   '/settings',
   route(async (_req, res) => {
@@ -55,7 +106,7 @@ restaurantRouter.put(
     await transaction(async (c) => {
       await c.query('SELECT id FROM restaurant_settings WHERE id=1 FOR UPDATE');
       const largestTable = await c.query<{ capacity: number }>(
-        'SELECT COALESCE(max(capacity),0)::integer AS capacity FROM dining_tables',
+        "SELECT COALESCE(max(capacity),0)::integer AS capacity FROM dining_tables WHERE active=true",
       );
       if (data.max_guest_per_booking > largestTable.rows[0].capacity)
         throw new HttpError(400, `Party size cannot exceed the largest table (${largestTable.rows[0].capacity}).`);
@@ -105,7 +156,7 @@ restaurantRouter.get(
       await pool.query("SELECT CURRENT_DATE::text AS today,to_char(LOCALTIME,'HH24:MI') AS time")
     ).rows[0];
     if (data.date < current.today) throw new HttpError(400, 'Choose today or a future date.');
-    const tables = (await pool.query<DiningTable>('SELECT * FROM dining_tables ORDER BY name')).rows;
+    const tables = (await pool.query<DiningTable>('SELECT * FROM dining_tables WHERE active=true ORDER BY name')).rows;
     const bookings = (
       await pool.query<TableBooking>(
         `SELECT d.table_id,d.start_time,d.end_time,
@@ -185,7 +236,7 @@ restaurantRouter.post(
       await expireHolds(c);
       const tables = (
         await c.query<DiningTable>(
-          'SELECT * FROM dining_tables WHERE ($1::uuid IS NULL OR id=$1) AND capacity >= $2 ORDER BY capacity,name',
+          'SELECT * FROM dining_tables WHERE active=true AND ($1::uuid IS NULL OR id=$1) AND capacity >= $2 ORDER BY capacity,name',
           [data.table_id ?? null, data.guest_count],
         )
       ).rows;
@@ -214,12 +265,12 @@ restaurantRouter.post(
           staffWalkIn ? null : req.user!.id,
           req.user!.id,
           staffWalkIn ? 'walk_in' : 'online',
-          'confirmed',
+          staffWalkIn ? 'confirmed' : 'pending',
           data.contact_name,
           data.contact_email,
           data.contact_phone,
           `DIN-${randomBytes(5).toString('hex').toUpperCase()}`,
-          null,
+          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
         ],
       );
       const r = inserted.rows[0];
@@ -238,10 +289,10 @@ restaurantRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        'confirmed',
+        staffWalkIn ? 'confirmed' : 'pending',
         staffWalkIn
           ? 'Walk-in dining reservation created and confirmed by staff.'
-          : 'Online dining reservation confirmed.',
+          : 'Dining time held for 15 minutes. Confirm to complete the booking.',
         req.user!.id,
       );
       if (staffWalkIn)

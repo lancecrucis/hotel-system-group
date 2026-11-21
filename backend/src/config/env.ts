@@ -22,6 +22,9 @@ const schema = z.object({
   SMTP_PASSWORD: z.string().optional(),
   APP_BASE_URL: z.string().url().optional(),
   SMS_PROVIDER: z.enum(['console', 'twilio']).default('console'),
+  MIXROUTE_API_KEY: z.string().min(1).optional(),
+  MIXROUTE_BASE_URL: z.url().default('https://api.mixroute.ai/v1'),
+  MIXROUTE_MODEL: z.string().min(1).default('deepseek-v4-flash'),
 });
 
 const parsed = schema.safeParse(process.env);

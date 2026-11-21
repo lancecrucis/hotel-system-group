@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import { pool } from '../../../config/database.js';
 import { requireUser, requireStaff } from '../../../middleware/auth.js';
 import { transaction } from '../../../shared/utils/transaction.js';
-import { route, uuid, text, date, money, HttpError } from '../../../shared/utils/http.js';
+import { route, uuid, text, date, time, money, HttpError } from '../../../shared/utils/http.js';
 import { roomAvailable, validateStay } from '../repositories/rooms.js';
-import { expireHolds, recordStatus, audit } from '../../reservation-tracking/repositories/reservations.js';
+import { audit } from '../../reservation-tracking/repositories/reservations.js';
+import { createHotelReservation, hotelReservationInput } from '../services/reservations.js';
 
 export const hotelRouter = Router();
 const safeImage = z.union([
@@ -31,6 +31,37 @@ const roomSchema = z.object({
     .max(8)
     .default([]),
 });
+const hotelSettingsSchema = z.object({
+  check_in_time: time,
+  check_out_time: time,
+  cancellation_notice_hours: z.number().int().min(0).max(168),
+  no_show_grace_minutes: z.number().int().min(0).max(1440),
+  tax_rate: z.number().min(0).max(100),
+  service_fee_rate: z.number().min(0).max(100),
+});
+hotelRouter.get(
+  '/settings',
+  route(async (_req, res) => {
+    res.json({ settings: (await pool.query('SELECT * FROM hotel_settings WHERE id=1')).rows[0] });
+  }),
+);
+hotelRouter.put(
+  '/settings',
+  requireUser,
+  requireStaff,
+  route(async (req, res) => {
+    const data = hotelSettingsSchema.parse(req.body);
+    await transaction(async (c) => {
+      await c.query('SELECT id FROM hotel_settings WHERE id=1 FOR UPDATE');
+      await c.query(
+        'UPDATE hotel_settings SET check_in_time=$1,check_out_time=$2,cancellation_notice_hours=$3,no_show_grace_minutes=$4,tax_rate=$5,service_fee_rate=$6,updated_at=now() WHERE id=1',
+        [data.check_in_time, data.check_out_time, data.cancellation_notice_hours, data.no_show_grace_minutes, data.tax_rate, data.service_fee_rate],
+      );
+      await audit(c, req.user!.id, 'update', 'hotel_settings', null, 'Updated hotel policies and room billing rates.');
+    });
+    res.json({ ok: true });
+  }),
+);
 hotelRouter.get(
   '/rooms',
   route(async (req, res) => {
@@ -52,7 +83,7 @@ hotelRouter.get(
         COALESCE((SELECT json_agg(i ORDER BY i.display_order) FROM room_images i WHERE i.room_id=rm.id),'[]') AS images,
         COALESCE((SELECT round(avg(rr.rating)::numeric,1) FROM room_ratings rr WHERE rr.room_id=rm.id),0)::float AS rating,
         (SELECT count(*)::int FROM room_ratings rr WHERE rr.room_id=rm.id) AS rating_count
-    FROM rooms rm WHERE ($1::boolean OR $2::boolean OR status='available') AND capacity>=$3
+    FROM rooms rm WHERE ($1::boolean OR $2::boolean OR (status='available' AND housekeeping_status IN ('clean','inspected'))) AND capacity>=$3
     AND ($4::text='' OR room_type=$4) ORDER BY price_per_night,room_number`,
       [req.user?.role === 'staff' || req.user?.role === 'admin', filter.include_unavailable, filter.guests, filter.room_type],
     );
@@ -60,6 +91,7 @@ hotelRouter.get(
     for (const room of result.rows) {
       const available =
         room.status === 'available' &&
+        ['clean', 'inspected'].includes(room.housekeeping_status) &&
         (!filter.check_in || (await roomAvailable(pool, room.id, filter.check_in, filter.check_out!)));
       if (available || filter.include_unavailable || (req.user?.role !== 'customer' && req.user)) {
         rooms.push({
@@ -142,86 +174,57 @@ hotelRouter.patch(
     res.json({ room: await saveRoom(uuid.parse(req.params.id), roomSchema.parse(req.body), req.user!.id) });
   }),
 );
-export const contactSchema = z.object({
-  contact_name: text(160).min(2),
-  contact_email: z.email().max(254),
-  contact_phone: text(18).regex(/^\+63[0-9 ]{9,14}$/, 'Use a Philippine number beginning with +63'),
-  special_requests: text(2000).default(''),
-});
+hotelRouter.patch(
+  '/rooms/:id/housekeeping',
+  requireUser,
+  requireStaff,
+  route(async (req, res) => {
+    const data = z
+      .object({
+        housekeeping_status: z.enum(['clean', 'inspected', 'dirty', 'cleaning', 'out_of_order']),
+        housekeeping_notes: text(1000).default(''),
+      })
+      .parse(req.body);
+    const room = await transaction(async (c) => {
+      const current = (await c.query('SELECT * FROM rooms WHERE id=$1 FOR UPDATE', [uuid.parse(req.params.id)])).rows[0];
+      if (!current) throw new HttpError(404, 'Room not found.');
+      if (data.housekeeping_status === 'clean' || data.housekeeping_status === 'inspected') {
+        const active = await c.query(
+          "SELECT 1 FROM hotel_reservations h JOIN reservations r ON r.id=h.reservation_id WHERE h.room_id=$1 AND r.status='checked_in' LIMIT 1",
+          [current.id],
+        );
+        if (active.rowCount) throw new HttpError(409, 'A checked-in guest is still assigned to this room.');
+      }
+      const updated = await c.query(
+        'UPDATE rooms SET housekeeping_status=$1,housekeeping_notes=$2,housekeeping_updated_at=now() WHERE id=$3 RETURNING *',
+        [data.housekeeping_status, data.housekeeping_notes, current.id],
+      );
+      await audit(c, req.user!.id, 'housekeeping_update', 'room', current.id, `Room ${current.room_number}: ${data.housekeeping_status}.`);
+      return updated.rows[0];
+    });
+    res.json({ room });
+  }),
+);
+export const contactSchema = hotelReservationInput.omit({ room_id: true, check_in: true, check_out: true, guest_count: true });
 hotelRouter.post(
   '/reservations',
   requireUser,
   route(async (req, res) => {
-    const data = contactSchema
-      .extend({
-        room_id: uuid,
-        check_in: date,
-        check_out: date,
-        guest_count: z.number().int().min(1).max(6),
-        walk_in: z.boolean().default(false),
-      })
-      .parse(req.body);
+    const data = hotelReservationInput.extend({ walk_in: z.boolean().default(false) }).parse(req.body);
     const staffWalkIn = data.walk_in && req.user!.role !== 'customer';
     if (data.walk_in && !staffWalkIn) throw new HttpError(403, 'Staff access required for walk-in bookings.');
     const result = await transaction(async (c) => {
-      const rooms = await c.query('SELECT * FROM rooms WHERE id=$1 FOR UPDATE', [data.room_id]);
-      const room = rooms.rows[0];
-      if (!room || room.status !== 'available' || room.capacity < data.guest_count)
-        throw new HttpError(409, 'This room is not available for your party.');
-      const nights = await validateStay(c, data.check_in, data.check_out);
-      if (!nights) throw new HttpError(400, 'Choose a future stay between 1 and 30 nights.');
-      await expireHolds(c);
-      if (!(await roomAvailable(c, room.id, data.check_in, data.check_out)))
-        throw new HttpError(409, 'This room was just booked for those dates. Choose another room or dates.');
-      const reference = `HTL-${randomBytes(5).toString('hex').toUpperCase()}`;
-      const inserted = await c.query(
-        `INSERT INTO reservations(user_id,created_by,booking_source,reservation_type,status,total_amount,contact_name,contact_email,contact_phone,reservation_reference,hold_expires_at)
-      VALUES($1,$2,$3,'hotel',$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
-        [
-          staffWalkIn ? null : req.user!.id,
-          req.user!.id,
-          staffWalkIn ? 'walk_in' : 'online',
-          'confirmed',
-          (Math.round(Number(room.price_per_night) * 100) * nights) / 100,
-          data.contact_name,
-          data.contact_email,
-          data.contact_phone,
-          reference,
-          null,
-        ],
-      );
-      const r = inserted.rows[0];
-      await c.query(
-        `INSERT INTO hotel_reservations(reservation_id,room_id,check_in,check_out,guest_count,price_per_night,special_requests) VALUES($1,$2,$3,$4,$5,$6,$7)`,
-        [
-          r.id,
-          room.id,
-          data.check_in,
-          data.check_out,
-          data.guest_count,
-          room.price_per_night,
-          data.special_requests,
-        ],
-      );
-      await recordStatus(
-        c,
-        { ...r, status: '' },
-        'confirmed',
-        staffWalkIn
-          ? 'Walk-in room reservation created and confirmed by staff.'
-          : 'Room reservation confirmed automatically.',
-        req.user!.id,
-      );
+      const created = await createHotelReservation(c, data, req.user!, { walkIn: staffWalkIn });
       if (staffWalkIn)
         await audit(
           c,
           req.user!.id,
           'create_walk_in',
           'reservation',
-          r.id,
-          `${reference}: hotel reservation for ${data.contact_name}.`,
+          created.id,
+          `${created.reservation_reference}: hotel reservation for ${data.contact_name}.`,
         );
-      return r;
+      return created;
     });
     res.status(201).json({ reservation: result });
   }),

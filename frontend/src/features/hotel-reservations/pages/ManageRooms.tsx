@@ -1,18 +1,58 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Plus, Pencil } from 'lucide-react';
+import { Plus, Pencil, Sparkles } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
 import { api, send } from '../../../services/client';
-import type { Room } from '../../../types/models';
+import type { HotelSettings, Room } from '../../../types/models';
 import { PageHeader, ErrorBox, Success, Loading, Badge, Modal } from '../../../components/ui/common';
 import { money } from '../../../utils/format';
 export function ManageRooms() {
   const query = useQuery<{ rooms: Room[] }>('/hotel/rooms'),
+    settingsQuery = useQuery<{ settings: HotelSettings }>('/hotel/settings'),
     [editing, setEditing] = useState<Room | 'new' | null>(null),
     [error, setError] = useState(''),
     [message, setMessage] = useState(''),
+    [housekeeping, setHousekeeping] = useState<Room | null>(null),
     [busy, setBusy] = useState(false);
   const room = editing && editing !== 'new' ? editing : null;
+  async function saveHousekeeping(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!housekeeping) return;
+    const form = Object.fromEntries(new FormData(e.currentTarget));
+    setBusy(true);
+    setError('');
+    try {
+      await api(`/hotel/rooms/${housekeeping.id}/housekeeping`, send('PATCH', form));
+      setHousekeeping(null);
+      setMessage('Room condition updated.');
+      query.reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function saveSettings(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = Object.fromEntries(new FormData(e.currentTarget));
+    setBusy(true);
+    setError('');
+    try {
+      await api('/hotel/settings', send('PUT', {
+        ...form,
+        cancellation_notice_hours: Number(form.cancellation_notice_hours),
+        no_show_grace_minutes: Number(form.no_show_grace_minutes),
+        tax_rate: Number(form.tax_rate),
+        service_fee_rate: Number(form.service_fee_rate),
+      }));
+      setMessage('Hotel policies and billing rates saved.');
+      settingsQuery.reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget),
@@ -43,6 +83,7 @@ export function ManageRooms() {
         title="Room inventory"
         action={
           <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28]"
             onClick={() => {
               setEditing('new');
               setError('');
@@ -55,45 +96,73 @@ export function ManageRooms() {
       />
       <ErrorBox message={query.error} />
       <Success message={message} />
-      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee]">
+      {settingsQuery.data && (
+        <section className="mb-6 rounded-2xl border border-[#d8bfa0] bg-[#fffaf2] p-6 shadow-[0_10px_28px_rgba(84,34,14,.06)]">
+          <div className="mb-5 border-b border-[#eadfce] pb-4">
+            <p className="mb-1 text-sm font-medium text-[#98785b]">Front desk rules</p>
+            <h2 className="m-0 !font-sans text-xl !font-semibold text-[#54220e]">Hotel policies and room billing</h2>
+            <p className="mb-0 mt-1.5 max-w-[650px] text-sm leading-relaxed text-[#806348]">These rates apply to new room reservations and are recalculated when a stay is rescheduled.</p>
+          </div>
+          <form className="grid grid-cols-3 gap-[18px] max-[700px]:grid-cols-2 max-[500px]:grid-cols-1 [&_input]:!rounded-[10px] [&_input]:!border-[#ddcbb5] [&_input]:!bg-[#fffdf9]" onSubmit={saveSettings}>
+            <label>Check-in time<input name="check_in_time" type="time" required defaultValue={settingsQuery.data.settings.check_in_time.slice(0, 5)} /></label>
+            <label>Check-out time<input name="check_out_time" type="time" required defaultValue={settingsQuery.data.settings.check_out_time.slice(0, 5)} /></label>
+            <label>Cancellation notice (hours)<input name="cancellation_notice_hours" type="number" min={0} max={168} required defaultValue={settingsQuery.data.settings.cancellation_notice_hours} /></label>
+            <label>No-show grace (minutes)<input name="no_show_grace_minutes" type="number" min={0} max={1440} required defaultValue={settingsQuery.data.settings.no_show_grace_minutes} /></label>
+            <label>Room tax (%)<input name="tax_rate" type="number" min={0} max={100} step="0.01" required defaultValue={settingsQuery.data.settings.tax_rate} /></label>
+            <label>Service fee (%)<input name="service_fee_rate" type="number" min={0} max={100} step="0.01" required defaultValue={settingsQuery.data.settings.service_fee_rate} /></label>
+            <div className="col-span-full max-[500px]:col-span-auto"><button className="w-full rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-3 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}>{busy ? 'Saving…' : 'Save policies and rates'}</button></div>
+          </form>
+        </section>
+      )}
+      <div className="overflow-hidden rounded-2xl border border-[#d8bfa0] bg-[#fffaf2] shadow-[0_10px_28px_rgba(84,34,14,.06)]">
         {query.loading ? (
           <Loading />
         ) : (
           <div className="w-full overflow-x-auto">
-            <table className="w-full border-collapse text-left text-xs">
+            <table className="w-full min-w-[760px] border-collapse bg-[#fffaf2] text-left text-xs">
               <thead>
                 <tr>
-                  {['Room', 'Type', 'Capacity', 'Rate / night', 'Status', 'Action'].map((heading) => <th className="whitespace-nowrap bg-[#ead5b8] px-5 py-[17px] font-serif text-[13px] font-bold uppercase tracking-[.08em] text-[#54220e]" key={heading}>{heading}</th>)}
+                  {['Room', 'Type', 'Capacity', 'Rate / night', 'Room status', 'Housekeeping', 'Action'].map((heading) => <th className="whitespace-nowrap bg-[#f3e1c7] px-5 py-4 text-xs font-semibold text-[#54220e]" key={heading}>{heading}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {query.data?.rooms.map((r) => (
-                  <tr key={r.id}>
-                    <td>
-                      <strong>{r.room_number}</strong>
+                  <tr className="border-b border-[#eadfce] last:border-b-0" key={r.id}>
+                    <td className="align-top px-5 py-4">
+                      <span className="inline-grid h-9 min-w-11 place-items-center rounded-lg bg-[#ead5b8] px-2 text-xs font-bold text-[#54220e]">{r.room_number}</span>
                     </td>
-                    <td>
-                      {r.room_type}
-                      <small>
+                    <td className="align-top px-5 py-4 text-[#54220e]">
+                      <strong className="font-semibold">{r.room_type}</strong>
+                      <small className="mt-1 block text-xs text-[#806348]">
                         {r.bed_count} {r.bed_type}
                       </small>
                     </td>
-                    <td>{r.capacity} guests</td>
-                    <td>{money(r.price_per_night)}</td>
-                    <td>
+                    <td className="align-top px-5 py-4 text-[#70462c]">{r.capacity} guests</td>
+                    <td className="align-top px-5 py-4 font-semibold text-[#54220e]">{money(r.price_per_night)}</td>
+                    <td className="align-top px-5 py-4">
                       <Badge status={r.status} />
                     </td>
-                    <td>
-                      <button
-                        className="inline-flex min-h-[34px] items-center justify-center gap-2 border border-[#a87652] bg-[#fff8ee] px-3 py-[7px] font-serif text-xs font-bold text-[#642c14] hover:bg-[#f1dfc8]"
-                        onClick={() => {
-                          setEditing(r);
-                          setError('');
-                        }}
-                      >
-                        <Pencil size={14} />
-                        Edit
-                      </button>
+                    <td className="align-top px-5 py-4">
+                      <Badge status={r.housekeeping_status} />
+                      {r.housekeeping_notes && <small className="mt-1 block max-w-[170px] text-xs leading-relaxed text-[#806348]">{r.housekeeping_notes}</small>}
+                    </td>
+                    <td className="align-top px-5 py-4">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-[#d8bfa0] bg-[#fffdf9] px-3 py-2 text-xs font-semibold text-[#642c14] transition-colors hover:border-[#9b6a43] hover:bg-[#f7ecdc] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28]"
+                          onClick={() => { setEditing(r); setError(''); }}
+                        >
+                          <Pencil size={14} />
+                          Edit
+                        </button>
+                        <button
+                          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-[#d8bfa0] bg-[#f3e1c7] px-3 py-2 text-xs font-semibold text-[#642c14] transition-colors hover:border-[#9b6a43] hover:bg-[#ead5b8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28]"
+                          onClick={() => { setHousekeeping(r); setError(''); }}
+                        >
+                          <Sparkles size={14} />
+                          Room condition
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -104,13 +173,14 @@ export function ManageRooms() {
       </div>
       {editing && (
         <Modal
+          className="max-w-[760px]"
           title={room ? `Edit room ${room.room_number}` : 'Add a room'}
           onClose={() => {
             if (!busy) setEditing(null);
           }}
         >
           <ErrorBox message={error} />
-          <form className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1" onSubmit={save}>
+          <form className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1 [&_input:not([type=checkbox])]:!rounded-[10px] [&_input:not([type=checkbox])]:!border-[#ddcbb5] [&_input:not([type=checkbox])]:!bg-[#fffdf9] [&_select]:!rounded-[10px] [&_select]:!border-[#ddcbb5] [&_select]:!bg-[#fffdf9] [&_textarea]:!rounded-[10px] [&_textarea]:!border-[#ddcbb5] [&_textarea]:!bg-[#fffdf9]" onSubmit={save}>
             <label>
               Room number
               <input name="room_number" defaultValue={room?.room_number} required maxLength={20} />
@@ -214,8 +284,31 @@ export function ManageRooms() {
               />
             </label>
             <div className="col-span-full max-[500px]:col-span-auto">
-              <button disabled={busy}>{busy ? 'Saving…' : 'Save room'}</button>
+              <button className="w-full rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-3 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}>{busy ? 'Saving…' : 'Save room'}</button>
             </div>
+          </form>
+        </Modal>
+      )}
+      {housekeeping && (
+        <Modal title={`Room condition · ${housekeeping.room_number}`} onClose={() => { if (!busy) setHousekeeping(null); }}>
+          <ErrorBox message={error} />
+          <form className="flex flex-col gap-4 [&_select]:!rounded-[10px] [&_select]:!border-[#ddcbb5] [&_select]:!bg-[#fffdf9] [&_textarea]:!rounded-[10px] [&_textarea]:!border-[#ddcbb5] [&_textarea]:!bg-[#fffdf9]" onSubmit={saveHousekeeping}>
+            <p className="mb-1 text-sm leading-relaxed text-[#70462c]">Mark the room’s turnover state so the front desk only assigns rooms that are ready.</p>
+            <label>
+              Housekeeping status
+              <select name="housekeeping_status" defaultValue={housekeeping.housekeeping_status}>
+                <option value="dirty">Dirty · needs turnover</option>
+                <option value="cleaning">Cleaning in progress</option>
+                <option value="clean">Clean · ready for inspection</option>
+                <option value="inspected">Inspected · ready to assign</option>
+                <option value="out_of_order">Out of order</option>
+              </select>
+            </label>
+            <label>
+              Housekeeping note
+              <textarea name="housekeeping_notes" defaultValue={housekeeping.housekeeping_notes} maxLength={1000} rows={3} placeholder="Turnover notes, maintenance detail, or inspection note" />
+            </label>
+            <button className="w-full rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-3 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}>{busy ? 'Saving…' : 'Save room condition'}</button>
           </form>
         </Modal>
       )}
