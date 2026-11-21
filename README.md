@@ -378,8 +378,9 @@ npm run dev
 
 Then open http://localhost:5173 and log in as `guest@example.com` / `Prototype123!`.
 
-Developers
-Lance Crucis
-Katharine Batioco
-Redgie Blanco
-John Cruz
+## Developers
+
+- Lance Crucis
+- Katharine Batioco
+- Redgie Blanco
+- John Cruz
