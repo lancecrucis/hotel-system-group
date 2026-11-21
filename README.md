@@ -17,163 +17,41 @@ A working school prototype of a hotel + restaurant booking system.
 | [Node.js 22.12+](https://nodejs.org/en/download) | runs the app | the installer already includes npm |
 | [PostgreSQL](https://www.postgresql.org/download/) | the database itself | must include `initdb` and `pg_ctl` |
 
-> **Windows:** if you installed PostgreSQL in `C:\Program Files\PostgreSQL\<version>\`, the project finds it by itself. Nothing to configure.
->
-> **Linux Mint:** install PostgreSQL from Mint's Ubuntu package repositories and add its versioned binary folder to your PATH (instructions below). The project uses its own local database on port `5433`; it does not use or modify Mint's system PostgreSQL service on port `5432`.
->
-> **macOS:** install PostgreSQL with a package that includes `initdb` and `pg_ctl`, then add its `bin` folder to your PATH.
+See [platform-specific setup](#more-setup-details) below if you need help installing these tools. Linux Mint instructions are included there.
 
-Not sure if you have everything? Run `npm run doctor` in step 3 — it tells you exactly what is missing.
+Not sure if you have everything? After cloning, `npm run doctor` tells you which required tools are missing.
 
 ---
 
-## 2. Get the code
+## 2. Download the project and choose your branch
 
-Open PowerShell (or any terminal) and run:
+Open PowerShell (Windows) or Terminal (Linux/macOS), then run:
 
 ```powershell
 git clone https://github.com/lancecrucis/hotel-system-group.git
 cd hotel-system-group
 ```
 
-The project must be installed with Git. Do not use **Code → Download ZIP**, because a ZIP download does not include the Git history or make it easy to receive future updates.
-
-### Branch workflow
-
-`main` is the shared, stable branch. Do not make feature changes directly on `main`.
-
-Each member should:
-
-1. Update their local `main` branch.
-2. Create a separate branch for their work, such as `lance`, `member-name/feature-name`, or `feature/feature-name`.
-3. Make and test changes only on that branch.
-4. Push the branch to GitHub.
-5. Open a pull request from the work branch into `main`.
-
-For example:
+Switch to the branch already assigned to you:
 
 ```powershell
-git switch main
-git pull origin main
-git switch -c your-name/short-feature-name
+git switch kath
 ```
 
-Replace `your-name/short-feature-name` with your own branch name. If the team has already assigned you a branch, switch to that branch instead of creating another one.
-
-### Get the latest code after cloning
-
-If you already cloned the project, do not clone it again. From the project folder, run:
-
-```powershell
-git status
-git switch main
-git pull origin main
-```
-
-Then update your working branch with the latest `main`:
-
-```powershell
-git switch your-name/short-feature-name
-git merge main
-npm ci
-```
-
-If Git reports conflicts, resolve the marked files, test the project, and then complete the merge. Never delete other members' changes just to make the merge finish.
-
-### Push your work and open a pull request
-
-When your changes are tested:
-
-```powershell
-git status
-git add .
-git commit -m "Describe the change"
-git push -u origin your-name/short-feature-name
-```
-
-On GitHub:
-
-1. Open the repository and choose **Compare & pull request** for your pushed branch.
-2. Set the base branch to `main`.
-3. Add a clear title and explain what changed and how you tested it.
-4. Request the required reviewer(s).
-5. Wait for checks and approval, then merge the pull request when it is approved.
-
-After the pull request is merged, refresh your local `main` before starting the next task:
-
-```powershell
-git switch main
-git pull origin main
-git branch -d your-name/short-feature-name
-```
-
-If the branch is still needed, keep it instead of deleting it. The branch deletion command only removes your local copy; it does not delete the project or other branches.
+Use your own branch name in the command: `kath`, `jesus`, `redgie`, or `lance`. Do not create a new branch for this project.
 
 ---
 
-## 3. Install the packages
+## 3. Install and run
 
 ```powershell
 npm ci
+npm run dev
 ```
 
-- Run this **once**, from the folder that contains `package.json` (the project root).
-- It installs the packages for both the frontend and the backend. You do not run it twice.
+Open **http://localhost:5173** in your browser. Keep the terminal open while using the app; press `Ctrl+C` to stop it. The database starts automatically and can remain running between sessions.
 
-Then check your machine:
-
-```powershell
-npm run doctor
-```
-
-You want to see `Your machine is ready.` at the end.
-
-### Linux Mint setup (Kath)
-
-Open Terminal and install Git, curl, and PostgreSQL:
-
-```bash
-sudo apt update
-sudo apt install -y git curl postgresql postgresql-client
-```
-
-Install Node.js 22 with `nvm` (Node Version Manager), then load it in the current terminal:
-
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash
-source ~/.bashrc
-nvm install 22
-nvm use 22
-node --version
-npm --version
-```
-
-Node must be version `22.12` or newer, and npm must be version `10` or newer. If `nvm` is not found after installation, close Terminal, open it again, then run `nvm install 22` and `nvm use 22`.
-
-Ubuntu-based distributions install PostgreSQL's server tools in a versioned folder. Find the folder and add it to PATH for this Terminal, replacing `<version>` with the folder name shown (for example, `16`):
-
-```bash
-ls /usr/lib/postgresql
-export PATH="/usr/lib/postgresql/<version>/bin:$PATH"
-```
-
-To keep this PATH setting for future Bash terminals, add it to `~/.bashrc` (again replacing `<version>`):
-
-```bash
-echo 'export PATH="/usr/lib/postgresql/<version>/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-Then clone the repository and install its packages:
-
-```bash
-git clone https://github.com/lancecrucis/hotel-system-group.git
-cd hotel-system-group
-npm ci
-npm run doctor
-```
-
-Continue with [Run it](#5-run-it). On the first run, `npm run dev` creates the project-local database, applies migrations, loads demo data, and starts both apps. Keep the terminal open while using the system; press `Ctrl+C` to stop the apps. The database can remain running between sessions.
+On the first run, the project also creates its local settings, database tables, and demo data. `npm run doctor` is an optional troubleshooting check if startup reports a missing tool.
 
 ---
 
@@ -188,17 +66,9 @@ Just remember:
 
 ---
 
-## 5. Run it
+## 5. First-run details
 
-One terminal is enough — this command runs both the frontend and the backend together.
-
-```powershell
-npm run dev
-```
-
-Then open **http://localhost:5173** in your browser.
-
-**What happens automatically on the first run:**
+The first `npm run dev` automatically:
 
 1. Checks your machine (`doctor`)
 2. Creates `backend/.env` with a random password
@@ -207,9 +77,9 @@ Then open **http://localhost:5173** in your browser.
 5. Adds demo rooms, tables, and accounts
 6. Starts the frontend and the backend
 
-**What is normal to see:** the terminal keeps printing logs and never "finishes". That means it is working. Leave the window open.
+The terminal keeps printing logs while the app is running. Leave it open.
 
-**To stop everything:** press `Ctrl+C` in that terminal.
+To stop the apps, press `Ctrl+C`. The local database remains running between sessions.
 
 ### If `npm` does not work in PowerShell
 
@@ -394,6 +264,74 @@ npx playwright install chromium
 
 ---
 
+## More setup details
+
+### Linux Mint installation
+
+Install Git, curl, and PostgreSQL:
+
+```bash
+sudo apt update
+sudo apt install -y git curl postgresql postgresql-client
+```
+
+Install Node.js 22 using `nvm`:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash
+source ~/.bashrc
+nvm install 22
+nvm use 22
+node --version
+npm --version
+```
+
+Node must be version `22.12` or newer, and npm must be version `10` or newer. If `nvm` is not found, restart Terminal and run `nvm install 22` and `nvm use 22`.
+
+Mint installs PostgreSQL's `initdb` and `pg_ctl` in a versioned folder. Find it and add it to PATH for this Terminal, replacing `<version>` with the number shown (for example, `16`):
+
+```bash
+ls /usr/lib/postgresql
+export PATH="/usr/lib/postgresql/<version>/bin:$PATH"
+```
+
+To keep this PATH setting in future Bash terminals, add it to `~/.bashrc`:
+
+```bash
+echo 'export PATH="/usr/lib/postgresql/<version>/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+The project runs its own local database on port `5433`; it does not use or modify Mint's system PostgreSQL service on port `5432`.
+
+### Windows PowerShell note
+
+If PowerShell blocks `npm.ps1`, use `npm.cmd` instead, for example `npm.cmd ci` and `npm.cmd run dev`.
+
+### Branch workflow and updates
+
+The team already has personal branches: `kath`, `jesus`, `redgie`, and `lance`. Work on your assigned branch and open a pull request into `main` when your work is ready. Do not commit feature work directly to `main`.
+
+To update your branch with the latest shared `main`:
+
+```bash
+git fetch origin
+git switch main
+git pull origin main
+git switch kath
+git merge main
+```
+
+Replace `kath` with your assigned branch. If Git reports conflicts, resolve them before continuing; do not discard another member's changes to force a merge.
+
+### PostgreSQL and local data
+
+- PostgreSQL must include `initdb` and `pg_ctl`. On Windows, the project finds a standard installation under `C:\Program Files\PostgreSQL\<version>\`. On Linux and macOS, add the PostgreSQL `bin` folder to PATH.
+- Each group member has a separate local database. `.local/` and `backend/.env` stay on that computer and are not committed.
+- Do not edit `PGPASSWORD` after the local database is created; the saved database password must match it.
+- `npm run db:stop` stops the project database. `npm run db:start` starts it again.
+- Never edit a migration that has already run. Add a new SQL migration instead.
+
 ## 14. Deployment (later, not needed for the demo)
 
 - `npm run build` puts the output in `frontend/dist/` and `backend/dist/`.
@@ -405,30 +343,9 @@ npx playwright install chromium
 
 ---
 
-## 15. Read more
+## 15. Developers
 
-- [Setup details and more troubleshooting](docs/SETUP.md)
-- [ERD mapping](docs/database/ERD.md)
-- [API reference](docs/api/README.md)
-- [Workflow research](docs/architecture/WORKFLOWS.md)
-- [Team conventions](docs/team/README.md)
-
----
-
-## Copy-paste quick start
-
-```powershell
-git clone https://github.com/lancecrucis/hotel-system-group.git
-cd hotel-system-group
-npm ci
-npm run doctor
-npm run dev
-```
-
-Then open http://localhost:5173 and log in as `guest@example.com` / `Prototype123!`.
-
-Developers
-Lance Crucis
-Katharine Batioco
-Redgie Blanco
-John Cruz
+- Lance Crucis
+- Katharine Batioco
+- Redgie Blanco
+- John Cruz
