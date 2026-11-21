@@ -19,7 +19,9 @@ A working school prototype of a hotel + restaurant booking system.
 
 > **Windows:** if you installed PostgreSQL in `C:\Program Files\PostgreSQL\<version>\`, the project finds it by itself. Nothing to configure.
 >
-> **Mac / Linux:** add the PostgreSQL `bin` folder to your PATH, then reopen the terminal.
+> **Linux Mint:** install PostgreSQL from Mint's Ubuntu package repositories and add its versioned binary folder to your PATH (instructions below). The project uses its own local database on port `5433`; it does not use or modify Mint's system PostgreSQL service on port `5432`.
+>
+> **macOS:** install PostgreSQL with a package that includes `initdb` and `pg_ctl`, then add its `bin` folder to your PATH.
 
 Not sure if you have everything? Run `npm run doctor` in step 3 — it tells you exactly what is missing.
 
@@ -125,6 +127,53 @@ npm run doctor
 ```
 
 You want to see `Your machine is ready.` at the end.
+
+### Linux Mint setup (Kath)
+
+Open Terminal and install Git, curl, and PostgreSQL:
+
+```bash
+sudo apt update
+sudo apt install -y git curl postgresql postgresql-client
+```
+
+Install Node.js 22 with `nvm` (Node Version Manager), then load it in the current terminal:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash
+source ~/.bashrc
+nvm install 22
+nvm use 22
+node --version
+npm --version
+```
+
+Node must be version `22.12` or newer, and npm must be version `10` or newer. If `nvm` is not found after installation, close Terminal, open it again, then run `nvm install 22` and `nvm use 22`.
+
+Ubuntu-based distributions install PostgreSQL's server tools in a versioned folder. Find the folder and add it to PATH for this Terminal, replacing `<version>` with the folder name shown (for example, `16`):
+
+```bash
+ls /usr/lib/postgresql
+export PATH="/usr/lib/postgresql/<version>/bin:$PATH"
+```
+
+To keep this PATH setting for future Bash terminals, add it to `~/.bashrc` (again replacing `<version>`):
+
+```bash
+echo 'export PATH="/usr/lib/postgresql/<version>/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Then clone the repository and install its packages:
+
+```bash
+git clone https://github.com/lancecrucis/hotel-system-group.git
+cd hotel-system-group
+npm ci
+npm run doctor
+```
+
+Continue with [Run it](#5-run-it). On the first run, `npm run dev` creates the project-local database, applies migrations, loads demo data, and starts both apps. Keep the terminal open while using the system; press `Ctrl+C` to stop the apps. The database can remain running between sessions.
 
 ---
 
