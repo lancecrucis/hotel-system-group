@@ -5,9 +5,10 @@ import { ArrowLeft, Printer, Check, Clock } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
 import { useAuth } from '../../../app/providers/AuthContext';
 import { api, send } from '../../../services/client';
-import type { Detail } from '../../../types/models';
+import type { Detail, DiningTable, HotelSettings, Invoice, Room } from '../../../types/models';
 import { PageHeader, Badge, ErrorBox, Success, Loading, Modal } from '../../../components/ui/common';
 import { money, dateLabel, timestamp, label } from '../../../utils/format';
+import { ChatWidget } from '../../landing/components/ChatWidget';
 const actionLabels: Record<string, string> = {
   confirmed: 'Confirm booking',
   checked_in: 'Check in',
@@ -18,6 +19,21 @@ const actionLabels: Record<string, string> = {
   no_show: 'Mark no-show',
   cancelled: 'Cancel reservation',
 };
+const actionDescriptions: Record<string, string> = {
+  confirmed: 'Approve this booking for the guest.',
+  checked_in: 'Record the guest arrival and occupy the room.',
+  checked_out: 'Close the stay after the balance is settled.',
+  arrived: 'Record that the dining party has arrived.',
+  seated: 'Record that the party has been seated.',
+  completed: 'Close the dining visit.',
+  no_show: 'Record that the guest did not arrive.',
+  cancelled: 'Cancel the reservation and capture a reason.',
+};
+function timeLabel(value: string) {
+  const [hourText, minute] = value.slice(0, 5).split(':');
+  const hour = Number(hourText);
+  return `${hour % 12 || 12}:${minute} ${hour >= 12 ? 'PM' : 'AM'}`;
+}
 type ProgressStage = {
   key: string;
   name: string;
@@ -28,11 +44,17 @@ type ProgressStage = {
 export function ReservationDetail() {
   const { id } = useParams(),
     query = useQuery<Detail>(`/reservations/${id}`, 15000),
+    invoiceQuery = useQuery<{ invoice: Invoice | null }>(`/reservations/${id}/invoice`, 30000),
+    hotelSettingsQuery = useQuery<{ settings: HotelSettings }>('/hotel/settings', 30000),
+    roomOptions = useQuery<{ rooms: Room[] }>('/hotel/rooms?include_unavailable=true&guests=1', 30000),
+    tableOptions = useQuery<{ tables: DiningTable[] }>('/restaurant/tables', 30000),
     { user } = useAuth(),
     [error, setError] = useState(''),
     [success, setSuccess] = useState(''),
     [busy, setBusy] = useState(false),
     [action, setAction] = useState<string | null>(null),
+    [rescheduling, setRescheduling] = useState(false),
+    [editing, setEditing] = useState(false),
     [financial, setFinancial] = useState<'payment' | 'refund' | null>(null);
   async function mutate(path: string, method: string, data: unknown, message: string) {
     setBusy(true);
@@ -71,6 +93,8 @@ export function ReservationDetail() {
       0,
   );
   const stopped = ['cancelled', 'expired', 'no_show'].includes(r.status);
+  const canReschedule = staff && ['pending', 'confirmed'].includes(r.status);
+  const canEdit = staff && !['cancelled', 'expired', 'no_show', 'checked_out', 'completed'].includes(r.status);
   const latestPayment = payments.at(-1),
     latestRefund = refunds.at(-1);
   const stages: ProgressStage[] = r.reservation_type === 'hotel'
@@ -111,11 +135,49 @@ export function ReservationDetail() {
       financial === 'payment' ? 'Payment recorded.' : 'Refund recorded.',
     );
   }
+  async function rescheduleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget));
+    setBusy(true);
+    setError('');
+    setSuccess('');
+    try {
+      await api(`/reservations/${id}/schedule`, send('PATCH', data));
+      setRescheduling(false);
+      setSuccess('Reservation rescheduled.');
+      query.reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function editSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget));
+    setBusy(true);
+    setError('');
+    setSuccess('');
+    try {
+      await api(`/reservations/${id}/edit`, send('PATCH', {
+        ...data,
+        guest_count: Number(data.guest_count),
+        ...(data.table_id ? { table_id: data.table_id } : {}),
+      }));
+      setEditing(false);
+      setSuccess('Reservation details updated.');
+      query.reload();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <>
       <Link className="mb-4 inline-flex items-center gap-1.5 font-serif text-sm text-[#8f421d]" to="/reservations">
         <ArrowLeft size={16} />
-        All reservations
+        {staff ? 'Back to reservations' : 'Back to my reservations'}
       </Link>
       <PageHeader
         title={r.reservation_reference}
@@ -154,7 +216,7 @@ export function ReservationDetail() {
                   </div>
                   <div>
                     <dt>Check-in</dt>
-                    <dd>{dateLabel(r.hotel.check_in)} · from 3:00 PM</dd>
+                      <dd>{dateLabel(r.hotel.check_in)} · from {hotelSettingsQuery.data ? timeLabel(hotelSettingsQuery.data.settings.check_in_time) : '3:00 PM'}</dd>
                   </div>
                   <div>
                     <dt>Check-out</dt>
@@ -277,6 +339,20 @@ export function ReservationDetail() {
           <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px]">
             <h2>{r.reservation_type === 'hotel' ? 'Payment summary' : 'Reservation fee'}</h2>
             <dl className="space-y-0 [&>div]:grid [&>div]:grid-cols-[.8fr_1.2fr] [&>div]:gap-3 [&>div]:border-b [&>div]:border-[#d8bfa0] [&>div]:py-3 [&>dt]:text-xs [&>dt]:text-[#806348] [&>dd]:m-0 [&>dd]:text-right [&>dd]:text-xs">
+              {r.hotel && <>
+                <div>
+                  <dt>Room charges</dt>
+                  <dd>{money(r.subtotal_amount)}</dd>
+                </div>
+                <div>
+                  <dt>Tax</dt>
+                  <dd>{money(r.tax_amount)}</dd>
+                </div>
+                <div>
+                  <dt>Service fee</dt>
+                  <dd>{money(r.service_fee_amount)}</dd>
+                </div>
+              </>}
               <div>
                 <dt>Total</dt>
                 <dd>{money(r.total_amount)}</dd>
@@ -297,6 +373,17 @@ export function ReservationDetail() {
             <p className="text-xs text-[#806348]">
               {r.reservation_type === 'hotel' ? 'Pay at the property.' : 'Meal billed at the restaurant.'}
             </p>
+            {r.hotel && invoiceQuery.data?.invoice && (
+              <div className="mt-4 border-t border-[#d8bfa0] pt-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <strong className="block text-sm">Invoice {invoiceQuery.data.invoice.invoice_number}</strong>
+                    <small className="text-xs text-[#806348]">Room charges, tax, and service fee</small>
+                  </div>
+                  <button className="border border-[#d8bfa0] bg-[#ead5b8] px-3 py-2 text-xs font-semibold text-[#54220e] hover:bg-[#d8bfa0]" onClick={() => window.print()}>Print invoice</button>
+                </div>
+              </div>
+            )}
             {staff &&
               r.reservation_type === 'hotel' &&
               ['confirmed', 'checked_in'].includes(r.status) &&
@@ -347,21 +434,55 @@ export function ReservationDetail() {
               </div>
             )}
           </section>
-          {allowed_actions.length > 0 && (
-          <section className="border border-[#c8a783] bg-[#fff8ee] p-[26px] no-print">
-              <h2>Next actions</h2>
-              <div className="flex flex-col gap-[18px]">
+          {(allowed_actions.length > 0 || canReschedule || canEdit) && (
+          <section className="no-print rounded-2xl border border-[#d8bfa0] bg-[#fffaf2] p-5 shadow-[0_10px_28px_rgba(84,34,14,.06)]">
+              <div className="mb-4 border-b border-[#eadfce] pb-4">
+                <p className="mb-1 text-sm font-medium text-[#98785b]">Front desk</p>
+                <h2 className="m-0 !font-sans text-xl !font-semibold text-[#54220e]">Operations actions</h2>
+                <p className="mb-0 mt-1.5 text-sm leading-relaxed text-[#806348]">Update the reservation as the guest moves through their stay or visit.</p>
+              </div>
+              <div className="grid gap-2.5">
+                {canEdit && (
+                  <button
+                    className="flex min-h-12 items-center justify-start rounded-xl border border-[#b99673] bg-[#fffaf2] px-4 py-2.5 text-left text-[#54220e] transition-colors hover:border-[#8b4d28] hover:bg-[#f7ecdc] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={busy}
+                    onClick={() => { setError(''); setEditing(true); }}
+                  >
+                    <span>
+                      <strong className="block text-sm font-semibold">Edit reservation details</strong>
+                      <small className="mt-0.5 block text-xs text-[#806348]">Update guest information, party size, requests, or assignment.</small>
+                    </span>
+                  </button>
+                )}
+                {canReschedule && (
+                  <button
+                    className="flex min-h-12 items-center justify-start rounded-xl border border-[#b99673] bg-[#f3e1c7] px-4 py-2.5 text-left text-[#54220e] transition-colors hover:border-[#8b4d28] hover:bg-[#ead5b8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={busy}
+                    onClick={() => {
+                      setError('');
+                      setRescheduling(true);
+                    }}
+                  >
+                    <span>
+                      <strong className="block text-sm font-semibold">Reschedule reservation</strong>
+                      <small className="mt-0.5 block text-xs text-[#70462c]">Change the stay dates or dining time.</small>
+                    </span>
+                  </button>
+                )}
                 {allowed_actions.map((s) => (
                   <button
                     key={s}
                     disabled={busy}
-                    className={s === 'cancelled' || s === 'no_show' ? 'secondary danger' : ''}
+                    className={`flex min-h-12 items-center justify-start rounded-xl border px-4 py-2.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] disabled:cursor-not-allowed disabled:opacity-50 ${s === 'cancelled' || s === 'no_show' ? 'border-[#b54724] bg-[#fff0e7] text-[#782c18] hover:bg-[#ffe4d7]' : 'border-[#642c14] bg-[#642c14] text-[#fff8ee] hover:bg-[#54220e]'}`}
                     onClick={() => {
                       setError('');
                       setAction(s);
                     }}
                   >
-                    {actionLabels[s] ?? label(s)}
+                    <span>
+                      <strong className="block text-sm font-semibold">{actionLabels[s] ?? label(s)}</strong>
+                      <small className={`mt-0.5 block text-xs ${s === 'cancelled' || s === 'no_show' ? 'text-[#9b4b32]' : 'text-[#f1dfc6]'}`}>{actionDescriptions[s] ?? 'Update this reservation status.'}</small>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -369,6 +490,74 @@ export function ReservationDetail() {
           )}
         </div>
       </div>
+      {rescheduling && (
+        <Modal
+          title="Reschedule reservation"
+          onClose={() => {
+            if (!busy) setRescheduling(false);
+          }}
+        >
+          <ErrorBox message={error} />
+          <form className="flex flex-col gap-4" onSubmit={rescheduleSubmit}>
+            <p className="mb-1 text-sm leading-relaxed text-[#70462c]">Choose a new time that is available. The guest will be notified after the change is saved.</p>
+            {r.hotel ? (
+              <div className="grid grid-cols-2 gap-3 max-[500px]:grid-cols-1">
+                <label className="gap-1.5 text-sm font-semibold text-[#70462c]">
+                  Check-in
+                  <input className="!rounded-[10px] !border-[#ddcbb5] !bg-[#fffdf9] text-sm focus:!border-[#9b6a43] focus:!ring-2 focus:!ring-[#9b6a43]/15" type="date" name="check_in" defaultValue={r.hotel.check_in} required />
+                </label>
+                <label className="gap-1.5 text-sm font-semibold text-[#70462c]">
+                  Check-out
+                  <input className="!rounded-[10px] !border-[#ddcbb5] !bg-[#fffdf9] text-sm focus:!border-[#9b6a43] focus:!ring-2 focus:!ring-[#9b6a43]/15" type="date" name="check_out" defaultValue={r.hotel.check_out} required />
+                </label>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 max-[500px]:grid-cols-1">
+                <label className="gap-1.5 text-sm font-semibold text-[#70462c]">
+                  Dining date
+                  <input className="!rounded-[10px] !border-[#ddcbb5] !bg-[#fffdf9] text-sm focus:!border-[#9b6a43] focus:!ring-2 focus:!ring-[#9b6a43]/15" type="date" name="reservation_date" defaultValue={r.restaurant!.reservation_date} required />
+                </label>
+                <label className="gap-1.5 text-sm font-semibold text-[#70462c]">
+                  Start time
+                  <input className="!rounded-[10px] !border-[#ddcbb5] !bg-[#fffdf9] text-sm focus:!border-[#9b6a43] focus:!ring-2 focus:!ring-[#9b6a43]/15" type="time" name="start_time" defaultValue={r.restaurant!.start_time.slice(0, 5)} required />
+                </label>
+              </div>
+            )}
+            <button className="w-full rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-3 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}>
+              {busy ? 'Saving new schedule…' : 'Save new schedule'}
+            </button>
+          </form>
+        </Modal>
+      )}
+      {editing && (
+        <Modal title="Edit reservation details" onClose={() => { if (!busy) setEditing(false); }}>
+          <ErrorBox message={error} />
+          <form className="flex flex-col gap-4 [&_input]:!rounded-[10px] [&_input]:!border-[#ddcbb5] [&_input]:!bg-[#fffdf9] [&_select]:!rounded-[10px] [&_select]:!border-[#ddcbb5] [&_select]:!bg-[#fffdf9] [&_textarea]:!rounded-[10px] [&_textarea]:!border-[#ddcbb5] [&_textarea]:!bg-[#fffdf9]" onSubmit={editSubmit}>
+            <div className="grid grid-cols-2 gap-3 max-[500px]:grid-cols-1">
+              <label>Guest name<input name="contact_name" defaultValue={r.contact_name} required maxLength={160} /></label>
+              <label>Guest count<input name="guest_count" type="number" min={1} max={r.hotel?.guest_count ? Math.max(r.hotel.guest_count, 6) : 500} defaultValue={r.hotel?.guest_count ?? r.restaurant?.guest_count} required /></label>
+              <label>Email<input name="contact_email" type="email" defaultValue={r.contact_email} required maxLength={254} /></label>
+              <label>Phone<input name="contact_phone" defaultValue={r.contact_phone} required maxLength={18} /></label>
+            </div>
+            {r.hotel ? (
+              <label>Assigned room
+                <select name="room_id" defaultValue={roomOptions.data?.rooms.find((room) => room.room_number === r.hotel!.room_number)?.id}>
+                  {roomOptions.data?.rooms.filter((room) => room.capacity >= (r.hotel?.guest_count ?? 1)).map((room) => <option key={room.id} value={room.id}>{room.room_number} · {room.room_type} · {label(room.housekeeping_status)}</option>)}
+                </select>
+              </label>
+            ) : (
+              <label>Assigned table
+                <select name="table_id" defaultValue={tableOptions.data?.tables.find((table) => table.name === r.restaurant!.table_name)?.id ?? ''}>
+                  <option value="">Choose automatically</option>
+                  {tableOptions.data?.tables.filter((table) => table.active && table.capacity >= (r.restaurant?.guest_count ?? 1)).map((table) => <option key={table.id} value={table.id}>{table.name} · {table.capacity} seats</option>)}
+                </select>
+              </label>
+            )}
+            <label>Special requests<textarea name="special_requests" defaultValue={r.hotel?.special_requests ?? r.restaurant?.special_requests ?? ''} maxLength={2000} rows={3} /></label>
+            <button className="w-full rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-3 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}>{busy ? 'Saving changes…' : 'Save reservation changes'}</button>
+          </form>
+        </Modal>
+      )}
       {action && (
         <Modal
           title={actionLabels[action] ?? label(action)}
@@ -483,6 +672,7 @@ export function ReservationDetail() {
           </form>
         </Modal>
       )}
+      {!staff && <ChatWidget />}
     </>
   );
 }

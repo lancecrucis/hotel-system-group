@@ -81,6 +81,20 @@ The terminal keeps printing logs while the app is running. Leave it open.
 
 To stop the apps, press `Ctrl+C`. The local database remains running between sessions.
 
+### Hotel reservation assistant
+
+The customer-facing assistant is available from the landing and room pages. It can search live room availability, prepare a room booking, prepare a room cancellation, and check the signed-in customer's reservation status. Booking and cancellation require the customer to review a confirmation card and click the backend confirmation button.
+
+To enable the AI provider, add these values to `backend/.env`:
+
+```text
+MIXROUTE_API_KEY=your-server-side-key
+MIXROUTE_BASE_URL=https://api.mixroute.ai/v1
+MIXROUTE_MODEL=deepseek-v4-flash
+```
+
+The API key stays on the backend. If it is not configured, the rest of the reservation system still runs and assistant requests return a controlled configuration error. The assistant uses migration `015_assistant_confirmation_intents.sql` for short-lived, one-time confirmation requests.
+
 ### If `npm` does not work in PowerShell
 
 Windows blocks `npm.ps1` on some machines. Use `npm.cmd` instead:

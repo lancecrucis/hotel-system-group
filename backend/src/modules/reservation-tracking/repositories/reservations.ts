@@ -19,7 +19,11 @@ export async function expireHolds(client: Pick<PoolClient, 'query'> = pool) {
     SELECT user_id,id,'Reservation hold expired','Your hold for ' || reservation_reference || ' expired. Please book again.' FROM expired
     WHERE user_id IS NOT NULL`);
 }
-export async function lockedReservation(client: PoolClient, id: string, user: Express.Request['user']) {
+export async function lockedReservation(
+  client: PoolClient,
+  id: string,
+  user: Pick<NonNullable<Express.Request['user']>, 'id' | 'role'> | undefined,
+) {
   const result = await client.query('SELECT * FROM reservations WHERE id=$1 FOR UPDATE', [id]);
   const r = result.rows[0];
   if (!r || (user?.role === 'customer' && r.user_id !== user.id))

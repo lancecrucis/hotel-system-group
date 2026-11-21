@@ -10,6 +10,7 @@ import { authRouter } from './modules/account-management/routes/auth.js';
 import { hotelRouter } from './modules/hotel-reservations/routes/hotel.js';
 import { restaurantRouter } from './modules/restaurant-reservations/routes/restaurant.js';
 import { trackingRouter } from './modules/reservation-tracking/routes/tracking.js';
+import { assistantRouter } from './modules/assistant/routes/assistant.js';
 
 export function createApp(checkDatabase: () => Promise<unknown> = () => pool.query('SELECT 1')) {
   const app = express();
@@ -46,6 +47,7 @@ export function createApp(checkDatabase: () => Promise<unknown> = () => pool.que
   app.use('/api/auth', authRouter);
   app.use('/api/hotel', hotelRouter);
   app.use('/api/restaurant', restaurantRouter);
+  app.use('/api/assistant', assistantRouter);
   app.use('/api', trackingRouter);
   app.use((_request, response) => {
     response.status(404).json({ error: 'Route not found' });
