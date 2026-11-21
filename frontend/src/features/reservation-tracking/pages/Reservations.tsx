@@ -15,18 +15,26 @@ export function Reservations() {
     [search, setSearch] = useState(initial),
     query = useQuery<{ reservations: Reservation[] }>(`/reservations?${new URLSearchParams(search)}`, 30000);
   return (
-    <>
-      <PageHeader
-        title={user!.role === 'customer' ? 'My reservations' : 'All reservations'}
-        action={
-          <Link className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#642c14] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/rooms">
-            <Plus size={17} />
-            New booking
-          </Link>
-        }
-      />
+    <div className="space-y-6">
+      <header className="flex items-end justify-between gap-6 max-[650px]:items-start max-[650px]:flex-col">
+        <div>
+          <p className="mb-2 text-sm font-medium text-[#98785b]">{user!.role === 'customer' ? 'Your stays and dining' : 'Guest booking overview'}</p>
+          <h1 className="m-0 font-['Gelasio'] text-[34px] font-normal leading-tight tracking-[-.03em] text-[#441901] max-[650px]:text-[29px]">
+            {user!.role === 'customer' ? 'My reservations' : 'All reservations'}
+          </h1>
+          <p className="mb-0 mt-2 max-w-[540px] text-sm leading-relaxed text-[#806348]">
+            {user!.role === 'customer'
+              ? 'Keep your hotel stays and restaurant bookings together in one place.'
+              : 'Search and review guest hotel and restaurant bookings.'}
+          </p>
+        </div>
+        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] no-underline transition-colors hover:bg-[#54220e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] max-[650px]:w-full" to="/rooms">
+          <Plus size={17} aria-hidden="true" />
+          New booking
+        </Link>
+      </header>
       <form
-        className="mb-5 grid grid-cols-[1fr_1fr_.65fr_auto] items-end gap-4 border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1 max-[500px]:gap-3"
+        className="grid grid-cols-[minmax(220px,1.4fr)_minmax(150px,.75fr)_minmax(160px,.8fr)_auto] items-end gap-3 rounded-2xl border border-[#e5d4bf] bg-[#fffaf2] p-4 shadow-[0_8px_24px_rgba(84,34,14,.055)] max-[900px]:grid-cols-2 max-[500px]:grid-cols-1"
         onSubmit={(e) => {
           e.preventDefault();
           setSearch({ ...filters });
@@ -81,7 +89,7 @@ export function Reservations() {
         </button>
       </form>
       <ErrorBox message={query.error} />
-      <div className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] p-0">
+      <div className={user!.role === 'customer' ? '' : 'overflow-hidden rounded-2xl border border-[#e5d4bf] bg-[#fffaf2] shadow-[0_10px_28px_rgba(84,34,14,.06)]'}>
         {query.loading && !query.data ? (
           <Loading />
         ) : (

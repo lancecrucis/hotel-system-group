@@ -116,19 +116,19 @@ export function ChatWidget() {
               <Send size={16} />
             </button>
           </form>
-          <p className="bg-[#fff8ee] pb-[11px] text-center text-[10px] text-[#806348]">Automated assistant for general questions.</p>
+          <p className="bg-[#fff8ee] pb-[11px] text-center text-[10px] text-[#806348]">Preview only · answers are not connected to hotel information yet.</p>
         </section>
       )}
 
       {!open && (
         <span className="relative">
           <button
-            className="relative inline-flex min-h-12 items-center justify-center gap-2 border border-[#b8763c] bg-[#642c14] px-5 py-3 font-serif font-bold text-[#fff8ee] shadow-[0_14px_32px_rgba(55,24,8,.24)] transition hover:-translate-y-0.5 hover:bg-[#54220e]"
+            className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#b8763c] bg-[#642c14] p-0 text-[#fff8ee] shadow-[0_14px_32px_rgba(55,24,8,.24)] transition hover:-translate-y-0.5 hover:bg-[#54220e]"
             onClick={() => toggle(true)}
             aria-expanded={false}
             aria-label="Open concierge chat"
           >
-            <MessageCircle size={18} /> Concierge
+            <MessageCircle size={20} aria-hidden="true" />
           </button>
           {unread > 0 && <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#f3e1c7] bg-[#b8763c] text-[11px] font-bold text-white">{unread}</span>}
         </span>

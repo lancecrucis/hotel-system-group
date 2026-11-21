@@ -23,7 +23,7 @@ function PasswordStrength({ password }: { password: string }) {
         {[1, 2, 3, 4, 5].map((n) => (
           <span
             key={n}
-              className={`h-1 flex-1 rounded-sm ${n <= passed ? 'bg-[#642c14]' : 'bg-[#d8bfa0]'}`}
+              className={`h-1 flex-1 rounded-sm ${passed === tests.length ? 'bg-green-600' : n <= passed ? 'bg-red-600' : 'bg-[#d8bfa0]'}`}
           />
         ))}
       </div>
