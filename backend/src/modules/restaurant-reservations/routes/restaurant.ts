@@ -10,7 +10,7 @@ import { expireHolds, recordStatus, audit } from '../../reservation-tracking/rep
 import { peakOccupancy, minutes, clock } from '../repositories/capacity.js';
 
 export const restaurantRouter = Router();
-const search = z.object({ date, guests: z.coerce.number().int().min(1).max(500) });
+const search = z.object({ date, guests: z.coerce.number().int().min(1).max(500), time: time.optional() });
 const visitMinutes = 60;
 const bufferMinutes = 30;
 type DiningTable = { id: string; name: string; shape: string; capacity: number };
@@ -93,6 +93,14 @@ restaurantRouter.get(
   route(async (req, res) => {
     const data = search.parse(req.query);
     const settings = (await pool.query('SELECT * FROM restaurant_settings WHERE id=1')).rows[0];
+    const requestedMinutes = data.time ? minutes(data.time) : null;
+    if (
+      requestedMinutes !== null &&
+      (requestedMinutes < minutes(settings.opening_time) ||
+        requestedMinutes + visitMinutes > minutes(settings.closing_time) ||
+        (requestedMinutes - minutes(settings.opening_time)) % 30 !== 0)
+    )
+      throw new HttpError(400, 'Choose a reservation time on a 30-minute interval during opening hours.');
     const current = (
       await pool.query("SELECT CURRENT_DATE::text AS today,to_char(LOCALTIME,'HH24:MI') AS time")
     ).rows[0];
@@ -116,6 +124,7 @@ restaurantRouter.get(
       m + visitMinutes <= minutes(settings.closing_time);
       m += 30
     ) {
+      if (requestedMinutes !== null && m !== requestedMinutes) continue;
       const start = clock(m),
         end = clock(m + visitMinutes);
       if (data.date === current.today && start <= current.time) continue;
