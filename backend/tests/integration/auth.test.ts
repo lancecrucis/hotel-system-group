@@ -36,7 +36,6 @@ test('auth: full flow — register, verify, login, reset, revoke', async (contex
       server.closeAllConnections();
     });
     if (userIds.length) {
-      await pool.query('DELETE FROM phone_verification_codes WHERE user_id=ANY($1::uuid[])', [userIds]);
       await pool.query('DELETE FROM email_verification_tokens WHERE user_id=ANY($1::uuid[])', [userIds]);
       await pool.query('DELETE FROM password_reset_tokens WHERE user_id=ANY($1::uuid[])', [userIds]);
       await pool.query('DELETE FROM auth_sessions WHERE user_id=ANY($1::uuid[])', [userIds]);

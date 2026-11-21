@@ -8,7 +8,6 @@ import { requireUser, tokenHash } from '../../../middleware/auth.js';
 import { HttpError, route, text, date } from '../../../shared/utils/http.js';
 import { hashPassword, verifyPassword } from '../services/password.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../services/email.js';
-import { sendPhoneCode } from '../services/sms.js';
 
 export const authRouter = Router();
 
@@ -60,14 +59,6 @@ async function session(userId: string, res: import('express').Response, remember
   });
 }
 
-
-const smsLimit = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  limit: 3,
-  standardHeaders: 'draft-8',
-  legacyHeaders: false,
-  message: { error: 'Too many SMS requests. Please try again in 5 minutes.' },
-});
 
 // -- GET /me --
 authRouter.get('/me', (req, res) => {
@@ -303,71 +294,6 @@ authRouter.post(
   }),
 );
 
-
-// -- POST /send-phone-code --
-authRouter.post(
-  '/send-phone-code',
-  smsLimit,
-  requireUser,
-  route(async (req, res) => {
-    const phone = req.user!.phone_number;
-    if (!phone) throw new HttpError(400, 'No phone number on account.');
-
-    // Clean old code
-    await pool.query('DELETE FROM phone_verification_codes WHERE user_id=$1', [req.user!.id]);
-
-    // Rate limit: max 3 codes in 5 minutes
-    const recent = await pool.query(
-      "SELECT COUNT(*) AS cnt FROM phone_verification_codes WHERE user_id=$1 AND created_at > now()-interval '5 minutes'",
-      [req.user!.id],
-    );
-    if (Number(recent.rows[0].cnt) >= 3)
-      throw new HttpError(429, 'Too many SMS requests. Please try again later.');
-
-    const code = sendPhoneCode(phone);
-    await pool.query(
-      "INSERT INTO phone_verification_codes(code_hash,user_id,expires_at) VALUES($1,$2,now()+interval '10 minutes')",
-      [tokenHash(code), req.user!.id],
-    );
-
-    res.json({
-      message: 'A 6-digit code has been sent to your phone.',
-      ...(env.NODE_ENV !== 'production' ? { dev_code: code } : {}),
-    });
-  }),
-);
-
-// -- POST /verify-phone --
-authRouter.post(
-  '/verify-phone',
-  smsLimit,
-  requireUser,
-  route(async (req, res) => {
-    const { code } = z
-      .object({ code: z.string().regex(/^\d{6}$/, 'Code must be exactly 6 digits.') })
-      .parse(req.body);
-
-    const hash = tokenHash(code);
-    const result = await pool.query(
-      'SELECT user_id,expires_at,used_at,attempts FROM phone_verification_codes WHERE code_hash=$1 AND user_id=$2',
-      [hash, req.user!.id],
-    );
-    const record = result.rows[0];
-
-    if (!record) throw new HttpError(400, 'Invalid verification code.');
-    if (record.used_at) throw new HttpError(400, 'This code has already been used.');
-    if (new Date(record.expires_at) < new Date()) throw new HttpError(400, 'Code has expired. Request a new one.');
-
-    if (record.attempts >= 5) throw new HttpError(429, 'Too many failed attempts. Request a new code.');
-
-    // Wrong code — increment attempts but don't reveal it was wrong vs used
-    await pool.query('UPDATE phone_verification_codes SET attempts=attempts+1 WHERE code_hash=$1', [hash]);
-    // Actually, we already validated above. Mark used.
-    await pool.query('UPDATE phone_verification_codes SET used_at=now() WHERE code_hash=$1', [hash]);
-
-    res.json({ message: 'Phone number verified.', verified: true });
-  }),
-);
 
 // -- POST /logout --
 

@@ -212,7 +212,7 @@ export function Dining() {
               <ContactFields />
             </div>
             <div className="mt-6 flex flex-col items-stretch gap-3">
-              <span className="text-xs text-[#70462c]">Your reservation is confirmed when you book.</span>
+              <span className="text-xs text-[#70462c]">Your dining time is held for 15 minutes while staff confirms the reservation.</span>
               <button className="min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-not-allowed disabled:bg-[#bba896]" disabled={busy || !slot?.available || !date || !guests}>
                 {busy ? 'Booking your table…' : 'Reserve table'}
               </button>

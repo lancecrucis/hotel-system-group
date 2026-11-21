@@ -36,6 +36,7 @@ export function Layout() {
     location = useLocation(),
     [error, setError] = useState('');
   const staff = user && user.role !== 'customer';
+  const admin = user?.role === 'admin';
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   if (isAuthPage) {
@@ -78,32 +79,38 @@ export function Layout() {
             <Link className="flex items-center gap-[11px] whitespace-nowrap font-serif text-[18px] font-bold tracking-wide text-[#f3e1c7] no-underline max-[1200px]:text-[15px] max-[500px]:gap-[7px] max-[500px]:text-xs" to={staff ? '/overview' : '/rooms'}>
               <img className="block w-[clamp(7.5rem,13vw,10.625rem)] max-[500px]:w-[7.25rem]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="LA Illustrada Hotel" />
             </Link>
-            <nav className="flex gap-1 max-[800px]:col-span-full max-[800px]:row-start-2 max-[800px]:justify-self-center max-[500px]:w-full max-[500px]:max-w-[360px]" aria-label="Booking type">
-              <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#d9985d] text-white' : 'border-transparent'}`} to="/rooms">
-                <BedDouble size={18} />
-                Book a room
-              </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#d9985d] text-white' : 'border-transparent'}`} to="/dining">
-                <UtensilsCrossed size={18} />
-                Reserve a table
-              </NavLink>
-            </nav>
+            {staff ? (
+              <span className="justify-self-center font-serif text-sm text-[#e8bd91] max-[800px]:hidden">{admin ? 'Hotel administration' : 'Front desk operations'}</span>
+            ) : (
+              <nav className="flex gap-1 max-[800px]:col-span-full max-[800px]:row-start-2 max-[800px]:justify-self-center max-[500px]:w-full max-[500px]:max-w-[360px]" aria-label="Booking type">
+                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#d9985d] text-white' : 'border-transparent'}`} to="/rooms">
+                  <BedDouble size={18} aria-hidden="true" />
+                  Book a room
+                </NavLink>
+                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#d9985d] text-white' : 'border-transparent'}`} to="/dining">
+                  <UtensilsCrossed size={18} aria-hidden="true" />
+                  Reserve a table
+                </NavLink>
+              </nav>
+            )}
             <div className="flex min-w-0 items-center justify-end gap-4 max-[1200px]:gap-2.5 max-[800px]:col-start-2 max-[800px]:row-start-1 max-[500px]:gap-1.5">
               {user ? (
                 <>
                   <NavLink
                     className="flex items-center gap-[7px] whitespace-nowrap text-xs text-[#f3e1c7] hover:text-white max-[1200px]:[&>span]:sr-only"
                     to="/reservations"
-                    title={staff ? 'All reservations' : 'My reservations'}
+                    title={staff ? 'Reservations' : 'My reservations'}
                   >
                     <ClipboardList size={18} />
-                    <span>{staff ? 'All reservations' : 'My reservations'}</span>
+                    <span>{staff ? 'Reservations' : 'My reservations'}</span>
                   </NavLink>
                   <NotificationLink />
-                  <Link className="flex items-center gap-[7px] whitespace-nowrap text-xs text-[#f3e1c7] hover:text-white max-[500px]:[&>span]:hidden" to="/profile" title="Your profile">
-                    <UserRound size={17} />
-                    <span>{user.first_name}</span>
-                  </Link>
+                  {!staff && (
+                    <Link className="flex items-center gap-[7px] whitespace-nowrap text-xs text-[#f3e1c7] hover:text-white max-[500px]:[&>span]:hidden" to="/profile" title="Your profile">
+                      <UserRound size={17} aria-hidden="true" />
+                      <span>{user.first_name}</span>
+                    </Link>
+                  )}
                   <button
                     className="min-h-9 border-0 bg-transparent p-2 text-[#e8bd91] hover:text-white"
                     title="Sign out"
@@ -128,11 +135,11 @@ export function Layout() {
             <nav className="flex flex-wrap justify-center gap-3 border-t border-white/15 px-6 pb-3.5 pt-2 max-[800px]:justify-start max-[800px]:flex-nowrap max-[800px]:gap-1 max-[800px]:overflow-auto max-[800px]:px-4" aria-label="Staff navigation">
               <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/overview">
                 <LayoutDashboard size={16} />
-                Overview
+                Operations dashboard
               </NavLink>
               <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/walk-in">
                 <UserPlus size={16} />
-                New walk-in
+                Walk-in booking
               </NavLink>
               <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/rooms">
                 <BedDouble size={16} />
@@ -140,12 +147,12 @@ export function Layout() {
               </NavLink>
               <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/restaurant">
                 <Settings size={16} />
-                Restaurant settings
+                Dining operations
               </NavLink>
               {user.role === 'admin' && (
                 <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/users">
                   <Users size={16} />
-                  Users &amp; roles
+                  Team access
                 </NavLink>
               )}
               <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/activity">

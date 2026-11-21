@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, CalendarDays, BedDouble, Clock3, UsersRound } from 'lucide-react';
+import { ArrowRight, CalendarDays, Clock3, UsersRound } from 'lucide-react';
 import type { Reservation } from '../../../types/models';
 import { Badge, Empty } from '../../../components/ui/common';
 import { dateLabel, money } from '../../../utils/format';
@@ -13,26 +13,31 @@ function displayTime(value: string) {
 export function MyReservationCards({ reservations }: { reservations: Reservation[] }) {
   if (!reservations.length)
     return (
-      <Empty title="No reservations yet">
-        <p className="mx-auto mb-5 mt-2 max-w-[390px] text-sm leading-relaxed text-[#806348]">
-          Your hotel stays and restaurant bookings will appear here once you reserve.
-        </p>
-        <div className="flex flex-wrap justify-center gap-2.5">
-          <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/rooms">
-            Browse rooms
-          </Link>
-          <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#d8bfa0] bg-[#fffdf9] px-5 py-2.5 text-sm font-semibold text-[#642c14] no-underline hover:bg-[#f7ecdc]" to="/dining">
-            Reserve dining
-          </Link>
-        </div>
-      </Empty>
+      <div className="overflow-hidden rounded-2xl border border-[#d8bfa0] bg-[#fffaf2] shadow-[0_8px_24px_rgba(84,34,14,.06)]">
+        <Empty title="No reservations yet">
+          <p className="mx-auto mb-5 mt-2 max-w-[390px] text-sm leading-relaxed text-[#806348]">
+            Your hotel stays and restaurant bookings will appear here once you reserve.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2.5">
+            <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] no-underline hover:bg-[#54220e]" to="/rooms">
+              Browse rooms
+            </Link>
+            <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#d8bfa0] bg-[#fffdf9] px-5 py-2.5 text-sm font-semibold text-[#642c14] no-underline hover:bg-[#f7ecdc]" to="/dining">
+              Reserve dining
+            </Link>
+          </div>
+        </Empty>
+      </div>
     );
 
   return (
     <section aria-label="Your reservations">
-      <p className="mb-3 text-sm text-[#806348]">
-        {reservations.length} {reservations.length === 1 ? 'reservation' : 'reservations'}
-      </p>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="m-0 text-sm text-[#806348]">
+          {reservations.length} {reservations.length === 1 ? 'reservation' : 'reservations'}
+        </p>
+        <span className="text-xs text-[#98785b]">Hotel and dining bookings</span>
+      </div>
       <div className="grid gap-4">
         {reservations.map((reservation) => {
           const hotel = reservation.reservation_type === 'hotel';
@@ -40,12 +45,13 @@ export function MyReservationCards({ reservations }: { reservations: Reservation
           const image = hotel
             ? reservation.hotel?.image_url || '/images/landing/hero-800.webp'
             : '/images/restaurant.webp';
+          const fallbackImage = hotel ? '/images/landing/hero-800.webp' : '/images/restaurant.webp';
           const schedule = hotel
             ? `${dateLabel(reservation.hotel!.check_in)} – ${dateLabel(reservation.hotel!.check_out)}`
             : dateLabel(reservation.restaurant!.reservation_date);
 
           return (
-            <article key={reservation.id} className="group grid overflow-hidden rounded-2xl border border-[#e5d4bf] bg-[#fffaf2] transition-colors hover:border-[#c8a783] sm:grid-cols-[210px_minmax(0,1fr)]">
+            <article key={reservation.id} className="group grid overflow-hidden rounded-2xl border border-[#e5d4bf] bg-[#fffaf2] shadow-[0_8px_24px_rgba(84,34,14,.045)] transition-[border-color,box-shadow] hover:border-[#c8a783] hover:shadow-[0_10px_28px_rgba(84,34,14,.08)] sm:grid-cols-[210px_minmax(0,1fr)]">
               <div className="relative min-h-[170px] overflow-hidden bg-[#eadbc8] sm:min-h-[205px]">
                 <img
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]"
@@ -53,7 +59,7 @@ export function MyReservationCards({ reservations }: { reservations: Reservation
                   alt={hotel ? `${title}, room ${reservation.hotel!.room_number}` : 'Hotel restaurant dining room'}
                   onError={(event) => {
                     event.currentTarget.onerror = null;
-                    event.currentTarget.src = '/images/landing/hero-800.webp';
+                    event.currentTarget.src = fallbackImage;
                   }}
                 />
                 <span className="absolute left-3 top-3 rounded-full border border-white/70 bg-[#fffaf2]/95 px-3 py-1.5 text-xs font-semibold text-[#54220e] shadow-sm">
@@ -91,7 +97,7 @@ export function MyReservationCards({ reservations }: { reservations: Reservation
                   </span>
                   {hotel ? (
                     <span className="inline-flex items-center gap-2">
-                      <BedDouble size={16} className="shrink-0 text-[#9b6a43]" aria-hidden="true" />
+                      <UsersRound size={16} className="shrink-0 text-[#9b6a43]" aria-hidden="true" />
                       {reservation.hotel!.guest_count} {reservation.hotel!.guest_count === 1 ? 'guest' : 'guests'}
                     </span>
                   ) : (

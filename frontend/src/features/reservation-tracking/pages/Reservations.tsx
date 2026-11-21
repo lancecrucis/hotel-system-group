@@ -18,19 +18,19 @@ export function Reservations() {
     <div className="space-y-6">
       <header className="flex items-end justify-between gap-6 max-[650px]:items-start max-[650px]:flex-col">
         <div>
-          <p className="mb-2 text-sm font-medium text-[#98785b]">{user!.role === 'customer' ? 'Your stays and dining' : 'Guest booking overview'}</p>
+          <p className="mb-2 text-sm font-medium text-[#98785b]">{user!.role === 'customer' ? 'Your stays and dining' : 'Reservations desk'}</p>
           <h1 className="m-0 font-['Gelasio'] text-[34px] font-normal leading-tight tracking-[-.03em] text-[#441901] max-[650px]:text-[29px]">
-            {user!.role === 'customer' ? 'My reservations' : 'All reservations'}
+            {user!.role === 'customer' ? 'My reservations' : 'Reservations'}
           </h1>
           <p className="mb-0 mt-2 max-w-[540px] text-sm leading-relaxed text-[#806348]">
             {user!.role === 'customer'
               ? 'Keep your hotel stays and restaurant bookings together in one place.'
-              : 'Search and review guest hotel and restaurant bookings.'}
+              : 'Search and manage hotel stays and dining reservations.'}
           </p>
         </div>
         <Link className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] no-underline transition-colors hover:bg-[#54220e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] max-[650px]:w-full" to="/rooms">
           <Plus size={17} aria-hidden="true" />
-          New booking
+          {user!.role === 'customer' ? 'New booking' : 'New walk-in'}
         </Link>
       </header>
       <form
@@ -45,12 +45,13 @@ export function Reservations() {
           Search reservations
           <span className="relative mt-1 block">
             <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9b8063]" aria-hidden="true" />
-          <input
-            className="rounded-xl border-[#ddcbb5] bg-[#fffdf9] pl-9 text-sm focus:border-[#9b6a43] focus:ring-2 focus:ring-[#9b6a43]/15"
-            placeholder="Reference or guest name"
-            value={filters.search}
-            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          />
+            <input
+              className="!rounded-xl !border-[#ddcbb5] !bg-[#fffdf9] !pl-10 !pr-3 text-sm focus:!border-[#9b6a43] focus:!ring-2 focus:!ring-[#9b6a43]/15"
+              aria-label="Search by reference or guest name"
+              placeholder="Reference or guest name"
+              value={filters.search}
+              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            />
           </span>
         </label>
         <label className="gap-1.5 text-xs font-semibold text-[#70462c]">
