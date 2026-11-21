@@ -48,9 +48,9 @@ export function ContactFields({ value, onChange }: { value?: ContactDetails; onC
           autoComplete="tel"
         />
       </label>
-      <label className="col-span-full flex flex-col gap-[7px] font-serif text-sm text-[#54220e]">
+      <label className="col-span-full">
         Special requests <span className="text-[#806348]">(optional)</span>
-        <textarea className={`${fieldClass} min-h-24 resize-y`} name="special_requests" {...(value ? { value: value.special_requests, onChange: (event) => update('special_requests', event.target.value) } : {})} maxLength={2000} rows={3} placeholder="Requests" />
+        <textarea name="special_requests" {...(value ? { value: value.special_requests, onChange: (event) => update('special_requests', event.target.value) } : {})} maxLength={2000} rows={3} placeholder="Requests" />
       </label>
     </>
   );

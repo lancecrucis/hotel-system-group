@@ -111,17 +111,17 @@ export function Dining() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-160px)] bg-[#f9f3e7]">
+    <>
       <div className="mb-6 h-[190px] overflow-hidden border border-[#c8a783] bg-[#ead5b8] max-[500px]:h-[140px]">
         <img className="block h-full w-full object-cover object-[center_53%]" src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
       </div>
       <div className="mx-auto mb-5 flex max-w-[820px] items-baseline justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
         <h1 className="m-0 font-['Gelasio'] text-[32px] font-normal leading-[1.15] tracking-[-.5px] text-[#441901]">Reserve a table</h1>
-        <span className="font-serif text-sm text-[#70462c]">1-hour dining · 30-minute table reset</span>
+        <span className="font-serif text-sm text-[#70462c]">1-hour visit · 30 minutes between bookings</span>
       </div>
       <form className="mx-auto max-w-[820px] border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[19px]" onSubmit={book}>
-        <div className="grid grid-cols-3 gap-[18px] max-[700px]:grid-cols-2 max-[500px]:grid-cols-1">
-          <label className="flex flex-col gap-[7px] font-serif text-sm text-[#54220e]">
+        <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
+          <label>
             Dining date
             <input
               className="!min-h-[44px] !rounded-[10px] !border !border-[#b99673] !bg-transparent !px-4 !py-2 !font-sans !text-sm text-[#54220e] focus:!border-[#642c14] focus:!outline-none focus:!ring-2 focus:!ring-[#642c14]/20"
@@ -180,27 +180,31 @@ export function Dining() {
             )}
           </label>
         </div>
-        {restaurantSettings.error && <ErrorBox message={restaurantSettings.error} />}
-        <button
-          type="button"
-          className="mt-5 min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-wait disabled:bg-[#bba896]"
-          onClick={() => void checkAvailability()}
-          disabled={checking || busy || restaurantSettings.loading || !date || !guests || !time}
-        >
-          {checking ? 'Checking availability…' : 'Show available times'}
-        </button>
-        {searchError && <ErrorBox message={searchError} />}
-        {searched && availability && slot?.available && (
-          <div className="mt-5 rounded-xl border border-[#c9d9ca] bg-[#f2f8f2] p-4" role="status" aria-live="polite">
-            <p className="m-0 font-sans text-sm font-semibold text-[#315d3a]">A table is available</p>
-            <p className="mb-0 mt-1 font-sans text-sm text-[#425748]">
-              {slot.tables.filter((table) => table.available && table.capacity >= guestCount).length} suitable tables for {guestCount} {guestCount === 1 ? 'guest' : 'guests'} on {new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })} at {displayTime(time)} ({time}). Dining ends at {displayTime(slot.end_time)} ({slot.end_time.slice(0, 5)}).
-            </p>
-          </div>
-        )}
-        {searched && availability && !slot?.available && (
-          <div className="mt-5 rounded-xl border border-[#e6aaa5] bg-[#fff1f0] p-4 text-sm text-[#8f1d14]" role="alert" aria-live="polite">
-            {slot ? `No table is available for ${guestCount} ${guestCount === 1 ? 'guest' : 'guests'} at ${displayTime(time)} (${time}). You can’t reserve this time; choose another time and check again.` : 'That time is not an available reservation slot. Choose a time on the hour or half-hour during opening hours.'}
+        <fieldset className="mt-[26px] min-w-0 border-0 p-0">
+          <legend className="mb-2.5 p-0 font-serif text-base font-semibold text-[#54220e]">Dining time</legend>
+          <div className="grid grid-cols-4 gap-2.5 max-[500px]:grid-cols-2">
+            {query.data?.slots.map((item) => {
+              const status = slotStatus(item);
+              const disabled = status.tone === 'fit' || status.tone === 'full';
+              return (
+                <label className={`relative flex min-h-[92px] cursor-pointer flex-col items-start gap-0.5 border px-3.5 py-[13px] transition-colors ${status.tone === 'fit' || status.tone === 'full' ? 'cursor-not-allowed border-[#dfcdb7] bg-[#f1e3d0] text-[#947c67]' : 'border-[#d3b694] bg-[#fffdf8] hover:border-[#9b623e]'} ${time === item.start_time ? 'border-[#642c14] shadow-[0_0_0_2px_#642c14_inset]' : ''}`} key={item.start_time}>
+                  <input
+                    type="radio"
+                    name="dining-time"
+                    value={item.start_time}
+                    checked={time === item.start_time}
+                    disabled={busy || disabled}
+                    onChange={(e) => {
+                      setTime(e.target.value);
+                      setError('');
+                    }}
+                  />
+                  <span className="font-['Gelasio'] text-[19px] font-normal tracking-[-.2px] text-[#441901]">{item.start_time.slice(0, 5)}</span>
+                  <span className="text-[11px]">until {item.end_time.slice(0, 5)}</span>
+                  <span className="mt-auto text-[11px] text-[#70462c]">{status.label}</span>
+                </label>
+              );
+            })}
           </div>
         )}
         <ErrorBox message={error} />
@@ -211,10 +215,10 @@ export function Dining() {
             <div className="grid grid-cols-2 gap-[18px] max-[500px]:grid-cols-1">
               <ContactFields />
             </div>
-            <div className="mt-6 flex flex-col items-stretch gap-3">
-              <span className="text-xs text-[#70462c]">Your reservation is confirmed when you book.</span>
-              <button className="min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-not-allowed disabled:bg-[#bba896]" disabled={busy || !slot?.available || !date || !guests}>
-                {busy ? 'Booking your table…' : 'Reserve table'}
+            <div className="mt-6 flex items-center justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
+              <span className="text-xs text-[#70462c]">Confirm within 15 minutes.</span>
+              <button className="border border-[#642c14] bg-[#642c14] font-serif text-base font-bold text-[#fff8ee] hover:bg-[#54220e]" disabled={busy || query.loading || !slot?.available || !date || !guests}>
+                {busy ? 'Holding your time…' : 'Continue to confirmation'}
               </button>
             </div>
           </>

@@ -88,57 +88,34 @@ export function StayCalendar({ value, onChange }: { value: Stay; onChange: (valu
   }
 
   return (
-    <section className="@container rounded-2xl border border-[#e2d1bd] bg-[#fffaf2] p-4 text-[#54220e] shadow-[0_12px_38px_rgba(84,34,14,.12)] sm:p-5" aria-label="Choose stay dates">
-      <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl bg-[#f3e7d7] p-1">
-        <button
-          type="button"
-          className={`flex min-h-[58px] flex-col items-start justify-center rounded-lg border px-3 py-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#8b4d28] ${step === 'checkIn' ? 'border-[#d8bfa0] bg-[#fffaf2] shadow-sm' : 'border-transparent bg-transparent'}`}
-          onClick={() => setStep('checkIn')}
-        >
-          <span className="text-[10px] font-semibold uppercase tracking-[.08em] text-[#806348]">Check-in</span>
-          <strong className="mt-0.5 text-[13px] font-semibold text-[#54220e]">{dateLabel(value.checkIn)}</strong>
+    <section className="border border-[#d8bfa0] bg-[#fff8ee] p-3.5 text-[#54220e]" aria-label="Choose stay dates">
+      <div className="grid grid-cols-2 gap-[7px]">
+        <button type="button" className={`flex min-h-0 flex-col items-start gap-px border px-[11px] py-[9px] text-left ${step === 'checkIn' ? 'border-[#642c14] bg-[#ead5b8]' : 'border-[#d8bfa0] bg-[#f3e1c7]'}`} onClick={() => { setStep('checkIn'); setMonth(value.checkIn.slice(0, 7)); }}>
+          <span>Check-in</span><strong>{dateLabel(value.checkIn)}</strong>
         </button>
-        <button
-          type="button"
-          className={`flex min-h-[58px] flex-col items-start justify-center rounded-lg border px-3 py-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#aa4136] ${step === 'checkOut' ? 'border-[#d8bfa0] bg-[#fffaf2] shadow-sm' : 'border-transparent bg-transparent'}`}
-          onClick={() => setStep('checkOut')}
-        >
-          <span className="text-[10px] font-semibold uppercase tracking-[.08em] text-[#806348]">Check-out</span>
-          <strong className={`mt-0.5 text-[13px] font-semibold ${value.checkOut ? 'text-[#54220e]' : 'text-[#806348]'}`}>{value.checkOut ? dateLabel(value.checkOut) : 'Select date'}</strong>
+        <button type="button" className={`flex min-h-0 flex-col items-start gap-px border px-[11px] py-[9px] text-left ${step === 'checkOut' ? 'border-[#642c14] bg-[#ead5b8]' : 'border-[#d8bfa0] bg-[#f3e1c7]'}`} onClick={() => { setStep('checkOut'); setMonth(value.checkOut.slice(0, 7)); }}>
+          <span>Check-out</span><strong>{dateLabel(value.checkOut)}</strong>
         </button>
       </div>
-
-      <div className="mb-2 flex items-center justify-between">
-        <button
-          className="grid h-9 w-9 place-items-center rounded-full border-0 bg-transparent p-0 text-[#642c14] hover:bg-[#f3e1c7] focus-visible:outline-2 focus-visible:outline-[#8b4d28] disabled:text-[#b7aa9c]"
-          type="button"
-          aria-label="Previous month"
-          disabled={month <= today.slice(0, 7)}
-          onClick={() => setMonth(monthOffset(month, -1))}
-        ><ChevronLeft size={18} /></button>
-        <span className="text-[11px] text-[#806348]">{step === 'checkIn' ? 'Choose your arrival' : 'Choose your departure'}</span>
-        <button
-          className="grid h-9 w-9 place-items-center rounded-full border-0 bg-transparent p-0 text-[#642c14] hover:bg-[#f3e1c7] focus-visible:outline-2 focus-visible:outline-[#8b4d28]"
-          type="button"
-          aria-label="Next month"
-          onClick={() => setMonth(monthOffset(month, 1))}
-        ><ChevronRight size={18} /></button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 @min-[700px]:grid-cols-2 @min-[700px]:gap-7">
-        <MonthGrid month={month} today={today} value={value} step={step} onChoose={choose} />
-        <div className="hidden @min-[700px]:block">
-          <MonthGrid month={monthOffset(month, 1)} today={today} value={value} step={step} onChoose={choose} />
+      <div className="my-[15px] flex items-center justify-between">
+        <strong>{title}</strong>
+        <div>
+          <button className="min-h-0 border-0 bg-transparent p-1 text-[#642c14] hover:bg-[#ead5b8]" type="button" aria-label="Previous month" disabled={month <= today.slice(0, 7)} onClick={() => changeMonth(-1)}><ChevronLeft size={18} /></button>
+          <button className="min-h-0 border-0 bg-transparent p-1 text-[#642c14] hover:bg-[#ead5b8]" type="button" aria-label="Next month" onClick={() => changeMonth(1)}><ChevronRight size={18} /></button>
         </div>
       </div>
-
-      <div className="mt-4 flex items-center justify-between border-t border-[#e3d6c7] pt-3 text-xs">
-        <span className="text-[#806348]">{value.checkOut ? `${nights(value.checkIn, value.checkOut)} ${nights(value.checkIn, value.checkOut) === 1 ? 'night' : 'nights'}` : 'Select a check-out date'}</span>
-        <span className="flex items-center gap-3 text-[10px] text-[#806348]">
-          <span className="inline-flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-[#32744b]" aria-hidden="true" />Arrival</span>
-          <span className="inline-flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-[#aa4136]" aria-hidden="true" />Departure</span>
-        </span>
+      <div className="grid grid-cols-7 gap-[3px] text-center">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((name) => <span className="py-[5px] text-[10px] text-[#806348]" key={name}>{name}</span>)}
+        {Array.from({ length: offset }, (_, index) => <span key={`blank-${index}`} />)}
+        {Array.from({ length: daysInMonth }, (_, index) => {
+          const date = `${month}-${String(index + 1).padStart(2, '0')}`;
+          const disabled = date < today || (step === 'checkOut' && (date <= value.checkIn || date > addDays(value.checkIn, 30)));
+          const isStart = date === value.checkIn;
+          const isEnd = date === value.checkOut;
+          return <button type="button" key={date} disabled={disabled} className={`min-h-[34px] border-0 p-0 text-xs ${isStart || isEnd ? 'bg-[#642c14] text-[#fff8ee]' : date > value.checkIn && date < value.checkOut ? 'bg-[#ead5b8] text-[#54220e]' : 'bg-transparent text-[#54220e] hover:bg-[#f3e1c7]'} disabled:cursor-default disabled:text-[#b99b7b]`} aria-label={`${dateLabel(date)}${isStart ? ', check-in' : isEnd ? ', check-out' : ''}`} aria-pressed={isStart || isEnd} onClick={() => choose(date)}>{index + 1}</button>;
+        })}
       </div>
+      <p className="mt-2.5 text-[11px] text-[#806348]">{step === 'checkIn' ? 'Select an arrival date.' : 'Select a departure date, up to 30 nights later.'}</p>
     </section>
   );
 }

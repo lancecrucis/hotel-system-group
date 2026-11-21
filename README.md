@@ -345,6 +345,8 @@ Replace `kath` with your assigned branch. If Git reports conflicts, resolve them
 
 ## 15. Developers
 
+## Developers
+
 - Lance Crucis
 - Katharine Batioco
 - Redgie Blanco

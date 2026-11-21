@@ -158,7 +158,7 @@ export function Rooms() {
   return (
     <div className="min-h-[calc(100vh-160px)] bg-[#f9f3e7]">
       <form
-        className="grid grid-cols-[minmax(155px,1fr)_minmax(270px,1.5fr)_minmax(140px,.8fr)_minmax(155px,auto)] items-center gap-2.5 rounded-2xl border border-[#63351f] bg-[#54220e] p-2.5 shadow-[0_8px_22px_rgba(84,34,14,.13)] max-[900px]:grid-cols-2 max-[500px]:grid-cols-2 max-[500px]:gap-2 max-[380px]:grid-cols-1"
+        className="grid grid-cols-[minmax(190px,1.15fr)_minmax(330px,2fr)_minmax(145px,.8fr)_auto] items-stretch gap-2.5 border border-[#c8a783] bg-[#ead5b8] p-3 max-[1200px]:grid-cols-2 max-[800px]:grid-cols-2 max-[500px]:grid-cols-1"
         onSubmit={(e) => {
           e.preventDefault();
           if (!filtersReady) return;
@@ -167,10 +167,10 @@ export function Rooms() {
           query.reload();
         }}
       >
-        <label className="flex min-h-[56px] min-w-0 flex-row items-center gap-2.5 rounded-xl border border-[#eadfce] bg-[#fffaf2] px-3.5 py-2 transition-colors focus-within:border-[#d18a4c] focus-within:ring-2 focus-within:ring-[#e7aa70]/30 max-[500px]:col-span-full">
-          <BedDouble className="shrink-0 text-[#70432b]" size={18} aria-hidden="true" />
-          <span className="relative flex min-w-0 flex-1 flex-col gap-1">
-            <span className="font-sans text-[10px] font-medium leading-tight text-[#806348]">Room type</span>
+        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
+          <BedDouble size={20} aria-hidden="true" />
+          <span className="relative flex min-w-0 flex-1 flex-col">
+            <span>Room type</span>
             <select
               className="!min-h-6 !border-0 !bg-transparent !p-0 !pr-5 font-sans text-[13px] font-medium !text-[#54220e] !shadow-none appearance-none focus:!border-0 focus:!outline-none focus:!ring-0 focus:!shadow-none"
               value={filters.room_type}
@@ -186,18 +186,21 @@ export function Rooms() {
                 <option value={filters.room_type}>{filters.room_type}</option>
               )}
             </select>
-            <ChevronDown className="pointer-events-none absolute bottom-1 right-0 text-[#806348]" size={15} aria-hidden="true" />
+            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#70462c]" size={16} aria-hidden="true" />
           </span>
         </label>
-        <div className="relative flex min-h-[56px] min-w-0 items-center gap-2.5 rounded-xl border border-[#eadfce] bg-[#fffaf2] px-3.5 py-2 transition-colors focus-within:border-[#d18a4c] max-[500px]:col-span-full">
-          <CalendarDays className="shrink-0 text-[#70432b]" size={18} aria-hidden="true" />
-          <button type="button" className="flex min-h-10 min-w-0 flex-1 items-center justify-between gap-1 border-0 bg-transparent p-0 text-left font-sans text-[12px] font-medium text-[#54220e] focus-visible:outline-2 focus-visible:outline-[#8b4d28]" aria-expanded={dateOpen} aria-label={`Choose check-in ${dateLabel(filters.check_in)} and check-out ${filters.check_out ? dateLabel(filters.check_out) : 'date not selected'}`} onClick={() => setDateOpen(!dateOpen)}><span className="flex min-w-0 flex-col truncate"><span className="text-[9px] font-normal text-[#806348]">Check-in</span><span className="truncate">{dateLabel(filters.check_in)}</span></span><span className="px-1 text-[#a87652]" aria-hidden="true">→</span><span className="flex min-w-0 flex-col truncate"><span className="text-[9px] font-normal text-[#806348]">Check-out</span><span className="truncate">{filters.check_out ? dateLabel(filters.check_out) : 'Select date'}</span></span><ChevronDown className="shrink-0 text-[#806348]" size={15} /></button>
-          {dateOpen && <div className="absolute left-0 top-[calc(100%+10px)] z-30 w-[min(100%,calc(100vw-2rem))] rounded-2xl border border-[#c8a783] bg-[#f3e1c7] p-2.5 shadow-[0_18px_50px_rgba(55,24,8,.18)]"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters((current) => ({ ...current, check_in: value.checkIn, check_out: value.checkOut }))} /><button type="button" className="mt-3 w-full rounded-xl disabled:cursor-not-allowed disabled:opacity-50" disabled={!filtersReady} onClick={() => setDateOpen(false)}>Done</button></div>}
+        <div className="relative flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
+          <CalendarDays size={20} aria-hidden="true" />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span>Check-in & check-out</span>
+            <button type="button" className="flex min-h-[26px] w-full items-center justify-between border-0 bg-transparent p-0 text-[13px] font-semibold text-[#54220e]" aria-expanded={dateOpen} aria-label="Choose check-in and check-out dates" onClick={() => setDateOpen(!dateOpen)}>{dateLabel(filters.check_in)} <span className="mx-1.5 text-[#806348]" aria-hidden="true">→</span> {dateLabel(filters.check_out)} <ChevronDown size={16} /></button>
+          </div>
+          {dateOpen && <div className="absolute left-0 top-[calc(100%+10px)] z-20 w-[min(370px,90vw)] border border-[#c8a783] bg-[#f3e1c7] p-3.5 shadow-[0_18px_50px_rgba(55,24,8,.18)]"><StayCalendar value={{ checkIn: filters.check_in, checkOut: filters.check_out }} onChange={(value) => setFilters({ ...filters, check_in: value.checkIn, check_out: value.checkOut })} /><button type="button" className="mt-3 w-full" onClick={() => setDateOpen(false)}>Done</button></div>}
         </div>
-        <label className="flex min-h-[56px] min-w-0 flex-row items-center gap-2.5 rounded-xl border border-[#eadfce] bg-[#fffaf2] px-3.5 py-2 transition-colors focus-within:border-[#d18a4c] focus-within:ring-2 focus-within:ring-[#e7aa70]/30">
-          <Users className="shrink-0 text-[#70432b]" size={18} aria-hidden="true" />
-          <span className="relative flex min-w-0 flex-1 flex-col gap-1">
-            <span className="font-sans text-[10px] font-medium leading-tight text-[#806348]">Guests</span>
+        <label className="flex min-h-[72px] min-w-0 items-center gap-[13px] border border-[#d3b694] bg-[#fff8ee] px-[15px] py-[11px] max-[500px]:min-h-16">
+          <Users size={20} aria-hidden="true" />
+          <span className="relative flex min-w-0 flex-1 flex-col">
+            <span>Guests</span>
             <select
               className="!min-h-6 !border-0 !bg-transparent !p-0 !pr-5 font-sans text-[13px] font-medium !text-[#54220e] !shadow-none appearance-none focus:!border-0 focus:!outline-none focus:!ring-0 focus:!shadow-none"
               value={filters.guests}
@@ -209,19 +212,16 @@ export function Rooms() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute bottom-1 right-0 text-[#806348]" size={15} aria-hidden="true" />
+            <ChevronDown className="pointer-events-none absolute bottom-2 right-0 text-[#70462c]" size={16} aria-hidden="true" />
           </span>
         </label>
-        <button className="flex min-h-[56px] items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-[#d18a4c] bg-[#d18a4c] px-5 font-sans text-[13px] font-semibold text-[#54220e] shadow-sm transition hover:border-[#e3a366] hover:bg-[#e3a366] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fff8ee] disabled:cursor-wait disabled:opacity-70" disabled={query.loading || !filtersReady}>
-          <span>Find a room</span><Search size={17} aria-hidden="true" />
+        <button className="min-h-[72px] whitespace-nowrap border border-[#642c14] bg-[#642c14] font-serif text-base font-bold text-[#fff8ee] hover:bg-[#54220e] max-[500px]:min-h-16" disabled={query.loading}>
+          Find a room <Search size={18} />
         </button>
       </form>
-      <div className="my-6 flex items-end justify-between gap-4">
-        <div>
-          <h1 className="m-0 !font-sans text-2xl !font-semibold tracking-[-.03em] text-[#54220e]">{currentBookings.length ? 'Your current bookings' : 'Find your stay'}</h1>
-          {!currentBookings.length && <p className="mb-0 mt-1 text-sm text-[#806348]">Choose a room that suits your trip</p>}
-        </div>
-        <span className="pb-1 text-sm text-[#70462c]">{availableRooms.length} {availableRooms.length === 1 ? 'room' : 'rooms'}</span>
+      <div className="my-9 flex items-center justify-between gap-4">
+        <h1 className="m-0 font-['Gelasio'] text-[30px] font-normal tracking-[-.4px] text-[#441901]">Available rooms</h1>
+        <span className="font-serif text-base text-[#70462c]">{query.data?.rooms.filter((r) => r.available).length ?? 0} rooms</span>
       </div>
       {currentBookings.length > 0 && <section className="-mt-2 mb-7" aria-label="Current hotel bookings">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -243,8 +243,61 @@ export function Rooms() {
       {query.loading ? (
         <Loading />
       ) : (
-        <div>
-          {roomSections.map((section) => <RoomSection key={section.title} {...section} onSelect={setSelected} />)}
+        <div className="grid grid-cols-3 gap-6 max-[1200px]:grid-cols-2 max-[500px]:grid-cols-1">
+          {query.data?.rooms
+            .filter((r) => r.available)
+            .map((room) => (
+              <article className="overflow-hidden border border-[#c8a783] bg-[#fff8ee] transition-colors hover:border-[#9b623e]" key={room.id}>
+                <img
+                  className="h-[176px] w-full object-cover"
+                  src={room.image_url || roomImage(room)}
+                  alt={`${room.room_type}, room ${room.room_number}`}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = roomImage(room);
+                  }}
+                />
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="flex-1 font-['Gelasio'] text-[22px] font-normal tracking-[-.2px] text-[#441901]">{room.room_type}</h3>
+                  </div>
+                  <div className="my-[17px] flex flex-wrap items-center gap-x-[13px] gap-y-[9px] text-[12px] text-[#70462c]">
+                    <span className="flex items-center gap-[5px]">
+                      <Users size={15} />
+                      {room.capacity} guests
+                    </span>
+                    <span className="flex items-center gap-[5px]">
+                      <BedDouble size={15} />
+                      {room.bed_count} {room.bed_type}
+                    </span>
+                    {room.has_wifi && (
+                      <span className="flex items-center gap-[5px]">
+                        <Wifi size={15} />
+                        Wi-Fi
+                      </span>
+                    )}
+                    {room.breakfast_included && (
+                      <span className="flex items-center gap-[5px]">
+                        <Coffee size={15} />
+                        Breakfast
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-[18px] flex items-center justify-between gap-2.5 border-t border-[#d8bfa0] pt-[17px]">
+                    <span>
+                      <strong className="font-['Gelasio'] text-[24px] font-normal tracking-[-.3px] text-[#54220e]">{money(room.price_per_night)}</strong>
+                      <small> / night</small>
+                    </span>
+                    <button
+                      className="min-h-[36px] border border-[#642c14] bg-[#642c14] px-3 py-[7px] text-xs text-[#fff8ee] hover:bg-[#54220e]"
+                      onClick={() => setSelected(room)}
+                    >
+                      Select room
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
         </div>
       )}
       {!query.loading && !query.error && (query.data?.rooms.length ?? 0) === 0 && (
