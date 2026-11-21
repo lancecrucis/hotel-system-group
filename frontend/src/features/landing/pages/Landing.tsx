@@ -16,7 +16,6 @@ import { useQuery } from '../../../hooks/useQuery';
 import type { Room, Settings } from '../../../types/models';
 import { money } from '../../../utils/format';
 import { LandingNav } from '../components/LandingNav';
-import { ChatWidget } from '../components/ChatWidget';
 
 const HOTEL_NAME = 'LA Illustrada';
 
@@ -437,7 +436,6 @@ export function Landing() {
         </div>
       </footer>
 
-      <ChatWidget />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { pool } from '../../../config/database.js';
 import { HttpError } from '../../../shared/utils/http.js';
 
 export const reservationSelect = `SELECT r.*,
-  (SELECT row_to_json(h) FROM (SELECT h.*,rm.room_number,rm.room_type FROM hotel_reservations h JOIN rooms rm ON rm.id=h.room_id WHERE h.reservation_id=r.id) h) AS hotel,
+  (SELECT row_to_json(h) FROM (SELECT h.*,rm.room_number,rm.room_type,rm.image_url FROM hotel_reservations h JOIN rooms rm ON rm.id=h.room_id WHERE h.reservation_id=r.id) h) AS hotel,
   (SELECT row_to_json(d) FROM (SELECT d.*,t.name AS table_name,t.shape AS table_shape FROM restaurant_reservations d LEFT JOIN dining_tables t ON t.id=d.table_id WHERE d.reservation_id=r.id) d) AS restaurant,
   COALESCE((SELECT sum(amount) FROM payments p WHERE p.reservation_id=r.id),0)::text AS paid_amount,
   COALESCE((SELECT sum(f.refund_amount) FROM refunds f JOIN payments p ON p.id=f.payment_id WHERE p.reservation_id=r.id),0)::text AS refunded_amount

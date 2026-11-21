@@ -93,11 +93,19 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#f3e1c7] font-sans text-sm leading-[1.55] text-[#54220e] antialiased">
+      <AppShell />
+    </BrowserRouter>
+  );
+}
+
+function AppShell() {
+  const location = useLocation();
+  const bookingPage = location.pathname === '/rooms' || location.pathname === '/dining';
+  return (
+      <div className={`min-h-screen ${bookingPage ? 'bg-[#f9f3e7]' : 'bg-[#f3e1c7]'} font-sans text-sm leading-[1.55] text-[#54220e] antialiased`}>
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>
       </div>
-    </BrowserRouter>
   );
 }

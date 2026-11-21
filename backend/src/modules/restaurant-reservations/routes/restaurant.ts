@@ -10,17 +10,24 @@ import { expireHolds, recordStatus, audit } from '../../reservation-tracking/rep
 import { peakOccupancy, minutes, clock } from '../repositories/capacity.js';
 
 export const restaurantRouter = Router();
-const search = z.object({ date, guests: z.coerce.number().int().min(1).max(500) });
+const search = z.object({ date, guests: z.coerce.number().int().min(1).max(500), time: time.optional() });
 const visitMinutes = 60;
 const bufferMinutes = 30;
 type DiningTable = { id: string; name: string; shape: string; capacity: number };
-type TableBooking = { table_id: string | null; start_time: string; end_time: string };
+type TableBooking = {
+  table_id: string | null;
+  start_time: string;
+  end_time: string;
+  completed_time: string | null;
+};
 const tableFree = (bookings: TableBooking[], tableId: string, start: number) =>
   !bookings.some(
     (booking) =>
       booking.table_id === tableId &&
       minutes(booking.start_time) < start + visitMinutes + bufferMinutes &&
-      minutes(booking.end_time) + bufferMinutes > start,
+      (booking.completed_time
+        ? minutes(booking.completed_time) + bufferMinutes
+        : minutes(booking.end_time) + bufferMinutes) > start,
   );
 restaurantRouter.get(
   '/settings',
@@ -47,6 +54,11 @@ restaurantRouter.put(
       .parse(req.body);
     await transaction(async (c) => {
       await c.query('SELECT id FROM restaurant_settings WHERE id=1 FOR UPDATE');
+      const largestTable = await c.query<{ capacity: number }>(
+        'SELECT COALESCE(max(capacity),0)::integer AS capacity FROM dining_tables',
+      );
+      if (data.max_guest_per_booking > largestTable.rows[0].capacity)
+        throw new HttpError(400, `Party size cannot exceed the largest table (${largestTable.rows[0].capacity}).`);
       const conflict = await c.query(
         `SELECT 1 FROM restaurant_reservations d JOIN reservations r ON r.id=d.reservation_id
       WHERE d.reservation_date>=CURRENT_DATE AND r.status IN ('pending','confirmed','arrived','seated') AND (r.status<>'pending' OR r.hold_expires_at>now())
@@ -81,6 +93,14 @@ restaurantRouter.get(
   route(async (req, res) => {
     const data = search.parse(req.query);
     const settings = (await pool.query('SELECT * FROM restaurant_settings WHERE id=1')).rows[0];
+    const requestedMinutes = data.time ? minutes(data.time) : null;
+    if (
+      requestedMinutes !== null &&
+      (requestedMinutes < minutes(settings.opening_time) ||
+        requestedMinutes + visitMinutes > minutes(settings.closing_time) ||
+        (requestedMinutes - minutes(settings.opening_time)) % 30 !== 0)
+    )
+      throw new HttpError(400, 'Choose a reservation time on a 30-minute interval during opening hours.');
     const current = (
       await pool.query("SELECT CURRENT_DATE::text AS today,to_char(LOCALTIME,'HH24:MI') AS time")
     ).rows[0];
@@ -88,7 +108,9 @@ restaurantRouter.get(
     const tables = (await pool.query<DiningTable>('SELECT * FROM dining_tables ORDER BY name')).rows;
     const bookings = (
       await pool.query<TableBooking>(
-        `SELECT d.table_id,d.start_time,d.end_time FROM restaurant_reservations d
+        `SELECT d.table_id,d.start_time,d.end_time,
+                to_char(d.completed_at,'HH24:MI') AS completed_time
+         FROM restaurant_reservations d
          JOIN reservations r ON r.id=d.reservation_id
          WHERE d.reservation_date=$1 AND
          (r.status IN ('confirmed','arrived','seated','completed') OR
@@ -102,6 +124,7 @@ restaurantRouter.get(
       m + visitMinutes <= minutes(settings.closing_time);
       m += 30
     ) {
+      if (requestedMinutes !== null && m !== requestedMinutes) continue;
       const start = clock(m),
         end = clock(m + visitMinutes);
       if (data.date === current.today && start <= current.time) continue;
@@ -169,7 +192,9 @@ restaurantRouter.post(
       if (!tables.length) throw new HttpError(400, 'No table fits this party size.');
       const bookings = (
         await c.query<TableBooking>(
-          `SELECT d.table_id,d.start_time,d.end_time FROM restaurant_reservations d
+          `SELECT d.table_id,d.start_time,d.end_time,
+                  to_char(d.completed_at,'HH24:MI') AS completed_time
+           FROM restaurant_reservations d
          JOIN reservations r ON r.id=d.reservation_id
          WHERE d.reservation_date=$1 AND
          (r.status IN ('confirmed','arrived','seated','completed') OR
@@ -189,12 +214,12 @@ restaurantRouter.post(
           staffWalkIn ? null : req.user!.id,
           req.user!.id,
           staffWalkIn ? 'walk_in' : 'online',
-          staffWalkIn ? 'confirmed' : 'pending',
+          'confirmed',
           data.contact_name,
           data.contact_email,
           data.contact_phone,
           `DIN-${randomBytes(5).toString('hex').toUpperCase()}`,
-          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
+          null,
         ],
       );
       const r = inserted.rows[0];
@@ -213,10 +238,10 @@ restaurantRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        staffWalkIn ? 'confirmed' : 'pending',
+        'confirmed',
         staffWalkIn
           ? 'Walk-in dining reservation created and confirmed by staff.'
-          : 'Dining time held for 15 minutes. Confirm to complete your booking.',
+          : 'Online dining reservation confirmed.',
         req.user!.id,
       );
       if (staffWalkIn)
