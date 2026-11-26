@@ -6,6 +6,7 @@ export interface User {
   email: string;
   phone_number: string;
   date_of_birth?: string | null;
+  profile_image?: string | null;
 }
 export interface Room {
   id: string;
