@@ -317,6 +317,8 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   assert.equal(dining.filter((r) => r.status === 201).length, 1);
   assert.equal(dining.filter((r) => r.status === 409).length, 1);
   const first = dining.find((r) => r.status === 201)!.body.reservation;
+  assert.equal(first.status, 'confirmed');
+  assert.equal(first.hold_expires_at, null);
   assert.equal(
     (await request(`/reservations/${first.id}/status`, 'PATCH', { status: 'confirmed' }, owner.cookie))
       .status,
@@ -325,7 +327,7 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
   assert.equal(
     (await request(`/reservations/${first.id}/status`, 'PATCH', { status: 'confirmed' }, staff.cookie))
       .status,
-    200,
+    409,
   );
   assert.equal(
     (await request(`/reservations/${first.id}/status`, 'PATCH', { status: 'arrived' }, staff.cookie)).status,
