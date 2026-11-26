@@ -14,6 +14,8 @@ interface Slot {
   start_time: string;
   end_time: string;
   available: boolean;
+  available_seats?: number;
+  max_party_size?: number;
   tables: { capacity: number; available: boolean }[];
 }
 
@@ -337,14 +339,45 @@ export function Dining() {
   const [searchError, setSearchError] = useState('');
   const [searched, setSearched] = useState(false);
   const [availability, setAvailability] = useState<{ slots: Slot[]; settings: Settings } | null>(null);
+  const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const restaurantSettings = useQuery<{ settings: Settings }>('/restaurant/settings');
   const slot = availability?.slots.find((item) => item.start_time === time);
   const timeUnavailable = searched && Boolean(availability) && !slot?.available;
-  const maximumSeats = Math.max(0, ...(availability?.slots[0]?.tables.map((table) => table.capacity) ?? []));
-  const maxGuests = Math.min(availability?.settings.max_guest_per_booking ?? 10, maximumSeats || 10);
+  const settingsMax = restaurantSettings.data?.settings.max_guest_per_booking ?? 10;
+  const slotMax = slot?.max_party_size ?? timeLimit;
+  const maxGuests = time ? Math.max(1, slotMax ?? settingsMax) : settingsMax;
   const guestCount = Number(guests) || 0;
+
+  useEffect(() => {
+    if (!date || !time) {
+      setTimeLimit(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await api<{ slots: Slot[]; settings: Settings }>(
+          `/restaurant/availability?${new URLSearchParams({ date, guests: '1', time })}`,
+        );
+        if (cancelled) return;
+        const match = result.slots.find((item) => item.start_time === time);
+        setTimeLimit(match?.max_party_size ?? null);
+      } catch {
+        if (!cancelled) setTimeLimit(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [date, time]);
+
+  useEffect(() => {
+    if (slotMax != null && guestCount > slotMax) {
+      setGuests(String(Math.max(1, slotMax)));
+    }
+  }, [slotMax, guestCount]);
 
   function clearAvailability() {
     setAvailability(null);
@@ -365,6 +398,8 @@ export function Dining() {
       );
       setAvailability(result);
       setSearched(true);
+      const match = result.slots.find((item) => item.start_time === time);
+      setTimeLimit(match?.max_party_size ?? null);
     } catch (e) {
       setAvailability(null);
       setSearched(true);
@@ -407,7 +442,7 @@ export function Dining() {
   return (
     <div className="min-h-[calc(100vh-160px)] bg-[#f9f3e7]">
       <div className="mb-6 h-[190px] overflow-hidden border border-[#c8a783] bg-[#ead5b8] max-[500px]:h-[140px]">
-        <img className="block h-full w-full object-cover object-[center_53%]" src="/images/restaurant.webp" alt="Hotel restaurant dining room" />
+        <img className="block h-full w-full object-cover object-[center_53%]" src="/images/dining-food.png" alt="Plated dish being served in the restaurant" />
       </div>
       <div className="mx-auto mb-5 flex max-w-[820px] items-baseline justify-between gap-4 max-[500px]:items-start max-[500px]:flex-col">
         <h1 className="m-0 font-['Gelasio'] text-[32px] font-normal leading-[1.15] tracking-[-.5px] text-[#441901]">Reserve a table</h1>
@@ -441,10 +476,23 @@ export function Dining() {
               value={guests}
               disabled={busy || checking}
               onChange={(e) => {
-                setGuests(e.target.value);
+                const next = e.target.value;
+                const capped = maxGuests != null && Number(next) > maxGuests ? String(maxGuests) : next;
+                setGuests(capped);
                 clearAvailability();
               }}
             />
+            {time && slotMax != null ? (
+              <span id="dining-guests-help" className="font-sans text-xs text-[#7d746b]">
+                {slotMax > 0
+                  ? `Max ${slotMax} guest${slotMax === 1 ? '' : 's'} at ${displayTime(time)}`
+                  : `No larger parties open at ${displayTime(time)}`}
+              </span>
+            ) : (
+              <span id="dining-guests-help" className="font-sans text-xs text-[#7d746b]">
+                {settingsMax} guests max · drops for busy times
+              </span>
+            )}
           </label>
           <label className="flex flex-col gap-[7px] font-serif text-sm text-[#54220e] max-[700px]:col-span-full">
             Preferred time
@@ -474,11 +522,11 @@ export function Dining() {
         {restaurantSettings.error && <ErrorBox message={restaurantSettings.error} />}
         <button
           type="button"
-          className="mt-5 min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-wait disabled:bg-[#bba896]"
+          className="mt-5 min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-not-allowed disabled:bg-[#d4c4b0] disabled:text-[#8a7561] disabled:hover:bg-[#d4c4b0]"
           onClick={() => void checkAvailability()}
           disabled={checking || busy || restaurantSettings.loading || !date || !guests || !time}
         >
-          {checking ? 'Checking availability…' : 'Show available times'}
+          Show available times
         </button>
         {searchError && <ErrorBox message={searchError} />}
         {searched && availability && slot?.available && (
@@ -517,6 +565,24 @@ export function Dining() {
           </div>
         ) : null}
       </form>
+      <div className="mx-auto mt-5 max-w-[820px] border border-[#c8a783] bg-[#fff8ee] p-[26px] max-[500px]:p-[19px]">
+        <h2 className="m-0 mb-1 font-['Gelasio'] text-[22px] font-normal text-[#441901]">Restaurant hours</h2>
+        <p className="mb-[14px] font-serif text-sm text-[#70462c]">Kitchen closes 60 minutes before last seating</p>
+        <div className="grid grid-cols-3 gap-[12px] max-[500px]:grid-cols-1">
+          <div className="rounded-[8px] border border-[#e0c9a8] bg-[#f3e6d4] px-4 py-3 text-center">
+            <div className="font-['Crimson_Text'] text-base font-bold text-[#642c14]">Lunch</div>
+            <div className="mt-0.5 font-sans text-sm text-[#7d746b]">11:30 AM – 2:30 PM</div>
+          </div>
+          <div className="rounded-[8px] border border-[#e0c9a8] bg-[#f3e6d4] px-4 py-3 text-center">
+            <div className="font-['Crimson_Text'] text-base font-bold text-[#642c14]">Dinner</div>
+            <div className="mt-0.5 font-sans text-sm text-[#7d746b]">5:30 PM – 9:00 PM</div>
+          </div>
+          <div className="rounded-[8px] border border-[#e0c9a8] bg-[#f3e6d4] px-4 py-3 text-center">
+            <div className="font-['Crimson_Text'] text-base font-bold text-[#642c14]">Last seating</div>
+            <div className="mt-0.5 font-sans text-sm text-[#7d746b]">8:00 PM daily</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
