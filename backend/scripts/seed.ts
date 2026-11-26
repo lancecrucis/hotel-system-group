@@ -251,9 +251,84 @@ try {
     );
   }
   await c.query(
-    "INSERT INTO restaurant_settings(id,max_capacity,opening_time,closing_time,max_guest_per_booking) VALUES(1,40,'08:00','22:00',6) ON CONFLICT(id) DO NOTHING",
+    "INSERT INTO restaurant_settings(id,max_capacity,opening_time,closing_time,max_guest_per_booking) VALUES(1,40,'08:00','22:00',12) ON CONFLICT(id) DO UPDATE SET max_guest_per_booking=12, max_capacity=40, updated_at=now()",
   );
   const guest = (await c.query("SELECT id FROM users WHERE email='guest@example.com'")).rows[0].id;
+
+  // Fixed busy/quiet ladder for the dining demo (real peak occupancy → real max_party_size).
+  await c.query(
+    `DELETE FROM restaurant_reservations WHERE reservation_id IN (
+       SELECT id FROM reservations WHERE reservation_reference LIKE 'DEMO-CROWD-%'
+     )`,
+  );
+  await c.query(`DELETE FROM reservations WHERE reservation_reference LIKE 'DEMO-CROWD-%'`);
+
+  async function seedCrowdBlock(
+    date: string,
+    start: string,
+    end: string,
+    totalGuests: number,
+    tableNames: string[],
+  ) {
+    if (totalGuests <= 0) return;
+    const tables = (
+      await c.query<{ id: string; capacity: number; name: string }>(
+        'SELECT id, capacity, name FROM dining_tables WHERE name = ANY($1::text[]) AND active = true ORDER BY capacity DESC, name',
+        [tableNames],
+      )
+    ).rows;
+    let remaining = totalGuests;
+    for (const table of tables) {
+      if (remaining <= 0) break;
+      const count = Math.min(remaining, table.capacity);
+      const ref = `DEMO-CROWD-${date}-${start.replace(':', '')}-${table.name}`;
+      const inserted = await c.query<{ id: string }>(
+        `INSERT INTO reservations(user_id,reservation_type,status,total_amount,contact_name,contact_email,contact_phone,reservation_reference)
+         VALUES($1,'restaurant','confirmed',0,'Demo Crowd','guest@example.com','+63 917 123 4567',$2)
+         ON CONFLICT(reservation_reference) DO NOTHING RETURNING id`,
+        [guest, ref],
+      );
+      if (!inserted.rowCount) {
+        remaining -= count;
+        continue;
+      }
+      await c.query(
+        `INSERT INTO restaurant_reservations(reservation_id,reservation_date,start_time,end_time,guest_count,special_requests,table_id)
+         VALUES($1,$2,$3,$4,$5,'Demo party for max-party-size ladder.',$6)`,
+        [inserted.rows[0].id, date, start, end, count, table.id],
+      );
+      remaining -= count;
+    }
+  }
+
+  // Keep T12 free so largest free table stays 12; drive max via peak occupancy:
+  // max = min(12, free seats) where free seats = 40 - peak.
+  // 60-min visits, tables clean 30 min after → same tables reusable every 90 min.
+  const busyTables = ['T10', 'T11', 'T05', 'T06', 'T07', 'T08', 'T09', 'T01', 'T02', 'T03', 'T04']; // cap 40
+
+  // 11/27/2026 — walk max 1→9 across the day, then quiet 12 at 21:00.
+  // peak 39→avail 1→max 1 … peak 31→avail 9→max 9.
+  const ladder1127: [string, string, number][] = [
+    ['08:00', '09:00', 39], // max 1
+    ['09:30', '10:30', 38], // max 2
+    ['11:00', '12:00', 37], // max 3
+    ['12:30', '13:30', 36], // max 4
+    ['14:00', '15:00', 35], // max 5
+    ['15:30', '16:30', 34], // max 6
+    ['17:00', '18:00', 33], // max 7
+    ['18:30', '19:30', 32], // max 8
+    ['20:00', '21:00', 31], // max 9 — tables free again 21:30; 21:00 slot is quiet → max 12
+  ];
+  for (const [start, end, guests] of ladder1127) {
+    await seedCrowdBlock('2026-11-27', start, end, guests, busyTables);
+  }
+
+  // 11/28/2026 — one medium rush (max 10), quiet otherwise (max 12)
+  await seedCrowdBlock('2026-11-28', '13:00', '14:00', 30, busyTables);
+
+  // 11/30/2026 — slightly lighter rush (max 11), quiet otherwise (max 12)
+  await seedCrowdBlock('2026-11-30', '11:00', '12:00', 29, busyTables);
+
   for (const [type, ref] of [
     ['hotel', 'DEMO-HTL-001'],
     ['hotel', 'DEMO-HTL-002'],

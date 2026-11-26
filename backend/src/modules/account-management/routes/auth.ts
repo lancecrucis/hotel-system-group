@@ -302,9 +302,35 @@ authRouter.patch(
       throw new HttpError(400, 'Date of birth cannot be in the future.');
     const result = await pool.query(
       `UPDATE users SET first_name=$1,last_name=$2,phone_number=$3,date_of_birth=$4,updated_at=now() WHERE id=$5
-       RETURNING id,role,first_name,last_name,email,phone_number,date_of_birth`,
+       RETURNING id,role,first_name,last_name,email,phone_number,date_of_birth,profile_image`,
       [data.first_name, data.last_name, data.phone_number, data.date_of_birth ?? null, req.user!.id],
     );
+    res.json({ user: result.rows[0] });
+  }),
+);
+// -- PATCH /profile/photo --
+authRouter.patch(
+  '/profile/photo',
+  requireUser,
+  route(async (req, res) => {
+    const { profile_image } = z
+      .object({
+        profile_image: z
+          .string()
+          .max(900_000)
+          .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/)
+          .nullable(),
+      })
+      .parse(req.body);
+
+    const result = await pool.query(
+      `UPDATE users
+       SET profile_image=$1,updated_at=now()
+       WHERE id=$2
+       RETURNING id,role,first_name,last_name,email,phone_number,date_of_birth,profile_image`,
+      [profile_image, req.user!.id],
+    );
+
     res.json({ user: result.rows[0] });
   }),
 );

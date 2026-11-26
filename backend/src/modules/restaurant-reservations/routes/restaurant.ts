@@ -180,6 +180,12 @@ restaurantRouter.get(
         end = clock(m + visitMinutes);
       if (data.date === current.today && start <= current.time) continue;
       const available = settings.max_capacity - (await peakOccupancy(pool, data.date, start, end));
+      const freeTables = tables.filter((table) => tableFree(bookings, table.id, m));
+      const largestFreeTable = freeTables.reduce((max, table) => Math.max(max, table.capacity), 0);
+      const maxPartySize = Math.max(
+        0,
+        Math.min(Number(settings.max_guest_per_booking), largestFreeTable, Math.max(0, available)),
+      );
       const slotTables = tables.map((table) => ({
         ...table,
         available:
@@ -192,6 +198,7 @@ restaurantRouter.get(
         start_time: start,
         end_time: end,
         available_seats: Math.max(0, available),
+        max_party_size: maxPartySize,
         available: slotTables.some((table) => table.available),
         tables: slotTables,
       });
@@ -269,7 +276,7 @@ restaurantRouter.post(
           data.contact_email,
           data.contact_phone,
           `DIN-${randomBytes(5).toString('hex').toUpperCase()}`,
-          null,
+          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
         ],
       );
       const r = inserted.rows[0];
@@ -288,7 +295,7 @@ restaurantRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        'confirmed',
+        staffWalkIn ? 'confirmed' : 'pending',
         staffWalkIn
           ? 'Walk-in dining reservation created and confirmed by staff.'
           : 'Dining reservation confirmed automatically.',

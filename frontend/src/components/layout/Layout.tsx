@@ -9,7 +9,6 @@ import {
   Users,
   History,
   LogOut,
-  UserRound,
   ArrowUpRight,
   UserPlus,
   Sparkles,
@@ -109,7 +108,17 @@ export function Layout() {
                   <NotificationLink />
                   {!staff && (
                     <Link className="flex items-center gap-[7px] whitespace-nowrap text-xs text-[#f3e1c7] hover:text-white max-[500px]:[&>span]:hidden" to="/profile" title="Your profile">
-                      <UserRound size={17} aria-hidden="true" />
+                      {user.profile_image ? (
+                        <img
+                          className="h-7 w-7 rounded-full border border-[#d9985d] object-cover"
+                          src={user.profile_image}
+                          alt=""
+                        />
+                      ) : (
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-[#d9985d] text-xs">
+                          {user.first_name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                       <span>{user.first_name}</span>
                     </Link>
                   )}

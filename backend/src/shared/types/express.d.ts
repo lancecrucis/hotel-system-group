@@ -9,6 +9,7 @@ declare global {
         email: string;
         phone_number: string;
         date_of_birth: string | null;
+        profile_image: string | null;
       };
     }
   }

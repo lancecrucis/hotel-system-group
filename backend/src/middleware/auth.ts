@@ -12,8 +12,10 @@ export const authenticate: RequestHandler = (request, _response, next) => {
   }
   void pool
     .query(
-      `SELECT u.id,u.role,u.first_name,u.last_name,u.email,u.phone_number,u.date_of_birth
-    FROM auth_sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>now()`,
+      `SELECT u.id,u.role,u.first_name,u.last_name,u.email,u.phone_number,u.date_of_birth,u.profile_image
+       FROM auth_sessions s
+       JOIN users u ON u.id=s.user_id
+       WHERE s.token_hash=$1 AND s.expires_at>now()`,
       [tokenHash(token)],
     )
     .then((result) => {
