@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LogIn, LogOut, BedDouble, UtensilsCrossed, Clock, Wallet, Plus } from 'lucide-react';
+import { LogIn, LogOut, BedDouble, UtensilsCrossed, Clock, Wallet, Plus, Sparkles } from 'lucide-react';
 import { useQuery } from '../../../hooks/useQuery';
 import type { Reservation } from '../../../types/models';
 import { PageHeader, ErrorBox, Loading } from '../../../components/ui/common';
@@ -12,6 +12,7 @@ interface Summary {
   in_house: number;
   diners: number;
   receipts: string;
+  needs_cleaning: number;
   today: string;
 }
 export function Overview() {
@@ -23,6 +24,7 @@ export function Overview() {
     { name: 'Departures due', value: s?.departures, icon: LogOut },
     { name: 'Guests in-house', value: s?.in_house, icon: BedDouble },
     { name: 'Dining covers today', value: s?.diners, icon: UtensilsCrossed },
+    { name: 'Rooms needing cleaning', value: s?.needs_cleaning, icon: Sparkles, to: '/housekeeping' },
     { name: 'Awaiting confirmation', value: s?.pending, icon: Clock },
     { name: 'Net receipts today', value: s ? money(s.receipts) : undefined, icon: Wallet },
   ];
@@ -55,18 +57,31 @@ export function Overview() {
           </div>
           {s?.today && <span className="pb-1 text-sm text-[#806348]">{dateLabel(s.today)}</span>}
         </div>
-        <div className="grid grid-cols-3 gap-4 max-[900px]:grid-cols-2 max-[500px]:gap-2.5">
-          {cards.map((c) => (
-            <div key={c.name} className="flex min-h-[122px] items-start justify-between gap-3 rounded-2xl border border-[#e5d4bf] bg-[#fffaf2] p-5 shadow-[0_8px_24px_rgba(84,34,14,.055)] max-[500px]:min-h-[112px] max-[500px]:p-4">
-              <div className="min-w-0">
+        <div className="grid grid-cols-4 gap-4 max-[1100px]:grid-cols-3 max-[900px]:grid-cols-2 max-[500px]:gap-2.5">
+          {cards.map((c) => {
+            const body = (
+              <>
                 <span className="block max-w-[150px] text-xs font-semibold leading-snug text-[#70462c]">{c.name}</span>
                 <strong className="mt-3 block font-['Gelasio'] text-[30px] font-normal tracking-[-.4px] text-[#441901] max-[500px]:mt-2 max-[500px]:text-[25px]">{c.value ?? '—'}</strong>
-              </div>
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f3e1c7] text-[#a64b1c]">
-                <c.icon size={20} aria-hidden="true" />
+                <span className="mt-1 block text-[11px] font-medium text-[#9b6a43]">{c.to ? 'View housekeeping →' : ''}</span>
+              </>
+            );
+            const inner = (
+              <span className="flex min-h-[122px] w-full items-start justify-between gap-3 rounded-2xl border border-[#e5d4bf] bg-[#fffaf2] p-5 shadow-[0_8px_24px_rgba(84,34,14,.055)] max-[500px]:min-h-[112px] max-[500px]:p-4">
+                <span className="min-w-0">{body}</span>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f3e1c7] text-[#a64b1c]">
+                  <c.icon size={20} aria-hidden="true" />
+                </span>
               </span>
-            </div>
-          ))}
+            );
+            return c.to ? (
+              <Link key={c.name} to={c.to} className="no-underline text-inherit">
+                {inner}
+              </Link>
+            ) : (
+              <div key={c.name}>{inner}</div>
+            );
+          })}
         </div>
       </section>
       <section aria-labelledby="today-service-heading">

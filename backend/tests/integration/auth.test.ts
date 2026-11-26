@@ -23,7 +23,7 @@ const request = (base: string) =>
     };
   };
 
-test('auth: full flow — register, verify, login, reset, revoke', async (context) => {
+test('auth: full flow — register, login, reset, revoke', async (context) => {
   const server = createApp().listen(0, '127.0.0.1');
   await once(server, 'listening');
   const req = request(`http://127.0.0.1:${(server.address() as AddressInfo).port}/api`);
@@ -53,9 +53,8 @@ test('auth: full flow — register, verify, login, reset, revoke', async (contex
   // -- REGISTRATION --
   const reg = await req('/auth/register', 'POST', user);
   assert.equal(reg.status, 201, `register: ${JSON.stringify(reg.body)}`);
-  assert.ok(reg.body.message);
+  assert.equal(reg.body.message, 'Account created successfully.');
   assert.ok(!reg.body.user);
-  assert.ok(reg.body.verify_link, 'dev should return verify link');
   assert.equal(reg.cookie, '');
 
   const uid = (await pool.query('SELECT id FROM users WHERE email=$1', [user.email])).rows[0];
@@ -71,18 +70,9 @@ test('auth: full flow — register, verify, login, reset, revoke', async (contex
   // Mismatch
   assert.equal((await req('/auth/register', 'POST', { ...user, email: `x2-${suffix}@x.com`, confirm_password: 'wrong!' })).status, 400);
 
-  // -- LOGIN BEFORE VERIFICATION --
-  assert.equal((await req('/auth/login', 'POST', { email: user.email, password: user.password })).status, 403);
-
-  // -- VERIFY EMAIL --
-  const rawToken = new URL(reg.body.verify_link!).searchParams.get('token')!;
-  assert.ok(rawToken);
-  const verify = await req(`/auth/verify-email?token=${encodeURIComponent(rawToken)}`);
-  assert.equal(verify.status, 200);
-  assert.equal(verify.body.message, 'Email verified. You can now log in.');
-
-  // Reused token
-  assert.equal((await req(`/auth/verify-email?token=${encodeURIComponent(rawToken)}`)).status, 400);
+  // Login is allowed immediately after registration, even if an older account
+  // has not completed optional email verification.
+  await pool.query('UPDATE users SET email_verified_at=NULL WHERE id=$1', [uid.id]);
 
   // -- LOGIN SUCCESS --
   const login = await req('/auth/login', 'POST', { email: user.email, password: user.password });
@@ -123,19 +113,22 @@ test('auth: full flow — register, verify, login, reset, revoke', async (contex
   // Weak reset password
   assert.equal((await req('/auth/reset-password', 'POST', { token: 'bad', password: 'x', confirm_password: 'x' })).status, 400);
 
-  // -- RATE LIMIT ON RESEND (use a fresh unverified user) --
+  // -- RATE LIMIT ON RESEND (use a fresh legacy-style unverified user) --
   const rateEmail = `rate-${suffix}@example.com`;
   await req('/auth/register', 'POST', {
     first_name: 'R', last_name: 'T', email: rateEmail,
     phone_number: '+63 917 123 4567', password: 'Test123!', confirm_password: 'Test123!',
   });
   const rateUid = (await pool.query('SELECT id FROM users WHERE email=$1', [rateEmail])).rows[0];
-  if (rateUid) userIds.push(rateUid.id);
+  if (rateUid) {
+    userIds.push(rateUid.id);
+    await pool.query('UPDATE users SET email_verified_at=NULL WHERE id=$1', [rateUid.id]);
+  }
 
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 3; i++) {
       assert.equal((await req('/auth/resend-verification', 'POST', { email: rateEmail })).status, 200, `resend ${i}`);
     }
-    assert.equal((await req('/auth/resend-verification', 'POST', { email: rateEmail })).status, 429, '3rd resend should be rate-limited');
+    assert.equal((await req('/auth/resend-verification', 'POST', { email: rateEmail })).status, 429, '4th resend should be rate-limited');
 });
 
 test('auth: resend for verified email is harmless', async (context) => {
@@ -157,8 +150,6 @@ test('auth: resend for verified email is harmless', async (context) => {
     phone_number: '+63 917 123 4567', password: 'Test123!', confirm_password: 'Test123!',
   });
   assert.equal(r.status, 201);
-  const token = new URL(r.body.verify_link!).searchParams.get('token')!;
-  await req(`/auth/verify-email?token=${encodeURIComponent(token)}`);
 
   const resend = await req('/auth/resend-verification', 'POST', { email });
   assert.equal(resend.status, 200);

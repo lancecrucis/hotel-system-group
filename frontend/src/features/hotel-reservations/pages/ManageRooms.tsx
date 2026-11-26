@@ -109,7 +109,7 @@ export function ManageRooms() {
             <label>Cancellation notice (hours)<input name="cancellation_notice_hours" type="number" min={0} max={168} required defaultValue={settingsQuery.data.settings.cancellation_notice_hours} /></label>
             <label>No-show grace (minutes)<input name="no_show_grace_minutes" type="number" min={0} max={1440} required defaultValue={settingsQuery.data.settings.no_show_grace_minutes} /></label>
             <label>Room tax (%)<input name="tax_rate" type="number" min={0} max={100} step="0.01" required defaultValue={settingsQuery.data.settings.tax_rate} /></label>
-            <label>Service fee (%)<input name="service_fee_rate" type="number" min={0} max={100} step="0.01" required defaultValue={settingsQuery.data.settings.service_fee_rate} /></label>
+            <label>Hotel service charge (%)<input name="service_fee_rate" type="number" min={0} max={100} step="0.01" required defaultValue={settingsQuery.data.settings.service_fee_rate} /></label>
             <div className="col-span-full max-[500px]:col-span-auto"><button className="w-full rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-3 text-sm font-semibold text-[#fff8ee] transition-colors hover:bg-[#54220e] disabled:cursor-not-allowed disabled:opacity-50" disabled={busy}>{busy ? 'Saving…' : 'Save policies and rates'}</button></div>
           </form>
         </section>

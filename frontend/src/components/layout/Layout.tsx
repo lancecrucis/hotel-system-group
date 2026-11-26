@@ -12,6 +12,8 @@ import {
   UserRound,
   ArrowUpRight,
   UserPlus,
+  Sparkles,
+  BarChart3,
 } from 'lucide-react';
 import { useAuth } from '../../app/providers/AuthContext';
 import { useQuery } from '../../hooks/useQuery';
@@ -145,9 +147,17 @@ export function Layout() {
                 <BedDouble size={16} />
                 Room inventory
               </NavLink>
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/housekeeping">
+                <Sparkles size={16} />
+                Housekeeping
+              </NavLink>
               <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/restaurant">
                 <Settings size={16} />
                 Dining operations
+              </NavLink>
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/reports">
+                <BarChart3 size={16} />
+                Reports
               </NavLink>
               {user.role === 'admin' && (
                 <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/users">

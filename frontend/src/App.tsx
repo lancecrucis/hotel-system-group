@@ -9,6 +9,7 @@ import { Profile } from './features/account-management/pages/Profile';
 import { Users } from './features/account-management/pages/Users';
 import { Rooms } from './features/hotel-reservations/pages/Rooms';
 import { ManageRooms } from './features/hotel-reservations/pages/ManageRooms';
+import { Housekeeping } from './features/hotel-reservations/pages/Housekeeping';
 import { Dining } from './features/restaurant-reservations/pages/Dining';
 import { RestaurantSettings } from './features/restaurant-reservations/pages/RestaurantSettings';
 import { Reservations } from './features/reservation-tracking/pages/Reservations';
@@ -17,6 +18,7 @@ import { Overview } from './features/reservation-tracking/pages/Overview';
 import { Notifications } from './features/reservation-tracking/pages/Notifications';
 import { Activity } from './features/reservation-tracking/pages/Activity';
 import { WalkInReservation } from './features/reservation-tracking/pages/WalkInReservation';
+import { Reports } from './features/reservation-tracking/pages/Reports';
 import { Landing } from './features/landing/pages/Landing';
 
 function Guard({ staff = false, admin = false }: { staff?: boolean; admin?: boolean }) {
@@ -72,8 +74,10 @@ function AppRoutes() {
           <Route path="overview" element={<Overview />} />
           <Route path="walk-in" element={<WalkInReservation />} />
           <Route path="manage/rooms" element={<ManageRooms />} />
+          <Route path="housekeeping" element={<Housekeeping />} />
           <Route path="manage/restaurant" element={<RestaurantSettings />} />
           <Route path="activity" element={<Activity />} />
+          <Route path="reports" element={<Reports />} />
         </Route>
         <Route element={<Guard admin />}>
           <Route path="manage/users" element={<Users />} />
