@@ -474,11 +474,11 @@ export function Dining() {
         {restaurantSettings.error && <ErrorBox message={restaurantSettings.error} />}
         <button
           type="button"
-          className="mt-5 min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-wait disabled:bg-[#bba896]"
+          className="mt-5 min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-not-allowed disabled:bg-[#d4c4b0] disabled:text-[#8a7561] disabled:hover:bg-[#d4c4b0]"
           onClick={() => void checkAvailability()}
           disabled={checking || busy || restaurantSettings.loading || !date || !guests || !time}
         >
-          {checking ? 'Checking availability…' : 'Show available times'}
+          Show available times
         </button>
         {searchError && <ErrorBox message={searchError} />}
         {searched && availability && slot?.available && (
