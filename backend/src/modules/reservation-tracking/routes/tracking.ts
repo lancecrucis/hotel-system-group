@@ -551,8 +551,165 @@ trackingRouter.get(
     (SELECT count(*) FROM reservations WHERE status='checked_in')::integer AS in_house,
     (SELECT coalesce(sum(d.guest_count),0) FROM restaurant_reservations d JOIN reservations r ON r.id=d.reservation_id WHERE d.reservation_date=CURRENT_DATE AND r.status IN ('confirmed','arrived','seated'))::integer AS diners,
     (SELECT coalesce(sum(amount),0) FROM payments WHERE paid_at::date=CURRENT_DATE)-(SELECT coalesce(sum(refund_amount),0) FROM refunds WHERE processed_at::date=CURRENT_DATE) AS receipts,
+    (SELECT count(*) FROM rooms WHERE housekeeping_status IN ('dirty','cleaning'))::integer AS needs_cleaning,
     CURRENT_DATE::text AS today`);
     res.json({ summary: result.rows[0] });
+  }),
+);
+const reportRange = z.object({
+  from: date.default(() => dayOffset(-30)),
+  to: date.default(() => dayOffset(0)),
+});
+function dayOffset(offset: number) {
+  const today = new Date();
+  today.setUTCDate(today.getUTCDate() + offset);
+  return today.toISOString().slice(0, 10);
+}
+trackingRouter.get(
+  '/reports/summary',
+  requireStaff,
+  route(async (req, res) => {
+    const range = reportRange.parse(req.query);
+    if (range.from > range.to) throw new HttpError(400, 'From date must be on or before To date.');
+    const [hotelStatus, restaurantStatus, hotelTotals, restaurantTotals, paymentsByMethod, daily] =
+      await Promise.all([
+        pool.query(
+          `SELECT status,count(*)::integer AS count FROM reservations
+           WHERE reservation_type='hotel' AND created_at::date BETWEEN $1 AND $2
+           GROUP BY status ORDER BY status`,
+          [range.from, range.to],
+        ),
+        pool.query(
+          `SELECT status,count(*)::integer AS count FROM reservations
+           WHERE reservation_type='restaurant' AND created_at::date BETWEEN $1 AND $2
+           GROUP BY status ORDER BY status`,
+          [range.from, range.to],
+        ),
+        pool.query(
+          `SELECT
+             count(*)::integer AS bookings,
+             coalesce(sum(h.check_out - h.check_in),0)::integer AS room_nights,
+             coalesce(sum(r.subtotal_amount),0) AS subtotal,
+             coalesce(sum(r.tax_amount),0) AS tax,
+             coalesce(sum(r.service_fee_amount),0) AS service_fee,
+             coalesce(sum(r.total_amount),0) AS total,
+             coalesce((SELECT sum(p.amount) FROM payments p JOIN reservations pr ON pr.id=p.reservation_id
+               WHERE pr.reservation_type='hotel' AND p.paid_at::date BETWEEN $1 AND $2),0) AS paid,
+             coalesce((SELECT sum(f.refund_amount) FROM refunds f
+               JOIN payments p ON p.id=f.payment_id
+               JOIN reservations pr ON pr.id=p.reservation_id
+               WHERE pr.reservation_type='hotel' AND f.processed_at::date BETWEEN $1 AND $2),0) AS refunded
+           FROM reservations r
+           JOIN hotel_reservations h ON h.reservation_id=r.id
+           WHERE r.reservation_type='hotel' AND r.created_at::date BETWEEN $1 AND $2`,
+          [range.from, range.to],
+        ),
+        pool.query(
+          `SELECT
+             count(*)::integer AS bookings,
+             coalesce(sum(d.guest_count),0)::integer AS covers,
+             count(*) FILTER (WHERE r.status='completed')::integer AS completed,
+             count(*) FILTER (WHERE r.status='no_show')::integer AS no_show,
+             count(*) FILTER (WHERE r.status='cancelled')::integer AS cancelled
+           FROM reservations r
+           JOIN restaurant_reservations d ON d.reservation_id=r.id
+           WHERE r.reservation_type='restaurant' AND r.created_at::date BETWEEN $1 AND $2`,
+          [range.from, range.to],
+        ),
+        pool.query(
+          `SELECT p.payment_method AS method,count(*)::integer AS count,coalesce(sum(p.amount),0) AS amount
+           FROM payments p
+           WHERE p.paid_at::date BETWEEN $1 AND $2
+           GROUP BY p.payment_method ORDER BY p.payment_method`,
+          [range.from, range.to],
+        ),
+        pool.query(
+          `WITH days AS (
+             SELECT generate_series($1::date, $2::date, interval '1 day')::date AS day
+           ),
+           hotel AS (
+             SELECT r.created_at::date AS day, count(*)::int AS n
+             FROM reservations r WHERE r.reservation_type='hotel' AND r.created_at::date BETWEEN $1 AND $2
+             GROUP BY 1
+           ),
+           rest AS (
+             SELECT r.created_at::date AS day, count(*)::int AS n, coalesce(sum(d.guest_count),0)::int AS covers
+             FROM reservations r
+             JOIN restaurant_reservations d ON d.reservation_id=r.id
+             WHERE r.reservation_type='restaurant' AND r.created_at::date BETWEEN $1 AND $2
+             GROUP BY 1
+           ),
+           pay AS (
+             SELECT paid_at::date AS day, coalesce(sum(amount),0) AS amount
+             FROM payments WHERE paid_at::date BETWEEN $1 AND $2 GROUP BY 1
+           )
+           SELECT to_char(days.day,'YYYY-MM-DD') AS day,
+             coalesce(hotel.n,0) AS hotel_bookings,
+             coalesce(rest.n,0) AS restaurant_bookings,
+             coalesce(rest.covers,0) AS covers,
+             coalesce(pay.amount,0) AS payments
+           FROM days
+           LEFT JOIN hotel ON hotel.day=days.day
+           LEFT JOIN rest ON rest.day=days.day
+           LEFT JOIN pay ON pay.day=days.day
+           ORDER BY days.day`,
+          [range.from, range.to],
+        ),
+      ]);
+    const ht = hotelTotals.rows[0];
+    const paid = Number(ht.paid);
+    const refunded = Number(ht.refunded);
+    res.json({
+      range,
+      hotel_by_status: hotelStatus.rows,
+      restaurant_by_status: restaurantStatus.rows,
+      hotel_totals: {
+        bookings: ht.bookings,
+        room_nights: ht.room_nights,
+        subtotal: ht.subtotal,
+        tax: ht.tax,
+        service_fee: ht.service_fee,
+        total: ht.total,
+        paid: ht.paid,
+        refunded: ht.refunded,
+        net: String(paid - refunded),
+      },
+      restaurant_totals: restaurantTotals.rows[0],
+      payments_by_method: paymentsByMethod.rows,
+      daily: daily.rows,
+    });
+  }),
+);
+trackingRouter.get(
+  '/reports/reservations',
+  requireStaff,
+  route(async (req, res) => {
+    const range = reportRange.parse(req.query);
+    if (range.from > range.to) throw new HttpError(400, 'From date must be on or before To date.');
+    const result = await pool.query(
+      `${reservationSelect}
+       WHERE r.created_at::date BETWEEN $1 AND $2
+       ORDER BY r.created_at DESC LIMIT 500`,
+      [range.from, range.to],
+    );
+    res.json({ reservations: result.rows });
+  }),
+);
+trackingRouter.get(
+  '/reports/payments',
+  requireStaff,
+  route(async (req, res) => {
+    const range = reportRange.parse(req.query);
+    if (range.from > range.to) throw new HttpError(400, 'From date must be on or before To date.');
+    const result = await pool.query(
+      `SELECT p.*, r.reservation_reference, r.reservation_type
+       FROM payments p
+       JOIN reservations r ON r.id=p.reservation_id
+       WHERE p.paid_at::date BETWEEN $1 AND $2
+       ORDER BY p.paid_at DESC LIMIT 500`,
+      [range.from, range.to],
+    );
+    res.json({ payments: result.rows });
   }),
 );
 trackingRouter.get(

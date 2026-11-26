@@ -30,7 +30,7 @@ export function Reservations() {
               : 'Search and manage hotel stays and dining reservations.'}
           </p>
         </div>
-        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] no-underline transition-colors hover:bg-[#54220e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] max-[650px]:w-full" to="/rooms">
+        <Link className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[#642c14] bg-[#642c14] px-5 py-2.5 text-sm font-semibold text-[#fff8ee] no-underline transition-colors hover:bg-[#54220e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b4d28] max-[650px]:w-full" to={user!.role === 'customer' ? '/rooms' : '/walk-in'}>
           <Plus size={17} aria-hidden="true" />
           {user!.role === 'customer' ? 'New booking' : 'New walk-in'}
         </Link>

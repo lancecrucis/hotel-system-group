@@ -131,7 +131,7 @@ Use these only on your own machine with the demo data.
 6. Open your booking under **All reservations**.
 7. Click **Check in**, then **Record payment**, then **Check out**.
    - Checkout refuses until the balance is fully paid. That is on purpose.
-8. **For the restaurant:** book a table, confirm it, then as staff click
+8. **For the restaurant:** book a table (confirmed immediately), then as staff click
    **Mark arrived → Seat guests → Complete visit**.
 
 **To see a refund:** record a hotel payment first, cancel the booking (or finish the stay), then record a refund against that original payment.
@@ -143,6 +143,7 @@ Use these only on your own machine with the demo data.
 **Bookings**
 
 - Available online room bookings are confirmed immediately; staff do not need to approve them.
+- Available online dining bookings are also confirmed immediately (no guest hold step).
 - Confirming a room booking does not require any payment.
 - Hotel stays are **1 to 30 nights**.
 - Check-in is from **3 PM**, check-out by **11 AM**.
@@ -170,7 +171,9 @@ Use these only on your own machine with the demo data.
 - Password reset links appear **on screen** in local development and expire after 15 minutes.
 - Room photos are **URLs, not uploads**.
 - Lists stop at **500** reservations/users and **200** notifications/activity entries.
-- No housekeeping module, no multi-hotel support, no Booking.com/Agoda integration.
+- Staff have a **Housekeeping** queue (dirty → cleaning → clean → inspected). Check-in requires clean or inspected.
+- Staff have a **Reports** page (date range, status breakdown, revenue, CSV export).
+- No multi-hotel support, no Booking.com/Agoda integration, no online card gateway, no restaurant POS/floor plan, no waitlist.
 - Prices display in **PHP (₱)**. To change currency, edit `frontend/src/utils/format.ts`.
 - Dates and times use the **Asia/Taipei** timezone.
 
@@ -206,9 +209,9 @@ The four features repeat the same pattern. Learn it once, and every feature make
 | Member | Feature folder | Handles |
 | --- | --- | --- |
 | 1 | `account-management` | Login, sessions, profiles, roles |
-| 2 | `hotel-reservations` | Rooms, availability, hotel bookings |
+| 2 | `hotel-reservations` | Rooms, availability, hotel bookings, housekeeping status |
 | 3 | `restaurant-reservations` | Dining availability, tables, capacity |
-| 4 | `reservation-tracking` | Statuses, history, payments, refunds, notifications, dashboard |
+| 4 | `reservation-tracking` | Statuses, history, payments, refunds, notifications, dashboard, reports |
 
 **Ask the group before changing:**
 

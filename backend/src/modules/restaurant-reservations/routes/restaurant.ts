@@ -260,12 +260,11 @@ restaurantRouter.post(
         throw new HttpError(409, 'This time slot has filled up. Choose another time.');
       const inserted = await c.query(
         `INSERT INTO reservations(user_id,created_by,booking_source,reservation_type,status,total_amount,contact_name,contact_email,contact_phone,reservation_reference,hold_expires_at)
-      VALUES($1,$2,$3,'restaurant',$4,0,$5,$6,$7,$8,$9) RETURNING *`,
+      VALUES($1,$2,$3,'restaurant','confirmed',0,$4,$5,$6,$7,$8) RETURNING *`,
         [
           staffWalkIn ? null : req.user!.id,
           req.user!.id,
           staffWalkIn ? 'walk_in' : 'online',
-          staffWalkIn ? 'confirmed' : 'pending',
           data.contact_name,
           data.contact_email,
           data.contact_phone,
@@ -292,7 +291,7 @@ restaurantRouter.post(
         staffWalkIn ? 'confirmed' : 'pending',
         staffWalkIn
           ? 'Walk-in dining reservation created and confirmed by staff.'
-          : 'Dining time held for 15 minutes. Confirm to complete the booking.',
+          : 'Dining reservation confirmed automatically.',
         req.user!.id,
       );
       if (staffWalkIn)

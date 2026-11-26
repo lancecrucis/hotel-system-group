@@ -71,7 +71,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
         setBusy(false);
         return;
       }
-      const result = await api<{ user: User; message?: string; verify_link?: string }>(
+      const result = await api<{ user?: User; message?: string }>(
         `/auth/${register ? 'register' : 'login'}`,
         send('POST', {
           ...fields,
@@ -79,10 +79,9 @@ export function AuthPage({ register = false }: { register?: boolean }) {
           ...(register ? { password: submittedPassword, confirm_password: submittedConfirm, phone_number: submittedPhone } : { password: submittedPassword, remember_me: remember }),
         }),
       );
-      if (register && result.message) {
-        setSuccess(result.message + (result.verify_link ? ' (Dev links shown below)' : ''));
-        if (result.verify_link) setSuccess((s) => s + '\n' + result.verify_link);
-      } else {
+      if (register) {
+        setSuccess(result.message ?? 'Account created successfully. You can now log in.');
+      } else if (result.user) {
         setUser(result.user);
         navigate(location.state?.from ?? (result.user.role === 'customer' ? '/rooms' : '/overview'), {
           replace: true,

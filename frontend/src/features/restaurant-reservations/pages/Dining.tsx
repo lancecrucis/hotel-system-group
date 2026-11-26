@@ -470,33 +470,6 @@ export function Dining() {
               <span id="dining-time-help" className="font-sans text-xs text-[#7d746b]">Times are offered every 30 minutes.</span>
             )}
           </label>
-          <label className="flex flex-col gap-[7px] font-serif text-sm text-[#54220e] max-[700px]:col-span-full">
-            Preferred time
-            <select
-              className={`!min-h-[44px] !rounded-[10px] !border !px-4 !py-2 !font-sans !text-sm focus:!outline-none focus:!ring-2 ${timeUnavailable ? '!border-[#b42318] !bg-[#fff1f0] !text-[#8f1d14] focus:!border-[#b42318] focus:!ring-[#b42318]/20' : '!border-[#b99673] !bg-transparent !text-[#54220e] focus:!border-[#642c14] focus:!ring-[#642c14]/20'}`}
-              required
-              value={time}
-              aria-invalid={timeUnavailable}
-              aria-describedby={timeUnavailable ? 'dining-time-error' : 'dining-time-help'}
-              disabled={busy || checking || restaurantSettings.loading || !restaurantSettings.data}
-              onChange={(e) => {
-                setTime(e.target.value);
-                clearAvailability();
-              }}
-            >
-              <option value="" disabled>Choose a time</option>
-              {restaurantSettings.data && startTimes(restaurantSettings.data.settings.opening_time, restaurantSettings.data.settings.closing_time).map((option) => (
-                <option key={option} value={option}>{displayTime(option)} ({option})</option>
-              ))}
-            </select>
-            {timeUnavailable ? (
-              <span id="dining-time-error" className="font-sans text-xs font-medium text-[#b42318]" role="alert">
-                Fully booked at {displayTime(time)} ({time}). Choose another time, then check again.
-              </span>
-            ) : (
-              <span id="dining-time-help" className="font-sans text-xs text-[#7d746b]">Times are offered every 30 minutes.</span>
-            )}
-          </label>
         </div>
         {restaurantSettings.error && <ErrorBox message={restaurantSettings.error} />}
         <button
@@ -530,7 +503,7 @@ export function Dining() {
               <ContactFields />
             </div>
             <div className="mt-6 flex flex-col items-stretch gap-3">
-              <span className="text-xs text-[#70462c]">Your reservation is confirmed when you book.</span>
+              <span className="text-xs text-[#70462c]">Your table is confirmed as soon as you reserve. Pay at the restaurant when you arrive.</span>
               <button className="min-h-11 w-full rounded-[9px] border-0 bg-[#642c14] px-4 py-2 font-['Crimson_Text'] text-xl font-bold text-[#fff8ed] hover:bg-[#54220e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#642c14] disabled:cursor-not-allowed disabled:bg-[#bba896]" disabled={busy || !slot?.available || !date || !guests}>
                 {busy ? 'Booking your table…' : 'Reserve table'}
               </button>
