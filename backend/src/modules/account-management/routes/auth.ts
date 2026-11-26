@@ -90,26 +90,14 @@ authRouter.post(
     if (existing.rows.length > 0)
       throw new HttpError(409, 'An account with this email already exists.');
 
-    const result = await pool.query(
-      `INSERT INTO users(first_name,last_name,email,password_hash,phone_number,date_of_birth)
-       VALUES($1,$2,$3,$4,$5,$6)
-       RETURNING id,role,first_name,last_name,email,phone_number,date_of_birth,email_verified_at`,
+    await pool.query(
+      `INSERT INTO users(first_name,last_name,email,password_hash,phone_number,date_of_birth,email_verified_at)
+       VALUES($1,$2,$3,$4,$5,$6,now())`,
       [data.first_name, data.last_name, data.email, await hashPassword(data.password), data.phone_number, data.date_of_birth ?? null],
     );
 
-    const user = result.rows[0];
-
-    const verifyToken = randomBytes(32).toString('hex');
-    await pool.query(
-      "INSERT INTO email_verification_tokens(token_hash,user_id,expires_at) VALUES($1,$2,now()+interval '1 hour')",
-      [tokenHash(verifyToken), user.id],
-    );
-
-    sendVerificationEmail(user.email, verifyToken).catch((err) => console.error('[EMAIL] Failed:', err.message));
-
     res.status(201).json({
-      message: 'Account created. Please check your email to verify your address before logging in.',
-      ...(env.NODE_ENV !== 'production' ? { verify_link: `${env.CLIENT_ORIGIN}/verify-email?token=${verifyToken}` } : {}),
+      message: 'Account created successfully.',
     });
   }),
 );
@@ -138,9 +126,6 @@ authRouter.post(
       : false;
 
     if (!user || !valid) throw new HttpError(401, 'Incorrect email or password.');
-
-    if (!user.email_verified_at)
-      throw new HttpError(403, 'Please verify your email address before logging in. Check your inbox for a verification link.');
 
     await session(user.id, res, data.remember_me);
     const { password_hash: _password, ...safe } = user;

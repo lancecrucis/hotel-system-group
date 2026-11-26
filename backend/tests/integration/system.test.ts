@@ -65,11 +65,8 @@ test('real PostgreSQL workflows: auth, concurrency, inventory, capacity, status,
       phone_number: '+63 917 123 4567',
     });
     assert.equal(r.status, 201, `register ${name}: ${JSON.stringify(r.body)}`);
-    // Registration no longer returns user or a session — verify email, then log in.
-    const verifyToken = new URL(r.body.verify_link).searchParams.get('token');
-    assert.ok(verifyToken, `register ${name} should return verify_link`);
-    const verified = await request(`/auth/verify-email?token=${encodeURIComponent(verifyToken!)}`);
-    assert.equal(verified.status, 200, `verify ${name}: ${JSON.stringify(verified.body)}`);
+    // Registration creates the account without logging the user in.
+    assert.equal(r.cookie, '');
     const login = await request('/auth/login', 'POST', { email, password });
     assert.equal(login.status, 200, `login ${name}: ${JSON.stringify(login.body)}`);
     assert.equal(login.body.user.role, 'customer');
