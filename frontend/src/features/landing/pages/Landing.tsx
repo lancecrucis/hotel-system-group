@@ -136,11 +136,11 @@ export function Landing() {
   const openHours = settings.data?.settings;
 
   return (
-    <div className="bg-[#f6f2eb] font-sans text-[#54220e]" id="top">
+    <div className="bg-[#f4f1ec] font-sans text-[#1e2d4a]" id="top">
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
-      <section className="relative flex min-h-[calc(100vh-93px)] items-end overflow-hidden bg-[#5e3a20] text-[#f3e1c7]">
+      <section className="relative flex min-h-[calc(100vh-93px)] items-end overflow-hidden bg-[#1e2d4a] text-[#f4f1ec]">
         <div className="absolute inset-0">
           <img
             className="h-full w-full object-cover object-center"
@@ -151,42 +151,42 @@ export function Landing() {
             fetchPriority="high"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#351506]/90 via-[#54220e]/25 to-[#351506]/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121a2c]/90 via-[#1e2d4a]/30 to-[#121a2c]/15" />
         <div className="relative mx-auto w-full max-w-[1280px] px-12 pb-[100px] pt-[180px] max-[900px]:px-[22px] max-[900px]:pb-[88px] max-[640px]:pt-[140px]">
           <div className="max-w-[680px]">
-            <span className="mb-5 inline-block font-serif text-[15px] font-bold uppercase tracking-[.2em] text-[#f3e1c7]">Tagaytay Ridge · Est. 1998</span>
-            <h1 className="mb-5 font-['Gelasio'] text-[clamp(2.75rem,6vw,5.5rem)] font-normal leading-[1.02] tracking-[-.035em] text-[#fff5e6]">
+            <span className="mb-5 inline-block font-serif text-[15px] font-bold uppercase tracking-[.2em] text-[#d4c4a0]">Tagaytay Ridge · Est. 1998</span>
+            <h1 className="mb-5 font-['Gelasio'] text-[clamp(2.75rem,6vw,5.5rem)] font-normal leading-[1.02] tracking-[-.035em] text-[#f7f4ef]">
               Stay where comfort feels like home
             </h1>
-            <p className="mb-7 max-w-[580px] text-[17px] leading-[1.75] text-[#fff5e6]/85">
+            <p className="mb-7 max-w-[580px] text-[17px] leading-[1.75] text-[#f7f4ef]/85">
               {HOTEL_NAME} is a boutique hotel and restaurant where warm Filipino hospitality meets
               considered, contemporary comfort. Rooms that open to the garden, and a table that is
               always yours.
             </p>
             <div className="flex flex-wrap gap-3.5 max-[640px]:[&>a]:w-full">
-              <Link className="inline-flex items-center gap-2 bg-[#b8763c] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#a76530]" to="/rooms">
+              <Link className="inline-flex items-center gap-2 bg-[#6b4423] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#5a381c]" to="/rooms">
                 Find a Room <ArrowRight size={15} />
               </Link>
-              <Link className="border border-[#f3e1c7]/70 px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/dining">
+              <Link className="border border-[#d4c4a0]/70 px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-[#d4c4a0] no-underline hover:bg-white/10" to="/dining">
                 Book a Table
               </Link>
             </div>
             <dl className="mt-14 flex max-w-[560px] flex-wrap gap-x-[34px] gap-y-4 border-t border-white/20 pt-[26px]">
               <div>
-                <dt className="font-['Gelasio'] text-[26px] text-[#fff5e6]">{rooms.data?.rooms.length ? `${rooms.data.rooms.length}` : '6'}</dt>
-                <dd className="mt-1 text-[12px] text-[#fff5e6]/75">Rooms &amp; suites</dd>
+                <dt className="font-['Gelasio'] text-[26px] text-[#f7f4ef]">{rooms.data?.rooms.length ? `${rooms.data.rooms.length}` : '6'}</dt>
+                <dd className="mt-1 text-[12px] text-[#f7f4ef]/75">Rooms &amp; suites</dd>
               </div>
               <div>
-                <dt className="font-['Gelasio'] text-[26px] text-[#fff5e6]">3 PM</dt>
-                <dd className="mt-1 text-[12px] text-[#fff5e6]/75">Check-in</dd>
+                <dt className="font-['Gelasio'] text-[26px] text-[#f7f4ef]">3 PM</dt>
+                <dd className="mt-1 text-[12px] text-[#f7f4ef]/75">Check-in</dd>
               </div>
               <div>
-                <dt className="font-['Gelasio'] text-[26px] text-[#fff5e6]">
+                <dt className="font-['Gelasio'] text-[26px] text-[#f7f4ef]">
                   {openHours
                     ? `${openHours.opening_time.slice(0, 5)}–${openHours.closing_time.slice(0, 5)}`
                     : '08:00–22:00'}
                 </dt>
-                <dd className="mt-1 text-[12px] text-[#fff5e6]/75">Restaurant hours</dd>
+                <dd className="mt-1 text-[12px] text-[#f7f4ef]/75">Restaurant hours</dd>
               </div>
             </dl>
           </div>
@@ -194,14 +194,14 @@ export function Landing() {
       </section>
 
       {/* ---------------- rooms ---------------- */}
-      <section className="bg-[#f6f2eb] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
+      <section className="bg-[#f4f1ec] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
-              <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#a64b1c]">Accommodation</span>
-              <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#441901] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
+              <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#6b4423]">Accommodation</span>
+              <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#1e2d4a] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
             </div>
-            <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#625b51] no-underline" to="/rooms">
+            <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#5a6578] no-underline" to="/rooms">
               View all rooms
             </Link>
           </div>
@@ -209,17 +209,17 @@ export function Landing() {
           <div className="grid grid-cols-3 gap-[30px] max-[1080px]:grid-cols-2 max-[640px]:grid-cols-1">
             {cards.map((card, index) => (
               <article
-                className={`flex flex-col border border-[#c8a783] bg-[#fff8ee] transition hover:-translate-y-1.5 hover:border-[#9b623e] hover:shadow-[0_22px_44px_rgba(55,24,8,.12)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
+                className={`flex flex-col border border-[#d4c4b0] bg-[#faf9f7] transition hover:-translate-y-1.5 hover:border-[#6b4423] hover:shadow-[0_22px_44px_rgba(30,45,74,.12)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
                 key={card.type}
               >
-                <figure className="relative aspect-[4/3] overflow-hidden bg-[#eee5d8]">
+                <figure className="relative aspect-[4/3] overflow-hidden bg-[#e8e4de]">
                   <img className="h-full w-full object-cover" src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
-                  <figcaption className="absolute bottom-0 left-0 bg-[#54220e]/90 px-[15px] py-2 font-serif text-[13px] font-bold uppercase tracking-[.12em] text-white">{card.type}</figcaption>
+                  <figcaption className="absolute bottom-0 left-0 bg-[#1e2d4a]/90 px-[15px] py-2 font-serif text-[13px] font-bold uppercase tracking-[.12em] text-white">{card.type}</figcaption>
                 </figure>
                 <div className="flex flex-1 flex-col p-[26px] pb-7">
-                  <h3 className="font-serif text-[23px] font-normal">{card.type}</h3>
-                  <p className="mb-5 flex-1 text-[13.5px] leading-[1.65] text-[#625b51]">{card.description}</p>
-                  <div className="mb-5 flex flex-wrap gap-x-4 gap-y-[7px] border-t border-[#ded6c9] pt-4 text-[11.5px] text-[#625b51]">
+                  <h3 className="font-serif text-[23px] font-normal text-[#1e2d4a]">{card.type}</h3>
+                  <p className="mb-5 flex-1 text-[13.5px] leading-[1.65] text-[#5a6578]">{card.description}</p>
+                  <div className="mb-5 flex flex-wrap gap-x-4 gap-y-[7px] border-t border-[#e4dfd7] pt-4 text-[11.5px] text-[#5a6578]">
                     <span className="inline-flex items-center gap-1.5">
                       <Users size={13} /> {card.capacity} guests
                     </span>
@@ -239,10 +239,10 @@ export function Landing() {
                   </div>
                   <div className="flex items-end justify-between gap-4">
                     <span className="flex flex-col gap-0.5">
-                      <strong className="font-serif text-[21px] font-normal">{money(card.price)}</strong>
-                      <small className="text-[10px] uppercase tracking-[.16em] text-[#625b51]">per night</small>
+                      <strong className="font-serif text-[21px] font-normal text-[#1e2d4a]">{money(card.price)}</strong>
+                      <small className="text-[10px] uppercase tracking-[.16em] text-[#5a6578]">per night</small>
                     </span>
-                    <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#625b51] no-underline" to="/rooms">
+                    <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#5a6578] no-underline" to="/rooms">
                       Reserve
                     </Link>
                   </div>
@@ -250,7 +250,7 @@ export function Landing() {
               </article>
             ))}
           </div>
-          <p className="mt-[34px] text-[12.5px] text-[#625b51]">
+          <p className="mt-[34px] text-[12.5px] text-[#5a6578]">
             Rates are per night. Deluxe rooms and suites include breakfast; Standard rooms do not.
             Availability and final pricing are confirmed when you book.
           </p>
@@ -258,12 +258,12 @@ export function Landing() {
       </section>
 
       {/* ---------------- restaurant ---------------- */}
-      <section className="relative overflow-hidden bg-[#54220e] px-0 py-[110px] text-[#f3e1c7] max-[900px]:py-[76px]" id="restaurant">
+      <section className="relative overflow-hidden bg-[#1e2d4a] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="restaurant">
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#e8bd91]">The Restaurant</span>
-            <h2 className="font-['Gelasio'] text-[46px] font-normal leading-[1.1] text-[#fff5e6] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
-            <p className="max-w-[470px] text-[16px] leading-[1.8] text-[#fff5e6]/80">
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#d4c4a0]">The Restaurant</span>
+            <h2 className="font-['Gelasio'] text-[46px] font-normal leading-[1.1] text-[#f7f4ef] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
+            <p className="max-w-[470px] text-[16px] leading-[1.8] text-[#f7f4ef]/80">
               Our kitchen cooks with what the season gives us — highland vegetables, herbs from the
               terrace, and fish brought in each morning. Breakfast, lunch, and dinner are served in a
               light-filled room that opens onto the garden.
@@ -286,7 +286,7 @@ export function Landing() {
                 <span>Smart casual</span>
               </li>
             </ul>
-            <Link className="inline-flex items-center gap-2 bg-[#b8763c] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#a76530]" to="/dining">
+            <Link className="inline-flex items-center gap-2 bg-[#6b4423] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#5a381c]" to="/dining">
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
@@ -303,44 +303,44 @@ export function Landing() {
       </section>
 
       {/* ---------------- contact ---------------- */}
-      <section className="bg-[#efe8df] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
+      <section className="bg-[#ebe6df] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#a64b1c]">Contact Us</span>
-            <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#441901] max-[640px]:text-[34px]">We would love to hear from you</h2>
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#6b4423]">Contact Us</span>
+            <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#1e2d4a] max-[640px]:text-[34px]">We would love to hear from you</h2>
             <dl className="mt-[34px] grid">
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Address</dt>
                 <dd>88 Illustrada Avenue, Tagaytay Ridge, Cavite 4120</dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Phone</dt>
                 <dd>
                   <a href="tel:+639175550142">+63 917 555 0142</a>
                 </dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Email</dt>
                 <dd>
                   <a href="mailto:stay@lailustrada.example">stay@lailustrada.example</a>
                 </dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#ded6c9] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Front desk</dt>
                 <dd>Open 24 hours, every day</dd>
               </div>
             </dl>
           </div>
 
-          <div className="border border-[#d4c4b0] bg-[#faf7f2] px-10 py-11 max-[900px]:px-[26px]">
-            <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#441901]">Plan your visit</h3>
+          <div className="border border-[#d4c4b0] bg-[#faf9f7] px-10 py-11 max-[900px]:px-[26px]">
+            <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#1e2d4a]">Plan your visit</h3>
             <p>
               Booking takes about two minutes. Sign in with your account, choose your dates, and
               you will have a confirmation reference right away.
             </p>
             <div className="mb-[30px] grid">
-              <div className="flex items-center gap-4 border-t border-[#ded6c9] py-4">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#eee5d8] text-[#b08d57]">
+              <div className="flex items-center gap-4 border-t border-[#e4dfd7] py-4">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#ebe6df] text-[#6b4423]">
                   <BedDouble size={17} />
                 </span>
                 <div>
@@ -348,8 +348,8 @@ export function Landing() {
                   <span>Search live availability and nightly rates</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-[#ded6c9] py-4 last:border-b">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#eee5d8] text-[#b08d57]">
+              <div className="flex items-center gap-4 border-t border-[#e4dfd7] py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#ebe6df] text-[#6b4423]">
                   <CalendarCheck size={17} />
                 </span>
                 <div>
@@ -357,8 +357,8 @@ export function Landing() {
                   <span>Lunch and dinner, every day of the week</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-[#ded6c9] py-4 last:border-b">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#eee5d8] text-[#b08d57]">
+              <div className="flex items-center gap-4 border-t border-[#e4dfd7] py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#ebe6df] text-[#6b4423]">
                   <MessageCircle size={17} />
                 </span>
                 <div>
@@ -367,10 +367,10 @@ export function Landing() {
                 </div>
               </div>
             </div>
-            <Link className="inline-flex items-center gap-2 bg-[#16211b] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
+            <Link className="inline-flex items-center gap-2 bg-[#1e2d4a] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
               Start a Booking <ArrowRight size={15} />
             </Link>
-            <p className="mt-5 text-[11px] leading-[1.6] text-[#625b51]">
+            <p className="mt-5 text-[11px] leading-[1.6] text-[#5a6578]">
               New here? <Link to="/register">Create an account</Link> first, or{' '}
               <Link to="/login">sign in</Link> if you already have one.
             </p>
@@ -379,21 +379,21 @@ export function Landing() {
       </section>
 
       {/* ---------------- footer ---------------- */}
-      <footer className="bg-[#351506] px-0 pt-[76px] text-[#f3e1c7]/80">
+      <footer className="bg-[#121a2c] px-0 pt-[76px] text-[#f4f1ec]/80">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-14 pb-[60px] max-[900px]:grid-cols-1 max-[900px]:gap-[38px] max-[900px]:pb-11">
             <div>
-              <span className="flex flex-col text-[#f3e1c7]">
+              <span className="flex flex-col text-[#f4f1ec]">
                 <span className="font-serif text-[21px] tracking-[.08em]">LA Illustrada</span>
-                <span className="text-[9px] uppercase tracking-[.28em] text-[#e8bd91]">Hotel &amp; Restaurant</span>
+                <span className="text-[9px] uppercase tracking-[.28em] text-[#d4c4a0]">Hotel &amp; Restaurant</span>
               </span>
               <p className="max-w-[330px] text-[13px] leading-[1.75] text-white/60">
                 A boutique hotel and restaurant on the Tagaytay ridge, welcoming guests since 1998.
               </p>
             </div>
             <div>
-              <h4 className="mb-4 font-serif text-xl font-bold text-[#f3e1c7]">Explore</h4>
-              <ul className="m-0 list-none space-y-2 p-0 text-[14px] text-[#f3e1c7]/80">
+              <h4 className="mb-4 font-serif text-xl font-bold text-[#f4f1ec]">Explore</h4>
+              <ul className="m-0 list-none space-y-2 p-0 text-[14px] text-[#f4f1ec]/80">
                 <li>
                   <Link to="/rooms">Rooms &amp; suites</Link>
                 </li>
@@ -406,8 +406,8 @@ export function Landing() {
               </ul>
             </div>
             <div>
-              <h4 className="mb-4 font-serif text-xl font-bold text-[#f3e1c7]">Guest access</h4>
-              <ul className="m-0 list-none space-y-2 p-0 text-[14px] text-[#f3e1c7]/80">
+              <h4 className="mb-4 font-serif text-xl font-bold text-[#f4f1ec]">Guest access</h4>
+              <ul className="m-0 list-none space-y-2 p-0 text-[14px] text-[#f4f1ec]/80">
                 <li>
                   <Link to="/login">Login</Link>
                 </li>
