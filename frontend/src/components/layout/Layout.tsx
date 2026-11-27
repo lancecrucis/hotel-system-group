@@ -26,7 +26,7 @@ function NotificationLink() {
   return (
     <NavLink className="relative p-2 text-[#f3e1c7] transition-colors hover:text-white" to="/notifications" aria-label="Notifications" title="Notifications">
       <Bell size={20} />
-      {count > 0 && <span className="absolute -right-0.5 top-0 min-w-[15px] rounded-full bg-[#b8763c] px-1 py-px text-center text-[9px] text-white">{count}</span>}
+      {count > 0 && <span className="absolute -right-0.5 top-0 min-w-[15px] rounded-full bg-[#b08d57] px-1 py-px text-center text-[9px] text-white">{count}</span>}
     </NavLink>
   );
 }
@@ -51,16 +51,20 @@ export function Layout() {
             text-[#f8ead5]
         ">
           <div className="mx-auto flex h-full w-full items-center justify-between gap-4 px-[clamp(.75rem,5vw,14.5rem)] max-[800px]:gap-3 max-[800px]:px-4">
-            <Link className="flex w-[clamp(8rem,14vw,14.6875rem)] min-w-0 shrink items-center justify-center no-underline max-[600px]:justify-start" to="/" aria-label="La Illustrada Hotel home">
-              <img className="block w-[clamp(7.5rem,10.2vw,10.625rem)] max-[600px]:w-[clamp(7.25rem,34vw,9rem)]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="La Illustrada Hotel" />
-            </Link>
+            <div className="flex min-w-0 items-center gap-4">
+              <Link className="flex w-[clamp(8rem,14vw,14.6875rem)] min-w-0 shrink items-center justify-center no-underline max-[600px]:justify-start" to="/" aria-label="La Illustrada Hotel home">
+                <img className="block w-[clamp(7.5rem,10.2vw,10.625rem)] max-[600px]:w-[clamp(7.25rem,34vw,9rem)]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="La Illustrada Hotel" />
+              </Link>
+              <Link className="shrink-0 whitespace-nowrap bg-[#b08d57] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline hover:bg-[#9a7848] max-[800px]:hidden" to="/rooms">Book Now</Link>
+              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white max-[800px]:hidden" to="/login">Login</Link>
+            </div>
             <nav className="flex min-w-0 flex-1 items-center justify-center gap-[clamp(.75rem,3.25vw,3.4375rem)] max-[800px]:hidden" aria-label="Hotel navigation">
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6] underline underline-offset-4" to="/">Home</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#rooms">Rooms</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#restaurant">Restaurant</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#contact">Contact Us</Link>
             </nav>
-            <Link className="shrink-0 whitespace-nowrap bg-[#c1844c] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline" to="/rooms">Book Now</Link>
+            <div className="w-0 max-[800px]:w-auto" aria-hidden="true" />
           </div>
         </header>
         <main className={`relative flex ${isAuthPage ? 'min-h-[calc(100svh-clamp(4.5rem,8vw,5.8125rem))] items-center py-3' : 'min-h-[calc(100vh-93px)] pt-[clamp(2.5rem,5.2vw,5.4375rem)] max-[600px]:min-h-[calc(100vh-76px)] max-[600px]:pt-10'} w-full justify-center overflow-x-hidden overflow-y-auto px-[clamp(1rem,4vw,4rem)] pb-4 max-[600px]:px-4`}>
@@ -75,20 +79,32 @@ export function Layout() {
   return (
     <div className="min-h-screen">
       <div className="min-w-0 w-full">
-        <header className="sticky top-0 z-20 border-b border-[#7b482d] bg-[#54220e] text-[#f3e1c7] shadow-[0_4px_18px_rgba(55,24,8,.12)]">
+        <header className="sticky top-0 z-20 border-b border-[#3a4f6f] bg-[#1e2d4a] text-[#f3e1c7] shadow-[0_4px_18px_rgba(30,45,74,.18)]">
           <div className="mx-auto grid min-h-[76px] max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-5 px-9 py-3 max-[1200px]:gap-4 max-[1200px]:px-7 max-[800px]:grid-cols-[1fr_auto] max-[800px]:gap-3 max-[800px]:px-5 max-[500px]:gap-x-2.5 max-[500px]:gap-y-2.5 max-[500px]:p-3">
-            <Link className="flex items-center gap-[11px] whitespace-nowrap font-serif text-[18px] font-bold tracking-wide text-[#f3e1c7] no-underline max-[1200px]:text-[15px] max-[500px]:gap-[7px] max-[500px]:text-xs" to={staff ? '/overview' : '/rooms'}>
-              <img className="block w-[clamp(7.5rem,13vw,10.625rem)] max-[500px]:w-[7.25rem]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="LA Illustrada Hotel" />
-            </Link>
+            <div className="flex min-w-0 items-center gap-3 max-[1200px]:gap-2 max-[500px]:gap-1.5">
+              <Link className="flex items-center gap-[11px] whitespace-nowrap font-serif text-[18px] font-bold tracking-wide text-[#f3e1c7] no-underline max-[1200px]:text-[15px] max-[500px]:gap-[7px] max-[500px]:text-xs" to={staff ? '/overview' : '/rooms'}>
+                <img className="block w-[clamp(7.5rem,13vw,10.625rem)] max-[500px]:w-[7.25rem]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="LA Illustrada Hotel" />
+              </Link>
+              {!user && (
+                <>
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-[#b08d57] px-3 py-[7px] text-xs font-semibold leading-[1.35] text-white no-underline transition hover:bg-[#9a7848] max-[1000px]:hidden" to="/rooms">
+                    Book Now
+                  </Link>
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/login">
+                    Login
+                  </Link>
+                </>
+              )}
+            </div>
             {staff ? (
               <span className="justify-self-center font-serif text-sm text-[#e8bd91] max-[800px]:hidden">{admin ? 'Hotel administration' : 'Front desk operations'}</span>
             ) : (
               <nav className="flex gap-1 max-[800px]:col-span-full max-[800px]:row-start-2 max-[800px]:justify-self-center max-[500px]:w-full max-[500px]:max-w-[360px]" aria-label="Booking type">
-                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#d9985d] text-white' : 'border-transparent'}`} to="/rooms">
+                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#b08d57] text-white' : 'border-transparent'}`} to="/rooms">
                   <BedDouble size={18} aria-hidden="true" />
                   Book a room
                 </NavLink>
-                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#d9985d] text-white' : 'border-transparent'}`} to="/dining">
+                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#b08d57] text-white' : 'border-transparent'}`} to="/dining">
                   <UtensilsCrossed size={18} aria-hidden="true" />
                   Reserve a table
                 </NavLink>
@@ -110,12 +126,12 @@ export function Layout() {
                     <Link className="flex items-center gap-[7px] whitespace-nowrap text-xs text-[#f3e1c7] hover:text-white max-[500px]:[&>span]:hidden" to="/profile" title="Your profile">
                       {user.profile_image ? (
                         <img
-                          className="h-7 w-7 rounded-full border border-[#d9985d] object-cover"
+                          className="h-7 w-7 rounded-full border border-[#b08d57] object-cover"
                           src={user.profile_image}
                           alt=""
                    />
                     ) : (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-[#d9985d] text-xs">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-[#b08d57] text-xs">
                       {user.first_name.charAt(0).toUpperCase()}
                         </div>
                   )}
@@ -136,7 +152,7 @@ export function Layout() {
                   </button>
                 </>
               ) : (
-                <Link className="inline-flex min-h-[34px] items-center justify-center gap-2 border border-[#d9985d] bg-[#b8763c] px-3 py-[7px] text-xs font-semibold leading-[1.35] text-white no-underline transition hover:bg-[#a76530]" to="/login">
+                <Link className="inline-flex min-h-[34px] items-center justify-center gap-2 whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:inline-flex" to="/login">
                   Sign in <ArrowUpRight size={16} />
                 </Link>
               )}
@@ -144,37 +160,37 @@ export function Layout() {
           </div>
           {staff && (
             <nav className="flex flex-wrap justify-center gap-3 border-t border-white/15 px-6 pb-3.5 pt-2 max-[800px]:justify-start max-[800px]:flex-nowrap max-[800px]:gap-1 max-[800px]:overflow-auto max-[800px]:px-4" aria-label="Staff navigation">
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/overview">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/overview">
                 <LayoutDashboard size={16} />
                 Operations dashboard
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/walk-in">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/walk-in">
                 <UserPlus size={16} />
                 Walk-in booking
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/rooms">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/manage/rooms">
                 <BedDouble size={16} />
                 Room inventory
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/housekeeping">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/housekeeping">
                 <Sparkles size={16} />
                 Housekeeping
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/restaurant">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/manage/restaurant">
                 <Settings size={16} />
                 Dining operations
               </NavLink>
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/reports">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/reports">
                 <BarChart3 size={16} />
                 Reports
               </NavLink>
               {user.role === 'admin' && (
-                <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/manage/users">
+                <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/manage/users">
                   <Users size={16} />
                   Team access
                 </NavLink>
               )}
-              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#7b3d20] text-white' : ''}`} to="/activity">
+              <NavLink className={({ isActive }) => `flex items-center gap-[7px] whitespace-nowrap px-3 py-2 text-xs text-[#e8bd91] hover:text-white ${isActive ? 'bg-[#2a3f5f] text-white' : ''}`} to="/activity">
                 <History size={16} />
                 Activity log
               </NavLink>
