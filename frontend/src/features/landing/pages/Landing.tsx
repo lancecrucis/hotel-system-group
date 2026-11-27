@@ -258,10 +258,10 @@ export function Landing() {
       </section>
 
       {/* ---------------- restaurant ---------------- */}
-      <section className="relative overflow-hidden bg-[#3a4a32] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="restaurant">
+      <section className="relative overflow-hidden bg-[#1e2d4a] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="restaurant">
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#c5d4a8]">The Restaurant</span>
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#d4c4a0]">The Restaurant</span>
             <h2 className="font-['Gelasio'] text-[46px] font-normal leading-[1.1] text-[#f7f4ef] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
             <p className="max-w-[470px] text-[16px] leading-[1.8] text-[#f7f4ef]/80">
               Our kitchen cooks with what the season gives us — highland vegetables, herbs from the
@@ -286,7 +286,7 @@ export function Landing() {
                 <span>Smart casual</span>
               </li>
             </ul>
-            <Link className="inline-flex items-center gap-2 bg-[#6b7a4a] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#5a683d]" to="/dining">
+            <Link className="inline-flex items-center gap-2 bg-[#6b4423] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#5a381c]" to="/dining">
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
