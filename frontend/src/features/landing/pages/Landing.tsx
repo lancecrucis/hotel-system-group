@@ -140,7 +140,7 @@ export function Landing() {
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
-      <section className="relative flex min-h-[calc(100vh-93px)] items-end overflow-hidden bg-[#54220e] text-[#f3e1c7]">
+      <section className="relative flex min-h-[calc(100vh-93px)] items-end overflow-hidden bg-[#5e3a20] text-[#f3e1c7]">
         <div className="absolute inset-0">
           <img
             className="h-full w-full object-cover object-center"
