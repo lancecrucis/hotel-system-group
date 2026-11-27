@@ -276,7 +276,7 @@ restaurantRouter.post(
           data.contact_email,
           data.contact_phone,
           `DIN-${randomBytes(5).toString('hex').toUpperCase()}`,
-          staffWalkIn ? null : new Date(Date.now() + 15 * 60 * 1000),
+          null,
         ],
       );
       const r = inserted.rows[0];
@@ -295,7 +295,7 @@ restaurantRouter.post(
       await recordStatus(
         c,
         { ...r, status: '' },
-        staffWalkIn ? 'confirmed' : 'pending',
+        'confirmed',
         staffWalkIn
           ? 'Walk-in dining reservation created and confirmed by staff.'
           : 'Dining reservation confirmed automatically.',
