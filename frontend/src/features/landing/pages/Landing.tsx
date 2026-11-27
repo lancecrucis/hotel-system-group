@@ -191,10 +191,6 @@ export function Landing() {
             </dl>
           </div>
         </div>
-        <div className="absolute bottom-[30px] left-1/2 flex -translate-x-1/2 flex-col items-center gap-[9px] text-[9px] uppercase tracking-[.26em] text-white/60" aria-hidden="true">
-          <span />
-          Scroll
-        </div>
       </section>
 
       {/* ---------------- rooms ---------------- */}
