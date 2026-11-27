@@ -31,8 +31,15 @@ export function LandingNav() {
     <>
       <header className="sticky top-0 z-50 h-[93px] bg-[url('/images/login%20elements/navbar%20bg.png')] bg-[length:auto_100%] bg-center bg-no-repeat text-[#f3e1c7]">
         <div className="mx-auto flex h-full max-w-[1210px] items-center justify-between gap-[clamp(1rem,3vw,2rem)] px-[clamp(1rem,3vw,2rem)]">
-          <div className="flex min-w-0 items-center gap-4">
-            <Brand />
+          <Brand />
+          <nav className="flex items-center gap-[clamp(1rem,3.2vw,3.25rem)] max-[1000px]:hidden" aria-label="Landing navigation">
+            {links.map((link) => (
+              <Link key={link.label} className="whitespace-nowrap font-serif text-[17px] font-bold uppercase text-[#f3e1c7] transition hover:text-white" to={`${link.to}${link.hash}`}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 max-[1000px]:hidden">
               <Link className="bg-[#b08d57] px-5 py-[11px] font-serif text-[16px] font-bold uppercase text-[#fff8ee] no-underline transition hover:bg-[#9a7848]" to="/rooms">
                 Book Now
@@ -44,15 +51,6 @@ export function LandingNav() {
                 Sign Up
               </Link>
             </div>
-          </div>
-          <nav className="flex items-center gap-[clamp(1rem,3.2vw,3.25rem)] max-[1000px]:hidden" aria-label="Landing navigation">
-            {links.map((link) => (
-              <Link key={link.label} className="whitespace-nowrap font-serif text-[17px] font-bold uppercase text-[#f3e1c7] transition hover:text-white" to={`${link.to}${link.hash}`}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-4">
             <button
               type="button"
               className="hidden min-h-11 items-center justify-center border-0 bg-transparent p-2 text-[#f3e1c7] hover:bg-white/10 max-[1000px]:inline-flex"

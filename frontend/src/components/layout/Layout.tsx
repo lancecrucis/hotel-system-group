@@ -9,7 +9,6 @@ import {
   Users,
   History,
   LogOut,
-  ArrowUpRight,
   UserPlus,
   Sparkles,
   BarChart3,
@@ -51,21 +50,20 @@ export function Layout() {
             text-[#f8ead5]
         ">
           <div className="mx-auto flex h-full w-full items-center justify-between gap-4 px-[clamp(.75rem,5vw,14.5rem)] max-[800px]:gap-3 max-[800px]:px-4">
-            <div className="flex min-w-0 items-center gap-4">
-              <Link className="flex w-[clamp(8rem,14vw,14.6875rem)] min-w-0 shrink items-center justify-center no-underline max-[600px]:justify-start" to="/" aria-label="La Illustrada Hotel home">
-                <img className="block w-[clamp(7.5rem,10.2vw,10.625rem)] max-[600px]:w-[clamp(7.25rem,34vw,9rem)]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="La Illustrada Hotel" />
-              </Link>
-              <Link className="shrink-0 whitespace-nowrap bg-[#b08d57] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline hover:bg-[#9a7848] max-[800px]:hidden" to="/rooms">Book Now</Link>
-              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white max-[800px]:hidden" to="/login">Login</Link>
-              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white max-[800px]:hidden" to="/register">Sign Up</Link>
-            </div>
+            <Link className="flex w-[clamp(8rem,14vw,14.6875rem)] min-w-0 shrink items-center justify-center no-underline max-[600px]:justify-start" to="/" aria-label="La Illustrada Hotel home">
+              <img className="block w-[clamp(7.5rem,10.2vw,10.625rem)] max-[600px]:w-[clamp(7.25rem,34vw,9rem)]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="La Illustrada Hotel" />
+            </Link>
             <nav className="flex min-w-0 flex-1 items-center justify-center gap-[clamp(.75rem,3.25vw,3.4375rem)] max-[800px]:hidden" aria-label="Hotel navigation">
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6] underline underline-offset-4" to="/">Home</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#rooms">Rooms</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#restaurant">Restaurant</Link>
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#contact">Contact Us</Link>
             </nav>
-            <div className="w-0 max-[800px]:w-auto" aria-hidden="true" />
+            <div className="flex items-center gap-3 max-[800px]:hidden">
+              <Link className="shrink-0 whitespace-nowrap bg-[#b08d57] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline hover:bg-[#9a7848]" to="/rooms">Book Now</Link>
+              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white" to="/login">Login</Link>
+              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white" to="/register">Sign Up</Link>
+            </div>
           </div>
         </header>
         <main className={`relative flex ${isAuthPage ? 'min-h-[calc(100svh-clamp(4.5rem,8vw,5.8125rem))] items-center py-3' : 'min-h-[calc(100vh-93px)] pt-[clamp(2.5rem,5.2vw,5.4375rem)] max-[600px]:min-h-[calc(100vh-76px)] max-[600px]:pt-10'} w-full justify-center overflow-x-hidden overflow-y-auto px-[clamp(1rem,4vw,4rem)] pb-4 max-[600px]:px-4`}>
@@ -86,19 +84,6 @@ export function Layout() {
               <Link className="flex items-center gap-[11px] whitespace-nowrap font-serif text-[18px] font-bold tracking-wide text-[#f3e1c7] no-underline max-[1200px]:text-[15px] max-[500px]:gap-[7px] max-[500px]:text-xs" to={staff ? '/overview' : '/rooms'}>
                 <img className="block w-[clamp(7.5rem,13vw,10.625rem)] max-[500px]:w-[7.25rem]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="LA Illustrada Hotel" />
               </Link>
-              {!user && (
-                <>
-                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-[#b08d57] px-3 py-[7px] text-xs font-semibold leading-[1.35] text-white no-underline transition hover:bg-[#9a7848] max-[1000px]:hidden" to="/rooms">
-                    Book Now
-                  </Link>
-                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/login">
-                    Login
-                  </Link>
-                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/register">
-                    Sign Up
-                  </Link>
-                </>
-              )}
             </div>
             {staff ? (
               <span className="justify-self-center font-serif text-sm text-[#e8bd91] max-[800px]:hidden">{admin ? 'Hotel administration' : 'Front desk operations'}</span>
@@ -115,6 +100,19 @@ export function Layout() {
               </nav>
             )}
             <div className="flex min-w-0 items-center justify-end gap-4 max-[1200px]:gap-2.5 max-[800px]:col-start-2 max-[800px]:row-start-1 max-[500px]:gap-1.5">
+              {!user && (
+                <>
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-[#b08d57] px-3 py-[7px] text-xs font-semibold leading-[1.35] text-white no-underline transition hover:bg-[#9a7848] max-[1000px]:hidden" to="/rooms">
+                    Book Now
+                  </Link>
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/login">
+                    Login
+                  </Link>
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/register">
+                    Sign Up
+                  </Link>
+                </>
+              )}
               {user ? (
                 <>
                   <NavLink
@@ -155,10 +153,6 @@ export function Layout() {
                     <LogOut size={18} />
                   </button>
                 </>
-              ) : (
-                <Link className="inline-flex min-h-[34px] items-center justify-center gap-2 whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:inline-flex" to="/login">
-                  Sign in <ArrowUpRight size={16} />
-                </Link>
               )}
             </div>
           </div>
