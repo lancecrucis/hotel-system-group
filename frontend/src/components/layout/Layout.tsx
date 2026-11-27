@@ -57,6 +57,7 @@ export function Layout() {
               </Link>
               <Link className="shrink-0 whitespace-nowrap bg-[#b08d57] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline hover:bg-[#9a7848] max-[800px]:hidden" to="/rooms">Book Now</Link>
               <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white max-[800px]:hidden" to="/login">Login</Link>
+              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white max-[800px]:hidden" to="/register">Sign Up</Link>
             </div>
             <nav className="flex min-w-0 flex-1 items-center justify-center gap-[clamp(.75rem,3.25vw,3.4375rem)] max-[800px]:hidden" aria-label="Hotel navigation">
               <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6] underline underline-offset-4" to="/">Home</Link>
@@ -92,6 +93,9 @@ export function Layout() {
                   </Link>
                   <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/login">
                     Login
+                  </Link>
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/register">
+                    Sign Up
                   </Link>
                 </>
               )}
