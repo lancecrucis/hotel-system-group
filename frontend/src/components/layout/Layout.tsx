@@ -113,7 +113,7 @@ export function Layout() {
                   </Link>
                 </>
               )}
-              {user ? (
+              {user && (
                 <>
                   <NavLink
                     className="flex items-center gap-[7px] whitespace-nowrap text-xs text-[#f3e1c7] hover:text-white max-[1200px]:[&>span]:sr-only"
