@@ -156,7 +156,7 @@ export function Landing() {
           <div className="max-w-[680px]">
             <span className="mb-5 inline-block font-serif text-[15px] font-bold uppercase tracking-[.2em] text-[#f3e1c7]">Tagaytay Ridge · Est. 1998</span>
             <h1 className="mb-5 font-['Gelasio'] text-[clamp(2.75rem,6vw,5.5rem)] font-normal leading-[1.02] tracking-[-.035em] text-[#fff5e6]">
-              Quiet luxury above <em>the ridge</em>
+              Stay where comfort feels like home
             </h1>
             <p className="mb-7 max-w-[580px] text-[17px] leading-[1.75] text-[#fff5e6]/85">
               {HOTEL_NAME} is a boutique hotel and restaurant where warm Filipino hospitality meets
