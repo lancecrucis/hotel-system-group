@@ -9,7 +9,6 @@ import {
   Users,
   History,
   LogOut,
-  UserRound,
   ArrowUpRight,
   UserPlus,
   Sparkles,

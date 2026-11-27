@@ -14,6 +14,7 @@ const user = (id: string): NonNullable<Express.Request['user']> => ({
   email: `assistant-${id}@example.com`,
   phone_number: '+63 917 123 4567',
   date_of_birth: null,
+  profile_image: null,
 });
 
 function choice(message: Record<string, unknown>) {
