@@ -136,7 +136,7 @@ export function Landing() {
   const openHours = settings.data?.settings;
 
   return (
-    <div className="bg-[#e8edf5] font-sans text-[#1e2d4a]" id="top">
+    <div className="bg-[#1e2d4a] font-sans text-[#f4f1ec]" id="top">
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
@@ -194,12 +194,12 @@ export function Landing() {
       </section>
 
       {/* ---------------- rooms ---------------- */}
-      <section className="bg-[#e8edf5] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
+      <section className="bg-[#1e2d4a] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="rooms">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
               <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#b08d57]">Accommodation</span>
-              <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#1e2d4a] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
+              <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#f7f4ef] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
             </div>
             <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#b08d57] no-underline" to="/rooms">
               View all rooms
@@ -209,17 +209,17 @@ export function Landing() {
           <div className="grid grid-cols-3 gap-[30px] max-[1080px]:grid-cols-2 max-[640px]:grid-cols-1">
             {cards.map((card, index) => (
               <article
-                className={`flex flex-col border border-[#c5d0e0] bg-[#f7f9fc] transition hover:-translate-y-1.5 hover:border-[#b08d57] hover:shadow-[0_22px_44px_rgba(30,45,74,.12)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
+                className={`flex flex-col border border-[#3a4f6f] bg-[#243652] transition hover:-translate-y-1.5 hover:border-[#b08d57] hover:shadow-[0_22px_44px_rgba(0,0,0,.2)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
                 key={card.type}
               >
-                <figure className="relative aspect-[4/3] overflow-hidden bg-[#e8e4de]">
+                <figure className="relative aspect-[4/3] overflow-hidden bg-[#1a2740]">
                   <img className="h-full w-full object-cover" src={card.image} alt={`${card.type} at LA Illustrada`} loading="lazy" />
-                  <figcaption className="absolute bottom-0 left-0 bg-[#1e2d4a]/90 px-[15px] py-2 font-serif text-[13px] font-bold uppercase tracking-[.12em] text-white">{card.type}</figcaption>
+                  <figcaption className="absolute bottom-0 left-0 bg-[#121a2c]/90 px-[15px] py-2 font-serif text-[13px] font-bold uppercase tracking-[.12em] text-white">{card.type}</figcaption>
                 </figure>
                 <div className="flex flex-1 flex-col p-[26px] pb-7">
-                  <h3 className="font-serif text-[23px] font-normal text-[#1e2d4a]">{card.type}</h3>
-                  <p className="mb-5 flex-1 text-[13.5px] leading-[1.65] text-[#5a6578]">{card.description}</p>
-                  <div className="mb-5 flex flex-wrap gap-x-4 gap-y-[7px] border-t border-[#e4dfd7] pt-4 text-[11.5px] text-[#5a6578]">
+                  <h3 className="font-serif text-[23px] font-normal text-[#f7f4ef]">{card.type}</h3>
+                  <p className="mb-5 flex-1 text-[13.5px] leading-[1.65] text-[#f4f1ec]/75">{card.description}</p>
+                  <div className="mb-5 flex flex-wrap gap-x-4 gap-y-[7px] border-t border-white/15 pt-4 text-[11.5px] text-[#f4f1ec]/75">
                     <span className="inline-flex items-center gap-1.5">
                       <Users size={13} /> {card.capacity} guests
                     </span>
@@ -239,8 +239,8 @@ export function Landing() {
                   </div>
                   <div className="flex items-end justify-between gap-4">
                     <span className="flex flex-col gap-0.5">
-                      <strong className="font-serif text-[21px] font-normal text-[#1e2d4a]">{money(card.price)}</strong>
-                      <small className="text-[10px] uppercase tracking-[.16em] text-[#5a6578]">per night</small>
+                      <strong className="font-serif text-[21px] font-normal text-[#f7f4ef]">{money(card.price)}</strong>
+                      <small className="text-[10px] uppercase tracking-[.16em] text-[#f4f1ec]/70">per night</small>
                     </span>
                     <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#b08d57] no-underline" to="/rooms">
                       Reserve
@@ -250,7 +250,7 @@ export function Landing() {
               </article>
             ))}
           </div>
-          <p className="mt-[34px] text-[12.5px] text-[#5a6578]">
+          <p className="mt-[34px] text-[12.5px] text-[#f4f1ec]/70">
             Rates are per night. Deluxe rooms and suites include breakfast; Standard rooms do not.
             Availability and final pricing are confirmed when you book.
           </p>
@@ -258,7 +258,7 @@ export function Landing() {
       </section>
 
       {/* ---------------- restaurant ---------------- */}
-      <section className="relative overflow-hidden bg-[#2a3f5f] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="restaurant">
+      <section className="relative overflow-hidden bg-[#1e2d4a] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="restaurant">
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
             <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#d4c4a0]">The Restaurant</span>
@@ -303,44 +303,44 @@ export function Landing() {
       </section>
 
       {/* ---------------- contact ---------------- */}
-      <section className="bg-[#dce5f0] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
+      <section className="bg-[#1e2d4a] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
             <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#b08d57]">Contact Us</span>
-            <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#1e2d4a] max-[640px]:text-[34px]">We would love to hear from you</h2>
+            <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#f7f4ef] max-[640px]:text-[34px]">We would love to hear from you</h2>
             <dl className="mt-[34px] grid">
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-white/15 py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Address</dt>
                 <dd>88 Illustrada Avenue, Tagaytay Ridge, Cavite 4120</dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-white/15 py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Phone</dt>
                 <dd>
                   <a href="tel:+639175550142">+63 917 555 0142</a>
                 </dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-white/15 py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Email</dt>
                 <dd>
                   <a href="mailto:stay@lailustrada.example">stay@lailustrada.example</a>
                 </dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-white/15 py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Front desk</dt>
                 <dd>Open 24 hours, every day</dd>
               </div>
             </dl>
           </div>
 
-          <div className="border border-[#c5d0e0] bg-[#f7f9fc] px-10 py-11 max-[900px]:px-[26px]">
-            <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#1e2d4a]">Plan your visit</h3>
+          <div className="border border-[#3a4f6f] bg-[#243652] px-10 py-11 max-[900px]:px-[26px]">
+            <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#f7f4ef]">Plan your visit</h3>
             <p>
               Booking takes about two minutes. Sign in with your account, choose your dates, and
               you will have a confirmation reference right away.
             </p>
             <div className="mb-[30px] grid">
-              <div className="flex items-center gap-4 border-t border-[#e4eaf2] py-4">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#e8edf5] text-[#b08d57]">
+              <div className="flex items-center gap-4 border-t border-white/15 py-4">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#1e2d4a] text-[#b08d57]">
                   <BedDouble size={17} />
                 </span>
                 <div>
@@ -348,8 +348,8 @@ export function Landing() {
                   <span>Search live availability and nightly rates</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-[#e4eaf2] py-4 last:border-b">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#e8edf5] text-[#b08d57]">
+              <div className="flex items-center gap-4 border-t border-white/15 py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#1e2d4a] text-[#b08d57]">
                   <CalendarCheck size={17} />
                 </span>
                 <div>
@@ -357,8 +357,8 @@ export function Landing() {
                   <span>Lunch and dinner, every day of the week</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-[#e4eaf2] py-4 last:border-b">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#e8edf5] text-[#b08d57]">
+              <div className="flex items-center gap-4 border-t border-white/15 py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#1e2d4a] text-[#b08d57]">
                   <MessageCircle size={17} />
                 </span>
                 <div>
@@ -370,7 +370,7 @@ export function Landing() {
             <Link className="inline-flex items-center gap-2 bg-[#b08d57] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline hover:bg-[#9a7848]" to="/rooms">
               Start a Booking <ArrowRight size={15} />
             </Link>
-            <p className="mt-5 text-[11px] leading-[1.6] text-[#5a6578]">
+            <p className="mt-5 text-[11px] leading-[1.6] text-[#f4f1ec]/70">
               New here? <Link to="/register">Create an account</Link> first, or{' '}
               <Link to="/login">sign in</Link> if you already have one.
             </p>
