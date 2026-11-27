@@ -286,7 +286,7 @@ export function Landing() {
                 <span>Smart casual</span>
               </li>
             </ul>
-            <Link className="inline-flex items-center gap-2 bg-[#6b4423] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#5a381c]" to="/dining">
+            <Link className="inline-flex items-center gap-2 bg-[#b08d57] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#9a7848]" to="/dining">
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
