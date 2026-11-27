@@ -54,15 +54,15 @@ export function Layout() {
               <img className="block w-[clamp(7.5rem,10.2vw,10.625rem)] max-[600px]:w-[clamp(7.25rem,34vw,9rem)]" src="/images/login%20elements/logo%20title%20white%20navbar.png" alt="La Illustrada Hotel" />
             </Link>
             <nav className="flex min-w-0 flex-1 items-center justify-center gap-[clamp(.75rem,3.25vw,3.4375rem)] max-[800px]:hidden" aria-label="Hotel navigation">
-              <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6] underline underline-offset-4" to="/">Home</Link>
-              <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#rooms">Rooms</Link>
-              <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#restaurant">Restaurant</Link>
-              <Link className="whitespace-nowrap font-serif text-[clamp(.875rem,1.15vw,1.0625rem)] text-[#f1dfc6]" to="/#contact">Contact Us</Link>
+              <Link className="whitespace-nowrap font-serif text-[17px] text-[#f1dfc6] underline underline-offset-4" to="/">Home</Link>
+              <Link className="whitespace-nowrap font-serif text-[17px] text-[#f1dfc6]" to="/#rooms">Rooms</Link>
+              <Link className="whitespace-nowrap font-serif text-[17px] text-[#f1dfc6]" to="/#restaurant">Restaurant</Link>
+              <Link className="whitespace-nowrap font-serif text-[17px] text-[#f1dfc6]" to="/#contact">Contact Us</Link>
             </nav>
             <div className="flex items-center gap-3 max-[800px]:hidden">
-              <Link className="shrink-0 whitespace-nowrap bg-[#b08d57] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[clamp(.75rem,1.15vw,1.0625rem)] text-[#fff8ee] no-underline hover:bg-[#9a7848]" to="/rooms">Book Now</Link>
-              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white" to="/login">Login</Link>
-              <Link className="shrink-0 whitespace-nowrap font-serif text-[clamp(.75rem,1.1vw,1rem)] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white" to="/register">Sign Up</Link>
+              <Link className="shrink-0 whitespace-nowrap bg-[#b08d57] px-[clamp(.625rem,1.1vw,1.125rem)] py-[clamp(.45rem,.65vw,.625rem)] text-center font-serif text-[17px] text-[#fff8ee] no-underline hover:bg-[#9a7848]" to="/rooms">Book Now</Link>
+              <Link className="shrink-0 whitespace-nowrap font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white" to="/login">Login</Link>
+              <Link className="shrink-0 whitespace-nowrap font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline hover:text-white" to="/register">Sign Up</Link>
             </div>
           </div>
         </header>
@@ -89,11 +89,11 @@ export function Layout() {
               <span className="justify-self-center font-serif text-sm text-[#e8bd91] max-[800px]:hidden">{admin ? 'Hotel administration' : 'Front desk operations'}</span>
             ) : (
               <nav className="flex gap-1 max-[800px]:col-span-full max-[800px]:row-start-2 max-[800px]:justify-self-center max-[500px]:w-full max-[500px]:max-w-[360px]" aria-label="Booking type">
-                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#b08d57] text-white' : 'border-transparent'}`} to="/rooms">
+                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 font-serif text-[17px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-[15px] ${isActive ? 'border-[#b08d57] text-white' : 'border-transparent'}`} to="/rooms">
                   <BedDouble size={18} aria-hidden="true" />
                   Book a room
                 </NavLink>
-                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-[13px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-xs ${isActive ? 'border-[#b08d57] text-white' : 'border-transparent'}`} to="/dining">
+                <NavLink className={({ isActive }) => `flex items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 font-serif text-[17px] font-semibold text-[#e8bd91] transition-colors hover:text-white max-[500px]:flex-1 max-[500px]:px-2.5 max-[500px]:text-[15px] ${isActive ? 'border-[#b08d57] text-white' : 'border-transparent'}`} to="/dining">
                   <UtensilsCrossed size={18} aria-hidden="true" />
                   Reserve a table
                 </NavLink>
@@ -102,13 +102,13 @@ export function Layout() {
             <div className="flex min-w-0 items-center justify-end gap-4 max-[1200px]:gap-2.5 max-[800px]:col-start-2 max-[800px]:row-start-1 max-[500px]:gap-1.5">
               {!user && (
                 <>
-                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-[#b08d57] px-3 py-[7px] text-xs font-semibold leading-[1.35] text-white no-underline transition hover:bg-[#9a7848] max-[1000px]:hidden" to="/rooms">
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-[#b08d57] px-3 py-[7px] font-serif text-[17px] leading-[1.35] text-white no-underline transition hover:bg-[#9a7848] max-[1000px]:hidden" to="/rooms">
                     Book Now
                   </Link>
-                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/login">
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] font-serif text-[17px] font-bold uppercase leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/login">
                     Login
                   </Link>
-                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] text-xs font-semibold leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/register">
+                  <Link className="inline-flex min-h-[34px] shrink-0 items-center justify-center whitespace-nowrap border border-[#b08d57] bg-transparent px-3 py-[7px] font-serif text-[17px] font-bold uppercase leading-[1.35] text-[#f3e1c7] no-underline transition hover:bg-[#b08d57] hover:text-white max-[1000px]:hidden" to="/register">
                     Sign Up
                   </Link>
                 </>

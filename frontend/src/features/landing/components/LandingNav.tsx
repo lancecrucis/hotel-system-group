@@ -41,13 +41,13 @@ export function LandingNav() {
           </nav>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 max-[1000px]:hidden">
-              <Link className="bg-[#b08d57] px-5 py-[11px] font-serif text-[16px] font-bold uppercase text-[#fff8ee] no-underline transition hover:bg-[#9a7848]" to="/rooms">
+              <Link className="bg-[#b08d57] px-5 py-[11px] font-serif text-[17px] font-bold uppercase text-[#fff8ee] no-underline transition hover:bg-[#9a7848]" to="/rooms">
                 Book Now
               </Link>
-              <Link className="font-serif text-[15px] font-bold uppercase text-[#f3e1c7] no-underline transition hover:text-white" to="/login">
+              <Link className="font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline transition hover:text-white" to="/login">
                 Login
               </Link>
-              <Link className="font-serif text-[15px] font-bold uppercase text-[#f3e1c7] no-underline transition hover:text-white" to="/register">
+              <Link className="font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline transition hover:text-white" to="/register">
                 Sign Up
               </Link>
             </div>
@@ -73,13 +73,13 @@ export function LandingNav() {
           ))}
         </nav>
         <div className="grid gap-2.5">
-          <Link className="w-full bg-[#b08d57] px-5 py-3.5 text-center font-serif text-[15px] font-bold uppercase text-white no-underline" to="/rooms" onClick={() => setOpen(false)}>
+          <Link className="w-full bg-[#b08d57] px-5 py-3.5 text-center font-serif text-[17px] font-bold uppercase text-white no-underline" to="/rooms" onClick={() => setOpen(false)}>
             Book Now
           </Link>
-          <Link className="w-full border border-white/40 px-5 py-3.5 text-center font-serif text-[15px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/login" onClick={() => setOpen(false)}>
+          <Link className="w-full border border-white/40 px-5 py-3.5 text-center font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/login" onClick={() => setOpen(false)}>
             Login
           </Link>
-          <Link className="w-full border border-white/40 px-5 py-3.5 text-center font-serif text-[15px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/register" onClick={() => setOpen(false)}>
+          <Link className="w-full border border-white/40 px-5 py-3.5 text-center font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/register" onClick={() => setOpen(false)}>
             Sign Up
           </Link>
         </div>
