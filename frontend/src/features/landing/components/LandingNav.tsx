@@ -40,7 +40,7 @@ export function LandingNav() {
             ))}
           </nav>
           <div className="flex items-center gap-4">
-            <Link className="bg-[#b8763c] px-5 py-[11px] font-serif text-[16px] font-bold uppercase text-[#fff8ee] no-underline transition hover:bg-[#a76530] max-[1000px]:hidden" to="/rooms">
+            <Link className="bg-[#b08d57] px-5 py-[11px] font-serif text-[16px] font-bold uppercase text-[#fff8ee] no-underline transition hover:bg-[#9a7848] max-[1000px]:hidden" to="/rooms">
               Book Now
             </Link>
             <Link className="font-serif text-[15px] font-bold uppercase text-[#f3e1c7] no-underline transition hover:text-white max-[1000px]:hidden" to="/login">
@@ -62,7 +62,7 @@ export function LandingNav() {
         </div>
       </header>
 
-      <div className="fixed inset-x-0 top-[93px] z-40 max-h-[calc(100vh-93px)] overflow-y-auto border-t border-white/15 bg-[#54220e] px-[clamp(1rem,5vw,2rem)] pb-7 pt-3 shadow-[0_20px_40px_rgba(27,26,23,.22)]" hidden={!open}>
+      <div className="fixed inset-x-0 top-[93px] z-40 max-h-[calc(100vh-93px)] overflow-y-auto border-t border-white/15 bg-[#1e2d4a] px-[clamp(1rem,5vw,2rem)] pb-7 pt-3 shadow-[0_20px_40px_rgba(27,26,23,.22)]" hidden={!open}>
         <nav className="mb-[22px] grid" aria-label="Mobile navigation">
           {links.map((link) => (
           <Link className="border-b border-white/20 py-[17px] font-serif text-[17px] font-bold uppercase text-[#f3e1c7] no-underline" key={link.label} to={`${link.to}${link.hash}`} onClick={() => setOpen(false)}>
@@ -71,7 +71,7 @@ export function LandingNav() {
           ))}
         </nav>
         <div className="grid gap-2.5">
-          <Link className="w-full bg-[#b8763c] px-5 py-3.5 text-center font-serif text-[15px] font-bold uppercase text-white no-underline" to="/rooms" onClick={() => setOpen(false)}>
+          <Link className="w-full bg-[#b08d57] px-5 py-3.5 text-center font-serif text-[15px] font-bold uppercase text-white no-underline" to="/rooms" onClick={() => setOpen(false)}>
             Book Now
           </Link>
           <Link className="w-full border border-white/40 px-5 py-3.5 text-center font-serif text-[15px] font-bold uppercase text-[#f3e1c7] no-underline hover:bg-white/10" to="/login" onClick={() => setOpen(false)}>

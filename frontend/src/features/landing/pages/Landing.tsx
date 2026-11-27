@@ -136,7 +136,7 @@ export function Landing() {
   const openHours = settings.data?.settings;
 
   return (
-    <div className="bg-[#f4f1ec] font-sans text-[#1e2d4a]" id="top">
+    <div className="bg-[#e8edf5] font-sans text-[#1e2d4a]" id="top">
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
@@ -164,10 +164,10 @@ export function Landing() {
               always yours.
             </p>
             <div className="flex flex-wrap gap-3.5 max-[640px]:[&>a]:w-full">
-              <Link className="inline-flex items-center gap-2 bg-[#6b4423] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#5a381c]" to="/rooms">
+              <Link className="inline-flex items-center gap-2 bg-[#b08d57] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#9a7848]" to="/rooms">
                 Find a Room <ArrowRight size={15} />
               </Link>
-              <Link className="border border-[#d4c4a0]/70 px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-[#d4c4a0] no-underline hover:bg-white/10" to="/dining">
+              <Link className="border border-[#b08d57] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-[#b08d57] no-underline hover:bg-[#b08d57] hover:text-white" to="/dining">
                 Book a Table
               </Link>
             </div>
@@ -194,14 +194,14 @@ export function Landing() {
       </section>
 
       {/* ---------------- rooms ---------------- */}
-      <section className="bg-[#f4f1ec] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
+      <section className="bg-[#e8edf5] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
-              <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#6b4423]">Accommodation</span>
+              <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#b08d57]">Accommodation</span>
               <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#1e2d4a] max-[640px]:text-[34px]">Rooms designed for slow mornings</h2>
             </div>
-            <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#5a6578] no-underline" to="/rooms">
+            <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#b08d57] no-underline" to="/rooms">
               View all rooms
             </Link>
           </div>
@@ -209,7 +209,7 @@ export function Landing() {
           <div className="grid grid-cols-3 gap-[30px] max-[1080px]:grid-cols-2 max-[640px]:grid-cols-1">
             {cards.map((card, index) => (
               <article
-                className={`flex flex-col border border-[#d4c4b0] bg-[#faf9f7] transition hover:-translate-y-1.5 hover:border-[#6b4423] hover:shadow-[0_22px_44px_rgba(30,45,74,.12)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
+                className={`flex flex-col border border-[#c5d0e0] bg-[#f7f9fc] transition hover:-translate-y-1.5 hover:border-[#b08d57] hover:shadow-[0_22px_44px_rgba(30,45,74,.12)] ${['delay-0', 'delay-[90ms]', 'delay-[180ms]'][index] ?? 'delay-0'}`}
                 key={card.type}
               >
                 <figure className="relative aspect-[4/3] overflow-hidden bg-[#e8e4de]">
@@ -242,7 +242,7 @@ export function Landing() {
                       <strong className="font-serif text-[21px] font-normal text-[#1e2d4a]">{money(card.price)}</strong>
                       <small className="text-[10px] uppercase tracking-[.16em] text-[#5a6578]">per night</small>
                     </span>
-                    <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#5a6578] no-underline" to="/rooms">
+                    <Link className="border-b border-[#b08d57] pb-1 text-[11px] font-semibold uppercase tracking-[.16em] text-[#b08d57] no-underline" to="/rooms">
                       Reserve
                     </Link>
                   </div>
@@ -258,35 +258,35 @@ export function Landing() {
       </section>
 
       {/* ---------------- restaurant ---------------- */}
-      <section className="relative overflow-hidden bg-[#b08d57] px-0 py-[110px] text-[#1e2d4a] max-[900px]:py-[76px]" id="restaurant">
+      <section className="relative overflow-hidden bg-[#2a3f5f] px-0 py-[110px] text-[#f4f1ec] max-[900px]:py-[76px]" id="restaurant">
         <div className="relative mx-auto grid max-w-[1280px] grid-cols-[1.05fr_1fr] items-center gap-[76px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#1e2d4a]/80">The Restaurant</span>
-            <h2 className="font-['Gelasio'] text-[46px] font-normal leading-[1.1] text-[#1e2d4a] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
-            <p className="max-w-[470px] text-[16px] leading-[1.8] text-[#1e2d4a]/85">
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#d4c4a0]">The Restaurant</span>
+            <h2 className="font-['Gelasio'] text-[46px] font-normal leading-[1.1] text-[#f7f4ef] max-[640px]:text-[34px]">Farm-to-table dining, garden-side</h2>
+            <p className="max-w-[470px] text-[16px] leading-[1.8] text-[#f7f4ef]/80">
               Our kitchen cooks with what the season gives us — highland vegetables, herbs from the
               terrace, and fish brought in each morning. Breakfast, lunch, and dinner are served in a
               light-filled room that opens onto the garden.
             </p>
             <ul className="my-[30px] grid max-w-[470px] list-none gap-0 p-0">
-              <li className="flex items-baseline justify-between gap-5 border-b border-[#1e2d4a]/20 py-3.5 text-[13.5px] first:border-t">
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px] first:border-t">
                 <b>Breakfast</b>
                 <span>Daily · 6:30 – 10:30</span>
               </li>
-              <li className="flex items-baseline justify-between gap-5 border-b border-[#1e2d4a]/20 py-3.5 text-[13.5px]">
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px]">
                 <b>Lunch</b>
                 <span>Daily · 11:30 – 14:30</span>
               </li>
-              <li className="flex items-baseline justify-between gap-5 border-b border-[#1e2d4a]/20 py-3.5 text-[13.5px]">
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px]">
                 <b>Dinner</b>
                 <span>Daily · 18:00 – 22:00</span>
               </li>
-              <li className="flex items-baseline justify-between gap-5 border-b border-[#1e2d4a]/20 py-3.5 text-[13.5px]">
+              <li className="flex items-baseline justify-between gap-5 border-b border-white/15 py-3.5 text-[13.5px]">
                 <b>Dress</b>
                 <span>Smart casual</span>
               </li>
             </ul>
-            <Link className="inline-flex items-center gap-2 bg-[#1e2d4a] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#121a2c]" to="/dining">
+            <Link className="inline-flex items-center gap-2 bg-[#b08d57] px-6 py-3.5 font-serif text-[16px] font-bold uppercase text-white no-underline hover:bg-[#9a7848]" to="/dining">
               Book a Table <UtensilsCrossed size={15} />
             </Link>
           </div>
@@ -297,50 +297,50 @@ export function Landing() {
               alt="The LA Illustrada restaurant, set with white linen beside garden windows"
               loading="lazy"
             />
-            <span className="pointer-events-none absolute inset-4 border border-[#1e2d4a]/30" aria-hidden="true" />
+            <span className="pointer-events-none absolute inset-4 border border-white/30" aria-hidden="true" />
           </figure>
         </div>
       </section>
 
       {/* ---------------- contact ---------------- */}
-      <section className="bg-[#ebe6df] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
+      <section className="bg-[#dce5f0] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
-            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#6b4423]">Contact Us</span>
+            <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#b08d57]">Contact Us</span>
             <h2 className="font-['Gelasio'] text-[42px] font-normal leading-[1.1] tracking-[-.02em] text-[#1e2d4a] max-[640px]:text-[34px]">We would love to hear from you</h2>
             <dl className="mt-[34px] grid">
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] first:border-t max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Address</dt>
                 <dd>88 Illustrada Avenue, Tagaytay Ridge, Cavite 4120</dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Phone</dt>
                 <dd>
                   <a href="tel:+639175550142">+63 917 555 0142</a>
                 </dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Email</dt>
                 <dd>
                   <a href="mailto:stay@lailustrada.example">stay@lailustrada.example</a>
                 </dd>
               </div>
-              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#d9d3cb] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
+              <div className="grid grid-cols-[124px_1fr] gap-5 border-b border-[#c5d0e0] py-[19px] max-[640px]:grid-cols-1 max-[640px]:gap-1">
                 <dt>Front desk</dt>
                 <dd>Open 24 hours, every day</dd>
               </div>
             </dl>
           </div>
 
-          <div className="border border-[#d4c4b0] bg-[#faf9f7] px-10 py-11 max-[900px]:px-[26px]">
+          <div className="border border-[#c5d0e0] bg-[#f7f9fc] px-10 py-11 max-[900px]:px-[26px]">
             <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#1e2d4a]">Plan your visit</h3>
             <p>
               Booking takes about two minutes. Sign in with your account, choose your dates, and
               you will have a confirmation reference right away.
             </p>
             <div className="mb-[30px] grid">
-              <div className="flex items-center gap-4 border-t border-[#e4dfd7] py-4">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#ebe6df] text-[#6b4423]">
+              <div className="flex items-center gap-4 border-t border-[#e4eaf2] py-4">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#e8edf5] text-[#b08d57]">
                   <BedDouble size={17} />
                 </span>
                 <div>
@@ -348,8 +348,8 @@ export function Landing() {
                   <span>Search live availability and nightly rates</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-[#e4dfd7] py-4 last:border-b">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#ebe6df] text-[#6b4423]">
+              <div className="flex items-center gap-4 border-t border-[#e4eaf2] py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#e8edf5] text-[#b08d57]">
                   <CalendarCheck size={17} />
                 </span>
                 <div>
@@ -357,8 +357,8 @@ export function Landing() {
                   <span>Lunch and dinner, every day of the week</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 border-t border-[#e4dfd7] py-4 last:border-b">
-                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#ebe6df] text-[#6b4423]">
+              <div className="flex items-center gap-4 border-t border-[#e4eaf2] py-4 last:border-b">
+                <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-full bg-[#e8edf5] text-[#b08d57]">
                   <MessageCircle size={17} />
                 </span>
                 <div>
@@ -367,7 +367,7 @@ export function Landing() {
                 </div>
               </div>
             </div>
-            <Link className="inline-flex items-center gap-2 bg-[#1e2d4a] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline" to="/rooms">
+            <Link className="inline-flex items-center gap-2 bg-[#b08d57] px-6 py-3.5 text-[10px] font-semibold uppercase tracking-[.16em] text-white no-underline hover:bg-[#9a7848]" to="/rooms">
               Start a Booking <ArrowRight size={15} />
             </Link>
             <p className="mt-5 text-[11px] leading-[1.6] text-[#5a6578]">
