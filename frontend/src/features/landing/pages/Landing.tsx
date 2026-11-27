@@ -136,7 +136,7 @@ export function Landing() {
   const openHours = settings.data?.settings;
 
   return (
-    <div className="bg-[#f3e1c7] font-sans text-[#54220e]" id="top">
+    <div className="bg-[#f6f2eb] font-sans text-[#54220e]" id="top">
       <LandingNav />
 
       {/* ---------------- hero ---------------- */}
@@ -194,7 +194,7 @@ export function Landing() {
       </section>
 
       {/* ---------------- rooms ---------------- */}
-      <section className="bg-[#f3e1c7] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
+      <section className="bg-[#f6f2eb] px-0 py-[110px] max-[900px]:py-[76px]" id="rooms">
         <div className="mx-auto max-w-[1280px] px-12 max-[900px]:px-[22px]">
           <div className="mb-14 flex items-end justify-between gap-8 max-[640px]:mb-9 max-[640px]:flex-col max-[640px]:items-start">
             <div>
@@ -303,7 +303,7 @@ export function Landing() {
       </section>
 
       {/* ---------------- contact ---------------- */}
-      <section className="bg-[#ead5b8] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
+      <section className="bg-[#efe8df] px-0 py-[110px] max-[900px]:py-[76px]" id="contact">
         <div className="mx-auto grid max-w-[1280px] grid-cols-[1fr_1.05fr] items-start gap-[72px] px-12 max-[900px]:grid-cols-1 max-[900px]:gap-[52px] max-[900px]:px-[22px]">
           <div>
             <span className="mb-3 inline-block font-serif text-[14px] font-bold uppercase tracking-[.2em] text-[#a64b1c]">Contact Us</span>
@@ -332,7 +332,7 @@ export function Landing() {
             </dl>
           </div>
 
-          <div className="border border-[#b99673] bg-[#f7e8d2] px-10 py-11 max-[900px]:px-[26px]">
+          <div className="border border-[#d4c4b0] bg-[#faf7f2] px-10 py-11 max-[900px]:px-[26px]">
             <h3 className="font-['Gelasio'] text-[25px] font-normal text-[#441901]">Plan your visit</h3>
             <p>
               Booking takes about two minutes. Sign in with your account, choose your dates, and
